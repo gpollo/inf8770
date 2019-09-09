@@ -11,16 +11,20 @@ TESTS=                \
 
 all: $(BINARIES)
 
-encode: $(TESTS:=.arithmetic)
+encode: $(TESTS:=.encoded.arithmetic)
 
-decode: $(TESTS:=.arithmetic.decoded)
+decode: encode $(TESTS:=.decoded.arithmetic)
 
 bin/arithmetic: arithmetic/*.go
 	go build -o $@ $?
 
-$(TESTS:=.arithmetic): 
-	cat $(@:.arithmetic=) | bin/arithmetic --encode --parallel --workers 16 > $@
+$(TESTS:=.encoded.arithmetic):
+	$(eval SRC := $(@:.encoded.arithmetic=.decoded))
+	$(eval DST := $@)
+	cat $(SRC) | bin/arithmetic --encode --parallel --workers 16 > $(DST)
 
-$(TESTS:=.arithmetic.decoded): 
-	cat $(@:.decoded=) | bin/arithmetic --decode --parallel --workers 16 > $@
+$(TESTS:=.decoded.arithmetic): 
+	$(eval SRC := $(@:.decoded.arithmetic=.encoded.arithmetic))
+	$(eval DST := $@)
+	cat $(SRC) | bin/arithmetic --decode --parallel --workers 16 > $(DST)
 
