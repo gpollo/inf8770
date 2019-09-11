@@ -1,9 +1,5 @@
 package main
 
-import (
-	"io"
-)
-
 type Encoder struct {
 	data     []byte
 	searcher *Searcher
@@ -16,7 +12,7 @@ func NewEncoder() *Encoder {
 	}
 }
 
-func (e *Encoder) ReadAll(in io.Reader) error {
+func (e *Encoder) ReadAll(in Reader) error {
 	buffer := make([]byte, 1024)
 	for {
 		n, err := in.Read(buffer)
@@ -35,7 +31,7 @@ func (e *Encoder) ReadAll(in io.Reader) error {
 	return nil
 }
 
-func (e *Encoder) WriteHeaderEntryCount(out io.Writer, count int) error {
+func (e *Encoder) WriteHeaderEntryCount(out Writer, count int) error {
 	debugHeaderCount(uint64(count))
 	if err := WriteUvarint(out, uint64(count)); err != nil {
 		return err
@@ -44,7 +40,7 @@ func (e *Encoder) WriteHeaderEntryCount(out io.Writer, count int) error {
 	return nil
 }
 
-func (e *Encoder) WriteHeaderEntry(out io.Writer, symbol byte) error {
+func (e *Encoder) WriteHeaderEntry(out Writer, symbol byte) error {
 	debugHeaderEntry(symbol)
 	if _, err := out.Write([]byte{symbol}); err != nil {
 		return err
@@ -53,7 +49,7 @@ func (e *Encoder) WriteHeaderEntry(out io.Writer, symbol byte) error {
 	return nil
 }
 
-func (e *Encoder) BuildInitialTable(out io.Writer) error {
+func (e *Encoder) BuildInitialTable(out Writer) error {
 	e.searcher.Reset()
 
 	initials := []byte{}
@@ -83,7 +79,7 @@ func (e *Encoder) BuildInitialTable(out io.Writer) error {
 	return nil
 }
 
-func (e *Encoder) WriteCurrentValue(out io.Writer) error {
+func (e *Encoder) WriteCurrentValue(out Writer) error {
 	value, err := e.searcher.GetValue()
 	if err != nil {
 		return err
@@ -97,7 +93,7 @@ func (e *Encoder) WriteCurrentValue(out io.Writer) error {
 	return nil
 }
 
-func (e *Encoder) ProcessData(out io.Writer) error {
+func (e *Encoder) ProcessData(out Writer) error {
 	e.searcher.Reset()
 
 	for _, symbol := range e.data {
@@ -124,7 +120,7 @@ func (e *Encoder) ProcessData(out io.Writer) error {
 	return nil
 }
 
-func Encode(in io.Reader, out io.Writer) error {
+func Encode(in Reader, out Writer) error {
 	encoder := NewEncoder()
 
 	if err := encoder.ReadAll(in); err != nil {

@@ -1,88 +1,177 @@
 package main
 
 import (
-	"bufio"
+	"io"
 )
 
-func Decode(in *bufio.Reader, out *bufio.Writer) error {
+type Decoder struct {
+	data     []byte
+	values   map[uint64][]byte
+	searcher *Searcher
+}
+
+func NewDecoder() *Decoder {
+	return &Decoder{
+		data:     []byte{},
+		searcher: NewSearcher(),
+	}
+}
+
+func (d *Decoder) ReadHeaderEntryCount(in Reader) (uint64, error) {
 	count, err := ReadUvarint(in)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	debugHeaderCount(count)
 
-	searcher := NewSearcher()
+	return count, nil
+}
 
-	for i := 0; i < int(count); i++ {
-		symbol, err := in.ReadByte()
-		if err != nil {
-			return err
-		}
-
-		debugHeaderEntry(symbol)
-		if _, err = searcher.AddNode(symbol); err != nil {
-			return err
-		}
-		searcher.Reset()
+func (d *Decoder) ReadHeaderEntry(in Reader) (byte, error) {
+	symbol, err := in.ReadByte()
+	if err != nil {
+		return 0, err
 	}
 
-	values, err := searcher.GetCurrentNode().GetValueToPathMap()
+	debugHeaderEntry(symbol)
+
+	return symbol, nil
+}
+
+func (d *Decoder) BuildInitialTable(in Reader) error {
+	count, err := d.ReadHeaderEntryCount(in)
 	if err != nil {
 		return err
 	}
 
-	data := []byte{}
+	for i := 0; i < int(count); i++ {
+		symbol, err := d.ReadHeaderEntry(in)
+		if err != nil {
+			return err
+		}
+
+		if _, err = d.searcher.AddNode(symbol); err != nil {
+			return err
+		}
+
+		d.searcher.Reset()
+	}
+
+	d.values, err = d.searcher.GetCurrentNode().GetValueToPathMap()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Decoder) ReadNextValue(in Reader) (uint64, error) {
+	value, err := ReadUvarint(in)
+	if err != nil {
+		return 0, err
+	}
+
+	debugOutput(value)
+
+	return value, nil
+}
+
+func (d *Decoder) DecodeValue(value uint64, out Writer) (bool, error) {
+	if path, ok := d.values[value]; ok {
+		if _, err := out.Write(path); err != nil {
+			return false, err
+		}
+
+		d.data = append(d.data, path...)
+
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (d *Decoder) DecodeUntilUnknown(in Reader, out Writer) (uint64, error) {
 	for {
-		var saved uint64
-		for {
-			value, err := ReadUvarint(in)
-			if err != nil {
+		value, err := d.ReadNextValue(in)
+		if err != nil {
+			return 0, err
+		}
+
+		ok, err := d.DecodeValue(value, out)
+		if err != nil {
+			return 0, err
+		}
+
+		if !ok {
+			return value, nil
+		}
+	}
+}
+
+func (d *Decoder) UpdateTableFromDecodedData() error {
+	for i := 0; i < len(d.data); i++ {
+		if d.searcher.Next(d.data[i]) {
+			continue
+		}
+
+		value, err := d.searcher.AddNode(d.data[i])
+		if err != nil {
+			return err
+		}
+
+		debugNewEntry(d.searcher.GetCurrentPath(), value)
+
+		if _, ok := d.values[value]; ok {
+			panic("Malformed value dictionnary")
+		}
+
+		d.values[value] = d.searcher.GetCurrentPath()
+
+		d.searcher.Reset()
+		i--
+	}
+
+	d.data = []byte{}
+
+	return nil
+}
+
+func (d *Decoder) ProcessData(in Reader, out Writer) error {
+	for {
+		unknown, err := d.DecodeUntilUnknown(in, out)
+		if err != nil {
+			if err == io.EOF {
 				return nil
-			}
-			debugOutput(value)
-
-			if path, ok := values[value]; ok {
-				data = append(data, path...)
-				if _, err = out.Write(path); err != nil {
-					return err
-				}
 			} else {
-				saved = value
-				break
-			}
-		}
-
-		for i := 0; i < len(data); i++ {
-			if !searcher.Next(data[i]) {
-				value, err := searcher.AddNode(data[i])
-				if err != nil {
-					return err
-				}
-				debugNewEntry(searcher.GetCurrentPath(), value)
-
-				if _, ok := values[value]; ok {
-					panic("Malformed value dictionnary")
-				}
-
-				values[value] = searcher.GetCurrentPath()
-
-				searcher.Reset()
-				i--
-			}
-		}
-
-		data = []byte{}
-
-		if path, ok := values[saved]; ok {
-			data = append(data, path...)
-			if _, err = out.Write(path); err != nil {
 				return err
 			}
-		} else {
-			panic("Symbol not found after updating table")
 		}
 
+		if err = d.UpdateTableFromDecodedData(); err != nil {
+			return err
+		}
+
+		ok, err := d.DecodeValue(unknown, out)
+		if err != nil {
+			return err
+		}
+
+		if !ok {
+			panic("Symbol not found after updating table")
+		}
+	}
+}
+
+func Decode(in Reader, out Writer) error {
+	decoder := NewDecoder()
+
+	if err := decoder.BuildInitialTable(in); err != nil {
+		return err
+	}
+
+	if err := decoder.ProcessData(in, out); err != nil {
+		return err
 	}
 
 	return nil
