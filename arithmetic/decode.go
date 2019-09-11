@@ -34,7 +34,7 @@ func (e *Decoder) getSymbols(input *bufio.Reader) error {
 	e.total += (int(data[2]) << 16)
 	e.total += (int(data[3]) << 24)
 
-	size := int(data[4])
+	size := int(data[4]) + 1
 
 	_, err = input.Discard(5)
 	if err != nil {
@@ -99,7 +99,6 @@ func (e *Decoder) GetFloat(input *bufio.Reader) error {
 		if n == 0 {
 			break
 		}
-
 		if err != nil {
 			return err
 		}
@@ -163,7 +162,9 @@ func (e *Decoder) Decode(output *bufio.Writer) error {
 			fmt.Fprintf(os.Stderr, "%d,%d\n", i, tsEnd-tsBegin)
 		}
 
-		output.WriteByte(interval.number)
+		if err := output.WriteByte(interval.number); err != nil {
+			return err
+		}
 	}
 
 	return nil

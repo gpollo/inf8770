@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"math/big"
 	"os"
@@ -71,8 +72,12 @@ func (e *Encoder) getIntervals(output *bufio.Writer) error {
 		fmt.Fprintf(os.Stderr, "header: symbol count=%d\n", len(sorted))
 	}
 
+	if len(sorted) == 0 {
+		return errors.New("Cannot have an empty symbol list")
+	}
+
 	_, err := output.Write([]byte{
-		byte(len(sorted)),
+		byte(len(sorted) - 1),
 	})
 	if err != nil {
 		return err
