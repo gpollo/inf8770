@@ -26,11 +26,15 @@ decode: encode \
 	$(TESTS:=.decoded.dictionnary)
 
 check: decode \
-	$(TESTS:=.decoded.arithmetic.checked) \
-	$(TESTS:=.decoded.dictionnary.checked)
+	$(TESTS:=.decoded.arithmetic.check) \
+	$(TESTS:=.decoded.dictionnary.check)
 
 clean:
 	rm -vf $(BINARIES)
+
+mrproper: clean
+	find -type f -iname "*.arithmetic"  -print0 | xargs -0 rm -vf
+	find -type f -iname "*.dictionnary" -print0 | xargs -0 rm -vf
 
 ##############
 # Arithmetic #
@@ -46,9 +50,9 @@ $(TESTS:=.decoded.arithmetic):
 	$(eval dst := $@)
 	cat $(src) | bin/arithmetic --decode --parallel --workers 16 > $(dst)
 
-$(TESTS:=.decoded.arithmetic.checked): 
-	$(eval file1 := $(@:.checked=))
-	$(eval file2 := $(@:.arithmetic.checked=))
+$(TESTS:=.decoded.arithmetic.check): 
+	$(eval file1 := $(@:.check=))
+	$(eval file2 := $(@:.arithmetic.check=))
 	@if ! cmp --silent $(file1) $(file2); then \
 		echo "error: $(file1) and $(file2) are different"; \
 	else \
@@ -69,9 +73,9 @@ $(TESTS:=.decoded.dictionnary):
 	$(eval DST := $@)
 	cat $(SRC) | bin/dictionnary --decode > $(DST)
 
-$(TESTS:=.decoded.dictionnary.checked):
-	$(eval file1 := $(@:.checked=))
-	$(eval file2 := $(@:.dictionnary.checked=))
+$(TESTS:=.decoded.dictionnary.check):
+	$(eval file1 := $(@:.check=))
+	$(eval file2 := $(@:.dictionnary.check=))
 	@if ! cmp --silent $(file1) $(file2); then \
 		echo "error: $(file1) and $(file2) are differential"; \
 	else \
