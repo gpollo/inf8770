@@ -1,30 +1,79 @@
-BINARIES=bin/arithmetic
+BINARIES=bin/arithmetic bin/dictionnary
 
-TESTS=                \
-	test/binary/10    \
-	test/binary/100   \
-	test/binary/1000  \
-	test/binary/4000  \
-	test/text/short   \
+TESTS= \
+	test/binary/10 \
+	test/binary/100 \
+	test/binary/1000 \
+	test/binary/4000 \
+	test/text/short \
 	test/text/average \
 	test/text/long
 
 all: $(BINARIES)
 
-encode: $(TESTS:=.encoded.arithmetic)
-
-decode: encode $(TESTS:=.decoded.arithmetic)
-
-bin/arithmetic: arithmetic/*.go
+bin/arithmetic: $(wildcard arithmetic/*.go)
 	go build -o $@ $?
 
+bin/dictionnary: $(wildcard dictionnary/*.go)
+	go build -o $@ $?
+
+encode: $(BINARIES) \
+	$(TESTS:=.encoded.arithmetic) \
+	$(TESTS:=.encoded.dictionnary)
+
+decode: encode \
+	$(TESTS:=.decoded.arithmetic) \
+	$(TESTS:=.decoded.dictionnary)
+
+check: decode \
+	$(TESTS:=.decoded.arithmetic.checked) \
+	$(TESTS:=.decoded.dictionnary.checked)
+
+clean:
+	rm -vf $(BINARIES)
+
+##############
+# Arithmetic #
+##############
+
 $(TESTS:=.encoded.arithmetic):
-	$(eval SRC := $(@:.encoded.arithmetic=.decoded))
-	$(eval DST := $@)
-	cat $(SRC) | bin/arithmetic --encode --parallel --workers 16 > $(DST)
+	$(eval src := $(@:.encoded.arithmetic=.decoded))
+	$(eval dst := $@)
+	cat $(src) | bin/arithmetic --encode --parallel --workers 16 > $(dst)
 
 $(TESTS:=.decoded.arithmetic): 
-	$(eval SRC := $(@:.decoded.arithmetic=.encoded.arithmetic))
-	$(eval DST := $@)
-	cat $(SRC) | bin/arithmetic --decode --parallel --workers 16 > $(DST)
+	$(eval src := $(@:.decoded.arithmetic=.encoded.arithmetic))
+	$(eval dst := $@)
+	cat $(src) | bin/arithmetic --decode --parallel --workers 16 > $(dst)
 
+$(TESTS:=.decoded.arithmetic.checked): 
+	$(eval file1 := $(@:.checked=))
+	$(eval file2 := $(@:.arithmetic.checked=))
+	@if ! cmp --silent $(file1) $(file2); then \
+		echo "error: $(file1) and $(file2) are different"; \
+	else \
+		echo "ok: $(file1) and $(file2) are identical"; \
+	fi
+
+###############
+# Dictionnary #
+###############
+
+$(TESTS:=.encoded.dictionnary):
+	$(eval SRC := $(@:.encoded.dictionnary=.decoded))
+	$(eval DST := $@)
+	cat $(SRC) | bin/dictionnary --encode > $(DST)
+
+$(TESTS:=.decoded.dictionnary): 
+	$(eval SRC := $(@:.decoded.dictionnary=.encoded.dictionnary))
+	$(eval DST := $@)
+	cat $(SRC) | bin/dictionnary --decode > $(DST)
+
+$(TESTS:=.decoded.dictionnary.checked):
+	$(eval file1 := $(@:.checked=))
+	$(eval file2 := $(@:.dictionnary.checked=))
+	@if ! cmp --silent $(file1) $(file2); then \
+		echo "error: $(file1) and $(file2) are differential"; \
+	else \
+		echo "ok: $(file1) and $(file2) are identical"; \
+	fi
