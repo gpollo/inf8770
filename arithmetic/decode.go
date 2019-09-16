@@ -1,12 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"math/big"
-	"os"
 	"sort"
-	"time"
 )
 
 type Decoder struct {
@@ -16,86 +12,76 @@ type Decoder struct {
 	float     big.Rat
 }
 
-func (e *Decoder) getSymbols(input *bufio.Reader) error {
+func (d *Decoder) ReadHeaderEntryCount(in Reader) (uint64, error) {
+	count, err := ReadUvarint(in)
+	if err != nil {
+		return 0, err
+	}
+
+	debugHeaderEntryCount(count)
+
+	return count, nil
+}
+
+func (d *Decoder) ReadHeaderEntry(in Reader) (byte, uint64, error) {
+	symbol, err := in.ReadByte()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	count, err := ReadUvarint(in)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	debugHeaderEntry(symbol, count)
+
+	return symbol, count, err
+}
+
+func (d *Decoder) GetSymbols(in Reader) error {
+	d.total = 0
 	for i := 0; i < SYMBOL_COUNT; i++ {
-		e.symbols[i].number = 0
-		e.symbols[i].count = 0
-		e.symbols[i].frequency.SetInt64(0)
+		d.symbols[i].number = 0
+		d.symbols[i].count = 0
+		d.symbols[i].frequency.SetInt64(0)
 	}
 
-	data, err := input.Peek(5)
+	size, err := d.ReadHeaderEntryCount(in)
 	if err != nil {
 		return err
 	}
 
-	e.total = 0
-	e.total += (int(data[0]) << 0)
-	e.total += (int(data[1]) << 8)
-	e.total += (int(data[2]) << 16)
-	e.total += (int(data[3]) << 24)
-
-	size := int(data[4]) + 1
-
-	_, err = input.Discard(5)
-	if err != nil {
-		return err
-	}
-
-	if *debug {
-		fmt.Fprintf(os.Stderr, "header: total=%d\n", e.total)
-		fmt.Fprintf(os.Stderr, "header: symbol count=%d\n", size)
-	}
-
-	for {
-		data, err = input.Peek(5)
+	for i := 0; i < int(size); i++ {
+		number, count, err := d.ReadHeaderEntry(in)
 		if err != nil {
 			return err
 		}
 
-		number := byte(data[0])
+		d.symbols[number].number = number
+		d.symbols[number].count = int(count)
+		d.total += int(count)
+	}
 
-		count := 0
-		count += (int(data[1]) << 0)
-		count += (int(data[2]) << 8)
-		count += (int(data[3]) << 16)
-		count += (int(data[4]) << 24)
-
-		_, err = input.Discard(5)
-		if err != nil {
-			return err
-		}
-
-		if *debug {
-			fmt.Fprintf(os.Stderr, "header: symbol=%d (%c), count=%d\n",
-				number, number, count,
-			)
-		}
-
-		e.symbols[number].number = number
-		e.symbols[number].count = count
-		e.symbols[number].computeFrequency(e.total)
-
-		size--
-		if size == 0 {
-			break
-		}
+	for i := 0; i < SYMBOL_COUNT; i++ {
+		d.symbols[i].computeFrequency(d.total)
 	}
 
 	return nil
 }
 
-func (e *Decoder) GetFloat(input *bufio.Reader) error {
+func (d *Decoder) GetFloat(in Reader) error {
 	base := big.NewInt(2)
 	exponent := big.NewInt(0)
 	increment := big.NewInt(1)
 	power := big.NewInt(0)
 	frac := big.NewRat(0, 1)
 
-	e.float.SetInt64(0)
+	d.float.SetInt64(0)
 
 	data := make([]byte, 1024)
 	for {
-		n, err := input.Read(data)
+		n, err := in.Read(data)
 		if n == 0 {
 			break
 		}
@@ -110,59 +96,45 @@ func (e *Decoder) GetFloat(input *bufio.Reader) error {
 				if data[i]&(1<<j) != 0 {
 					power.Exp(base, exponent, nil)
 					frac.SetFrac(increment, power)
-					e.float.Add(&e.float, frac)
+					d.float.Add(&d.float, frac)
 				}
 			}
 		}
 	}
 
-	if *debug {
-		fmt.Fprintf(os.Stderr, "Initial float: %s\n", e.float.FloatString(50))
-	}
+	debugRatFloat(&d.float)
 
 	return nil
 }
 
-func (e *Decoder) getIntervals() {
+func (d *Decoder) GetIntervals() {
 	sorted := Frequencies{}
 	for i := 0; i < SYMBOL_COUNT; i++ {
-		if e.symbols[i].count == 0 {
+		if d.symbols[i].count == 0 {
 			continue
 		}
 
-		sorted = append(sorted, e.symbols[i])
+		sorted = append(sorted, d.symbols[i])
 	}
 	sort.Sort(sorted)
 
 	for i := 0; i < len(sorted); i++ {
-		e.intervals.Append(sorted[i].number, &sorted[i].frequency)
+		d.intervals.Append(sorted[i].number, &sorted[i].frequency)
 	}
 
-	if *debug {
-		e.intervals.Print()
-	}
+	debugIntervals(d.intervals)
 }
 
-func (e *Decoder) Decode(output *bufio.Writer) error {
-	for i := 0; i < e.total; i++ {
-		var tsBegin, tsEnd int64
-		if *timed {
-			tsBegin = time.Now().UnixNano()
-		}
-
-		interval, err := e.intervals.FindByRat(&e.float)
+func (d *Decoder) Decode(out Writer) error {
+	for i := 0; i < d.total; i++ {
+		interval, err := d.intervals.FindByRat(&d.float)
 		if err != nil {
 			return err
 		}
 
-		e.intervals.Resize(interval)
+		d.intervals.Resize(interval)
 
-		if *timed {
-			tsEnd = time.Now().UnixNano()
-			fmt.Fprintf(os.Stderr, "%d,%d\n", i, tsEnd-tsBegin)
-		}
-
-		if err := output.WriteByte(interval.number); err != nil {
+		if _, err := out.Write([]byte{interval.number}); err != nil {
 			return err
 		}
 	}
@@ -170,10 +142,10 @@ func (e *Decoder) Decode(output *bufio.Writer) error {
 	return nil
 }
 
-func decodeData(in *bufio.Reader, out *bufio.Writer) error {
+func Decode(in Reader, out Writer) error {
 	decoder := Decoder{}
 
-	if err := decoder.getSymbols(in); err != nil {
+	if err := decoder.GetSymbols(in); err != nil {
 		return err
 	}
 
@@ -181,7 +153,7 @@ func decodeData(in *bufio.Reader, out *bufio.Writer) error {
 		return err
 	}
 
-	decoder.getIntervals()
+	decoder.GetIntervals()
 
 	if err := decoder.Decode(out); err != nil {
 		return err

@@ -1,13 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"math/big"
-	"os"
 	"sort"
-	"time"
 )
 
 type Encoder struct {
@@ -16,9 +13,9 @@ type Encoder struct {
 	intervals Intervals
 }
 
-func (e *Encoder) getSymbols(input *bufio.Reader, output *bufio.Writer) error {
+func (e *Encoder) GetSymbols(in Reader) error {
 	for {
-		b, err := input.ReadByte()
+		b, err := in.ReadByte()
 		if err != nil {
 			break
 		}
@@ -40,24 +37,34 @@ func (e *Encoder) getSymbols(input *bufio.Reader, output *bufio.Writer) error {
 		e.symbols[i].computeFrequency(len(e.data))
 	}
 
-	if *debug {
-		fmt.Fprintf(os.Stderr, "header: total=%d\n", len(e.data))
-	}
+	return nil
+}
 
-	_, err := output.Write([]byte{
-		byte(0xFF & (len(e.data) >> 0)),
-		byte(0xFF & (len(e.data) >> 8)),
-		byte(0xFF & (len(e.data) >> 16)),
-		byte(0xFF & (len(e.data) >> 24)),
-	})
-	if err != nil {
+func (e *Encoder) WriteHeaderEntryCount(out Writer, count int) error {
+	debugHeaderEntryCount(uint64(count))
+
+	if err := WriteUvarint(out, uint64(count)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (e *Encoder) getIntervals(output *bufio.Writer) error {
+func (e *Encoder) WriteHeaderEntry(out Writer, symbol byte, count uint64) error {
+	debugHeaderEntry(symbol, count)
+
+	if _, err := out.Write([]byte{symbol}); err != nil {
+		return err
+	}
+
+	if err := WriteUvarint(out, uint64(count)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *Encoder) GetIntervals(out Writer) error {
 	sorted := Frequencies{}
 	for i := 0; i < len(e.symbols); i++ {
 		if e.symbols[i].count == 0 {
@@ -68,38 +75,20 @@ func (e *Encoder) getIntervals(output *bufio.Writer) error {
 	}
 	sort.Sort(sorted)
 
-	if *debug {
-		fmt.Fprintf(os.Stderr, "header: symbol count=%d\n", len(sorted))
-	}
-
 	if len(sorted) == 0 {
 		return errors.New("Cannot have an empty symbol list")
 	}
 
-	_, err := output.Write([]byte{
-		byte(len(sorted) - 1),
-	})
-	if err != nil {
+	if err := e.WriteHeaderEntryCount(out, len(sorted)); err != nil {
 		return err
 	}
 
 	for i := 0; i < len(sorted); i++ {
 		e.intervals.Append(sorted[i].number, &sorted[i].frequency)
 
-		if *debug {
-			fmt.Fprintf(os.Stderr, "header: symbol=%d (%c), count=%d\n",
-				sorted[i].number, sorted[i].number, sorted[i].count,
-			)
-		}
-
-		_, err = output.Write([]byte{
-			sorted[i].number,
-			byte(0xFF & (sorted[i].count >> 0)),
-			byte(0xFF & (sorted[i].count >> 8)),
-			byte(0xFF & (sorted[i].count >> 16)),
-			byte(0xFF & (sorted[i].count >> 32)),
-		})
-		if err != nil {
+		symbol := sorted[i].number
+		count := uint64(sorted[i].count)
+		if err := e.WriteHeaderEntry(out, symbol, count); err != nil {
 			return err
 		}
 	}
@@ -107,13 +96,8 @@ func (e *Encoder) getIntervals(output *bufio.Writer) error {
 	return nil
 }
 
-func (e *Encoder) encodeSymbols() error {
+func (e *Encoder) EncodeSymbols() error {
 	for i := 0; i < len(e.data); i++ {
-		var tsBegin, tsEnd int64
-		if *timed {
-			tsBegin = time.Now().UnixNano()
-		}
-
 		interval, err := e.intervals.Find(e.data[i])
 		if err != nil {
 			fmt.Println(err)
@@ -121,27 +105,14 @@ func (e *Encoder) encodeSymbols() error {
 		}
 
 		e.intervals.Resize(interval)
-
-		if *timed {
-			tsEnd = time.Now().UnixNano()
-			fmt.Fprintf(os.Stderr, "%d,%d\n", i, tsEnd-tsBegin)
-		}
 	}
 
-	if *debug {
-		var start, end big.Rat
-		e.intervals.GetStart(&start)
-		e.intervals.GetEnd(&end)
-		fmt.Fprintf(os.Stderr, "Final interval is [%s, %s]\n",
-			start.FloatString(50),
-			end.FloatString(50),
-		)
-	}
+	debugIntervals(e.intervals)
 
 	return nil
 }
 
-func (e *Encoder) encodeBinary(output *bufio.Writer) error {
+func (e *Encoder) EncodeBinary(out Writer) error {
 	base := big.NewInt(2)
 	exponent := big.NewInt(0)
 	increment := big.NewInt(1)
@@ -164,8 +135,7 @@ func (e *Encoder) encodeBinary(output *bufio.Writer) error {
 		}
 
 		if len(bits) == 8 {
-			err := output.WriteByte(bitsToByte(&bits))
-			if err != nil {
+			if _, err := out.Write([]byte{bitsToByte(&bits)}); err != nil {
 				return err
 			}
 		}
@@ -175,33 +145,30 @@ func (e *Encoder) encodeBinary(output *bufio.Writer) error {
 		}
 	}
 
-	err := output.WriteByte(bitsToByte(&bits))
-	if err != nil {
-		return err
-	}
+	debugRatFloat(result)
 
-	if *debug {
-		fmt.Fprintf(os.Stderr, "Final number is %s\n", result.FloatString(100))
+	if _, err := out.Write([]byte{bitsToByte(&bits)}); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func encodeData(in *bufio.Reader, out *bufio.Writer) error {
+func Encode(in Reader, out Writer) error {
 	encoder := Encoder{}
-	if err := encoder.getSymbols(in, out); err != nil {
+	if err := encoder.GetSymbols(in); err != nil {
 		return err
 	}
 
-	if err := encoder.getIntervals(out); err != nil {
+	if err := encoder.GetIntervals(out); err != nil {
 		return err
 	}
 
-	if err := encoder.encodeSymbols(); err != nil {
+	if err := encoder.EncodeSymbols(); err != nil {
 		return err
 	}
 
-	if err := encoder.encodeBinary(out); err != nil {
+	if err := encoder.EncodeBinary(out); err != nil {
 		return err
 	}
 
