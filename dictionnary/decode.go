@@ -120,8 +120,6 @@ func (d *Decoder) UpdateTableFromDecodedData() error {
 			return err
 		}
 
-		debugNewEntry(d.searcher.GetCurrentPath(), value)
-
 		if _, ok := d.values[value]; ok {
 			panic("Malformed value dictionnary")
 		}
