@@ -5,6 +5,13 @@ TESTS= \
 	test/binary/100 \
 	test/binary/1000 \
 	test/binary/4000 \
+	test/letters/2 \
+	test/letters/3 \
+	test/letters/4 \
+	test/letters/5 \
+	test/letters/10 \
+	test/letters/20 \
+	test/other/pattern \
 	test/text/short \
 	test/text/average \
 	test/text/long
