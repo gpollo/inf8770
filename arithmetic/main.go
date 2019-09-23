@@ -3,7 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
+
+	"time"
 
 	"github.com/akamensky/argparse"
 )
@@ -16,14 +19,19 @@ var workers *int
 
 func main() {
 	parser := argparse.NewParser("encode", "STDIN arithmetic encoder/decoder")
-	decode := parser.Flag("d", "decode", &argparse.Options{
+	doDecode := parser.Flag("d", "decode", &argparse.Options{
 		Required: false,
 		Help:     "Run the decoder on the input data.",
 	})
-	encode := parser.Flag("e", "encode", &argparse.Options{
+	doEncode := parser.Flag("e", "encode", &argparse.Options{
 		Required: false,
 		Help:     "Run the encoder on the input data. [default]",
 	})
+	doBenchmark := parser.Flag("b", "benchmark", &argparse.Options{
+		Required: false,
+		Help:     "Print execution time (ms) and don't output data",
+	})
+
 	parallel = parser.Flag("p", "parallel", &argparse.Options{
 		Required: false,
 		Help:     "Run interval resizing using multiple threads",
@@ -44,21 +52,29 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !*encode && !*decode {
-		*encode = true
+	if !*doEncode && !*doDecode {
+		*doEncode = true
 	}
 
-	if *encode && *decode {
+	if *doEncode && *doDecode {
 		fmt.Print("Cannot have both `--encode` and `--decode` at the same time")
 		os.Exit(1)
 	}
 
-	stdin := bufio.NewReader(os.Stdin)
-	stdout := bufio.NewWriter(os.Stdout)
+	var stdin *bufio.Reader
+	var stdout *bufio.Writer
+
+	stdin = bufio.NewReader(os.Stdin)
+	if *doBenchmark {
+		stdout = bufio.NewWriter(ioutil.Discard)
+	} else {
+		stdout = bufio.NewWriter(os.Stdout)
+	}
 
 	defer stdout.Flush()
 
-	if *encode {
+	startTimestamp := time.Now().UnixNano()
+	if *doEncode {
 		if err := Encode(stdin, stdout); err != nil {
 			fmt.Fprintf(os.Stderr, err.Error())
 		}
@@ -66,5 +82,11 @@ func main() {
 		if err := Decode(stdin, stdout); err != nil {
 			fmt.Fprintf(os.Stderr, err.Error())
 		}
+	}
+	stopTimestamp := time.Now().UnixNano()
+
+	if *doBenchmark {
+		elapsed := stopTimestamp - startTimestamp
+		fmt.Printf("%d us\n", elapsed/1000000)
 	}
 }
