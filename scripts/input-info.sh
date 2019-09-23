@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "// auto-generated table, do not edit"
 echo ".Liste des Fichiers de Tests"
 echo "|==="
 echo "|Fichier ^|Taille (octets) ^|Entropie (bits/octet)"
