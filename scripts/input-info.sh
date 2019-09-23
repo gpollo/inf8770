@@ -11,7 +11,7 @@ find . -type f -iname "*.decoded" | sort | while read FILE; do
     ENTROPY=$(echo "$DATA" | awk '{print $3}')
 
     echo ""
-    echo "| $FILENAME"
+    echo "| \`$FILENAME\`"
     echo "^| $SIZE"
     echo "^| $ENTROPY"
 done
