@@ -43,6 +43,13 @@ mrproper: clean
 	find -type f -iname "*.arithmetic"  -print0 | xargs -0 rm -vf
 	find -type f -iname "*.dictionnary" -print0 | xargs -0 rm -vf
 
+rapport.pdf:
+	asciidoctor-pdf -r asciidoctor-mathematical README.asc
+	mv README.pdf rapport.pdf
+
+remise:
+	tar cvf - rapport.pdf arithmetic dictionnary makefile test | gzip -9 - > INF8770_1837776_LABO1.tar.gz
+
 ##############
 # Arithmetic #
 ##############
