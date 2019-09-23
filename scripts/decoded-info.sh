@@ -27,6 +27,6 @@ echo ".Résultats des Fichiers de Tests"
 echo "|==="
 echo "|Fichier ^|Originale (octets) ^|Arithmétique (octets) ^|Dictionnaire (octets) "
 find . -type f -iname "*.decoded" | sort | while read FILE; do
-    print_row "$FILE"
+    print_row "$(printf $FILE | sed 's/\.\///g')"
 done
 echo "|==="
