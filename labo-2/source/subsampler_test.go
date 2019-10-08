@@ -29,21 +29,21 @@ func assert2DByteArrayEqual(t *testing.T, got, expected [][]byte) {
 }
 
 func TestSubsampler410(t *testing.T) {
-	data := [][]byte{
+	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	yExpected := [][]byte{
+	yExpected := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	uvExpected := [][]byte{
+	uvExpected := ImageData{
 		{23, 38},
 		{46, 32},
 	}
@@ -57,21 +57,21 @@ func TestSubsampler410(t *testing.T) {
 }
 
 func TestSubsampler420(t *testing.T) {
-	data := [][]byte{
+	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	yExpected := [][]byte{
+	yExpected := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	uvExpected := [][]byte{
+	uvExpected := ImageData{
 		{25, 22, 45, 32},
 		{52, 40, 27, 37},
 	}
@@ -85,21 +85,21 @@ func TestSubsampler420(t *testing.T) {
 }
 
 func TestSubsampler422(t *testing.T) {
-	data := [][]byte{
+	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	yExpected := [][]byte{
+	yExpected := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
 		{30, 50, 10, 40, 80, 40, 20, 20},
 		{90, 90, 10, 60, 20, 60, 10, 70},
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	uvExpected := [][]byte{
+	uvExpected := ImageData{
 		{10, 20, 30, 45},
 		{40, 25, 60, 20},
 		{90, 35, 40, 40},
