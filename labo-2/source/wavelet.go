@@ -1,6 +1,7 @@
 package main
 
 // TODO: what to do if dimensions not multiple of 2?
+// TODO: check byte arithmetic overflow
 
 func (d ImageData) GetXLowPassFilter() ImageData {
 	sizeX, sizeY := d.GetDimensions()
