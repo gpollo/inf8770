@@ -1,8 +1,14 @@
 package main
 
-// TODO: what to do if dimensions not multiple of 2?
+type Wavelet interface {
+	WaveletTransform(d ImageData) ImageData
+}
 
-func (d ImageData) GetXLowPassFilter() ImageData {
+type HaarWavelet struct {
+	level int
+}
+
+func (w *HaarWavelet) GetXLowPassFilter(d ImageData) ImageData {
 	sizeX, sizeY := d.GetDimensions()
 	data := NewImageData(sizeX/2, sizeY)
 
@@ -18,7 +24,7 @@ func (d ImageData) GetXLowPassFilter() ImageData {
 	return data
 }
 
-func (d ImageData) GetYLowPassFilter() ImageData {
+func (w *HaarWavelet) GetYLowPassFilter(d ImageData) ImageData {
 	sizeX, sizeY := d.GetDimensions()
 	data := NewImageData(sizeX, sizeY/2)
 
@@ -34,7 +40,7 @@ func (d ImageData) GetYLowPassFilter() ImageData {
 	return data
 }
 
-func (d ImageData) GetXHighPassFilter() ImageData {
+func (w *HaarWavelet) GetXHighPassFilter(d ImageData) ImageData {
 	sizeX, sizeY := d.GetDimensions()
 	data := NewImageData(sizeX/2, sizeY)
 
@@ -54,7 +60,7 @@ func (d ImageData) GetXHighPassFilter() ImageData {
 	return data
 }
 
-func (d ImageData) GetYHighPassFilter() ImageData {
+func (w *HaarWavelet) GetYHighPassFilter(d ImageData) ImageData {
 	sizeX, sizeY := d.GetDimensions()
 	data := NewImageData(sizeX, sizeY/2)
 
@@ -69,6 +75,70 @@ func (d ImageData) GetYHighPassFilter() ImageData {
 				data[j][i] = byte(value / 2)
 			}
 		}
+	}
+
+	return data
+}
+
+func (w *HaarWavelet) CopyIntoQuadrant(from, into ImageData, quadrant int) {
+	sizeFromX, sizeFromY := from.GetDimensions()
+	sizeIntoX, sizeIntoY := into.GetDimensions()
+
+	if 2*sizeFromX > sizeIntoX {
+		panic("Invalid X size for copying from")
+	}
+
+	if 2*sizeFromY > sizeIntoY {
+		panic("Invalid Y size for copying from")
+	}
+
+	var offsetX int
+	var offsetY int
+	switch quadrant {
+	case 1:
+		offsetX = sizeFromX
+		offsetY = 0
+	case 2:
+		offsetX = 0
+		offsetY = 0
+	case 3:
+		offsetX = 0
+		offsetY = sizeFromY
+	case 4:
+		offsetX = sizeFromX
+		offsetY = sizeFromY
+	default:
+		panic("Invalid quadrant selected for copying")
+	}
+
+	for j := 0; j < sizeFromY; j++ {
+		for i := 0; i < sizeFromX; i++ {
+			into[j+offsetY][i+offsetX] = from[j][i]
+		}
+	}
+}
+
+func (w *HaarWavelet) WaveletTransform(d ImageData) ImageData {
+	sizeX, sizeY := d.GetDimensions()
+	data := NewImageData(sizeX, sizeY)
+
+	level := w.level
+	if level == 0 {
+		level = 2
+	}
+
+	for i := 0; i < level; i++ {
+		fll := w.GetYLowPassFilter(w.GetXLowPassFilter(d))
+		flh := w.GetYHighPassFilter(w.GetXLowPassFilter(d))
+		fhl := w.GetYLowPassFilter(w.GetXHighPassFilter(d))
+		fhh := w.GetYHighPassFilter(w.GetXHighPassFilter(d))
+
+		w.CopyIntoQuadrant(fll, data, 2)
+		w.CopyIntoQuadrant(flh, data, 1)
+		w.CopyIntoQuadrant(fhl, data, 3)
+		w.CopyIntoQuadrant(fhh, data, 4)
+
+		d = fll
 	}
 
 	return data
