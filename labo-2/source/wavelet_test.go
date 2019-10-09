@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"testing"
 )
 
@@ -20,7 +21,7 @@ func TestGetXLowPassFilter(t *testing.T) {
 		{15, 45, 15, 35},
 	}
 	result := wavelet.GetXLowPassFilter(data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestGetYLowPassFilter(t *testing.T) {
@@ -37,7 +38,7 @@ func TestGetYLowPassFilter(t *testing.T) {
 		{50, 55, 20, 60, 15, 40, 20, 55},
 	}
 	result := wavelet.GetYLowPassFilter(data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestGetXHighPassFilter(t *testing.T) {
@@ -50,13 +51,13 @@ func TestGetXHighPassFilter(t *testing.T) {
 	}
 
 	expected := ImageData{
-		{0, 0, 0, 0},
-		{0, 0, 20, 0},
-		{0, 0, 0, 0},
-		{0, 0, 0, 0},
+		{0, 0, 0, -5},
+		{-10, -15, 20, 0},
+		{0, -25, -20, -30},
+		{-5, -15, -5, -5},
 	}
 	result := wavelet.GetXHighPassFilter(data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestGetYHighPassFilter(t *testing.T) {
@@ -69,11 +70,11 @@ func TestGetYHighPassFilter(t *testing.T) {
 	}
 
 	expected := ImageData{
-		{0, 0, 5, 0, 0, 0, 10, 15},
-		{40, 35, 0, 0, 5, 20, 0, 15},
+		{-10, -20, 5, -10, -25, -5, 10, 15},
+		{40, 35, -10, 0, 5, 20, -10, 15},
 	}
 	result := wavelet.GetYHighPassFilter(data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestScaleX(t *testing.T) {
@@ -92,7 +93,7 @@ func TestScaleX(t *testing.T) {
 		{20, 0, 40, 0, 60, 0, 90, 0},
 	}
 	result := wavelet.ScaleX(data, data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestScaleY(t *testing.T) {
@@ -115,7 +116,7 @@ func TestScaleY(t *testing.T) {
 		{00, 00, 00, 00},
 	}
 	result := wavelet.ScaleY(data, data)
-	assert2DByteArrayEqual(t, result, expected)
+	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
 func TestCopyIntoQuadrant(t *testing.T) {
@@ -148,7 +149,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{0, 0, 0, 0, 0, 0, 0, 0},
 	}
 	wavelet.CopyIntoQuadrant(from1, into, 1)
-	assert2DByteArrayEqual(t, into, expected1)
+	assert2DFloat32ArrayEqual(t, into, expected1)
 
 	from2 := ImageData{
 		{2, 2, 2, 2},
@@ -167,7 +168,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{0, 0, 0, 0, 0, 0, 0, 0},
 	}
 	wavelet.CopyIntoQuadrant(from2, into, 2)
-	assert2DByteArrayEqual(t, into, expected2)
+	assert2DFloat32ArrayEqual(t, into, expected2)
 
 	from3 := ImageData{
 		{3, 3, 3, 3},
@@ -186,7 +187,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{3, 3, 3, 3, 0, 0, 0, 0},
 	}
 	wavelet.CopyIntoQuadrant(from3, into, 3)
-	assert2DByteArrayEqual(t, into, expected3)
+	assert2DFloat32ArrayEqual(t, into, expected3)
 
 	from4 := ImageData{
 		{4, 4, 4, 4},
@@ -205,7 +206,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{3, 3, 3, 3, 4, 4, 4, 4},
 	}
 	wavelet.CopyIntoQuadrant(from4, into, 4)
-	assert2DByteArrayEqual(t, into, expected4)
+	assert2DFloat32ArrayEqual(t, into, expected4)
 
 	from5 := ImageData{
 		{5, 5, 5, 5},
@@ -222,7 +223,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{3, 3, 3, 3, 4, 4, 4, 4},
 	}
 	wavelet.CopyIntoQuadrant(from5, into, 4)
-	assert2DByteArrayEqual(t, into, expected5)
+	assert2DFloat32ArrayEqual(t, into, expected5)
 
 	from6 := ImageData{
 		{6, 6},
@@ -241,7 +242,7 @@ func TestCopyIntoQuadrant(t *testing.T) {
 		{3, 3, 6, 6, 4, 4, 4, 4},
 	}
 	wavelet.CopyIntoQuadrant(from6, into, 4)
-	assert2DByteArrayEqual(t, into, expected6)
+	assert2DFloat32ArrayEqual(t, into, expected6)
 }
 
 func TestHaarWaveletTransform(t *testing.T) {
@@ -254,23 +255,23 @@ func TestHaarWaveletTransform(t *testing.T) {
 
 	wavelet1 := HaarWavelet{level: 1}
 	expected1 := ImageData{
-		{25, 22, 45, 32, 0, 0, 0, 12},
-		{52, 40, 27, 37, 37, 0, 12, 2},
-		{0, 0, 10, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
+		{25.00, 22.50, 45.00, 32.50, -15.00, -2.50, -15.00, 12.50},
+		{52.50, 40.00, 27.50, 37.50, 37.50, -5.00, 12.50, 2.50},
+		{-5.00, -7.50, 10.00, -2.50, 5.00, 7.50, -10.00, -2.50},
+		{-2.50, -20.00, -12.50, -17.50, 2.50, -5.00, -7.50, -12.50},
 	}
 	result1 := wavelet1.WaveletTransform(data)
-	assert2DByteArrayEqual(t, result1, expected1)
+	assert2DFloat32ArrayEqual(t, result1, expected1)
 
 	wavelet2 := HaarWavelet{level: 2}
 	expected2 := ImageData{
-		{34, 35, 0, 3, 0, 0, 0, 12},
-		{3, 3, 0, 3, 37, 0, 12, 2},
-		{0, 0, 10, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
+		{35.000, 35.625, -11.250, 3.125, -15.000, -2.500, -15.000, 12.500},
+		{3.750, 0.625, -2.500, 5.625, 37.500, -5.000, 12.500, 2.500},
+		{-5.000, -7.500, 10.000, -2.500, 5.000, 7.500, -10.000, -2.500},
+		{-2.500, -20.000, -12.500, -17.500, 2.500, -5.00, -7.500, -12.500},
 	}
 	result2 := wavelet2.WaveletTransform(data)
-	assert2DByteArrayEqual(t, result2, expected2)
+	assert2DFloat32ArrayEqual(t, result2, expected2)
 }
 
 func TestHaarWavelet(t *testing.T) {
@@ -281,14 +282,28 @@ func TestHaarWavelet(t *testing.T) {
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	wavelet := HaarWavelet{level: 1}
+	wavelet1 := HaarWavelet{level: 1}
+	transformed1 := wavelet1.WaveletTransform(data)
+	inversed1 := wavelet1.WaveletInverse(transformed1)
+	assert2DFloat32ArrayEqual(t, inversed1, data)
+
+	wavelet2 := HaarWavelet{level: 2}
+	transformed2 := wavelet2.WaveletTransform(data)
+	inversed2 := wavelet2.WaveletInverse(transformed2)
+	assert2DFloat32ArrayEqual(t, inversed2, data)
+}
+
+func TestHaarWaveletRandom(t *testing.T) {
+	size := 1000
+	data := NewImageData(size, size)
+	for j := 0; j < size; j++ {
+		for i := 0; i < size; i++ {
+			data[j][i] = float32(rand.Int31n(256))
+		}
+	}
+
+	wavelet := HaarWavelet{level: 8}
 	transformed := wavelet.WaveletTransform(data)
 	inversed := wavelet.WaveletInverse(transformed)
-	expected := ImageData{
-		{10, 20, 30, 45},
-		{40, 25, 60, 20},
-		{90, 35, 40, 40},
-		{15, 45, 15, 35},
-	}
-	assert2DByteArrayEqual(t, inversed, expected)
+	assert2DFloat32ArrayEqual(t, inversed, data)
 }

@@ -5,12 +5,12 @@ import (
 	"image"
 )
 
-type ImageData [][]byte
+type ImageData [][]float32
 
 func NewImageData(sizeX, sizeY int) ImageData {
-	data := make([][]byte, sizeY)
+	data := make([][]float32, sizeY)
 	for j := 0; j < sizeY; j++ {
-		data[j] = make([]byte, sizeX)
+		data[j] = make([]float32, sizeX)
 	}
 
 	return data
@@ -30,9 +30,9 @@ func GetImageData(image image.Image) (ImageData, ImageData, ImageData) {
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
 			r, g, b, _ := image.At(i, j).RGBA()
-			rData[j][i] = byte(r)
-			gData[j][i] = byte(g)
-			bData[j][i] = byte(b)
+			rData[j][i] = float32(r)
+			gData[j][i] = float32(g)
+			bData[j][i] = float32(b)
 		}
 	}
 

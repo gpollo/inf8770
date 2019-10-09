@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 type Wavelet interface {
 	WaveletTransform(d ImageData) ImageData
 	WaveletInverse(d ImageData) ImageData
@@ -15,10 +17,7 @@ func (w *HaarWavelet) GetXLowPassFilter(d ImageData) ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			value := 0
-			value += int(d[j][2*i+0])
-			value += int(d[j][2*i+1])
-			data[j][i] = byte(value / 2)
+			data[j][i] = (d[j][2*i+0] + d[j][2*i+1]) / 2
 		}
 	}
 
@@ -31,10 +30,7 @@ func (w *HaarWavelet) GetYLowPassFilter(d ImageData) ImageData {
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			value := 0
-			value += int(d[2*j+0][i])
-			value += int(d[2*j+1][i])
-			data[j][i] = byte(value / 2)
+			data[j][i] = (d[2*j+0][i] + d[2*j+1][i]) / 2
 		}
 	}
 
@@ -47,14 +43,7 @@ func (w *HaarWavelet) GetXHighPassFilter(d ImageData) ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			value := 0
-			value += int(d[j][2*i+0])
-			value -= int(d[j][2*i+1])
-			if value < 0 {
-				data[j][i] = byte(0)
-			} else {
-				data[j][i] = byte(value / 2)
-			}
+			data[j][i] = (d[j][2*i+0] - d[j][2*i+1]) / 2
 		}
 	}
 
@@ -67,14 +56,7 @@ func (w *HaarWavelet) GetYHighPassFilter(d ImageData) ImageData {
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			value := 0
-			value += int(d[2*j+0][i])
-			value -= int(d[2*j+1][i])
-			if value < 0 {
-				data[j][i] = byte(0)
-			} else {
-				data[j][i] = byte(value / 2)
-			}
+			data[j][i] = (d[2*j+0][i] - d[2*j+1][i]) / 2
 		}
 	}
 
@@ -95,8 +77,8 @@ func (w *HaarWavelet) ScaleX(f1, f2 ImageData) ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][2*i+0] = byte(int(f1[j][i]) + int(f2[j][i]))
-			data[j][2*i+1] = byte(int(f1[j][i]) - int(f2[j][i]))
+			data[j][2*i+0] = f1[j][i] + f2[j][i]
+			data[j][2*i+1] = f1[j][i] - f2[j][i]
 		}
 	}
 
@@ -117,20 +99,8 @@ func (w *HaarWavelet) ScaleY(f1, f2 ImageData) ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
-			value1 := int(f1[j][i]) + int(f2[j][i])
-			value2 := int(f1[j][i]) - int(f2[j][i])
-
-			if value1 < 0 {
-				data[2*j+0][i] = 0
-			} else {
-				data[2*j+0][i] = byte(value1)
-			}
-
-			if value2 < 0 {
-				data[2*j+1][i] = 0
-			} else {
-				data[2*j+1][i] = byte(value2)
-			}
+			data[2*j+0][i] = f1[j][i] + f2[j][i]
+			data[2*j+1][i] = f1[j][i] - f2[j][i]
 		}
 	}
 
@@ -248,30 +218,20 @@ func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
 		level = 2
 	}
 
-	/*
-	 * fll flh
-	 * fhl fhh
-	 *
-	 * fl = AddSub(ResizeX(fll), flh)
-	 * fh = AddSub(ResizeX(fhh), fhl)
-	 * f = AddSub(Resize(fl), fh)
-	 */
-
-	var fl ImageData
-	var fh ImageData
 	for i := level; i > 0; i-- {
-		fll := NewImageData(sizeX/(2*level), sizeY/(2*level))
-		flh := NewImageData(sizeX/(2*level), sizeY/(2*level))
-		fhl := NewImageData(sizeX/(2*level), sizeY/(2*level))
-		fhh := NewImageData(sizeX/(2*level), sizeY/(2*level))
+		factor := int(math.Pow(2.0, float64(i)))
+		fll := NewImageData(sizeX/factor, sizeY/factor)
+		flh := NewImageData(sizeX/factor, sizeY/factor)
+		fhl := NewImageData(sizeX/factor, sizeY/factor)
+		fhh := NewImageData(sizeX/factor, sizeY/factor)
 
 		w.CopyFromQuadrant(data, flh, 1)
 		w.CopyFromQuadrant(data, fll, 2)
 		w.CopyFromQuadrant(data, fhl, 3)
 		w.CopyFromQuadrant(data, fhh, 4)
 
-		fl = w.ScaleY(fll, flh)
-		fh = w.ScaleY(fhh, fhl)
+		fl := w.ScaleY(fll, flh)
+		fh := w.ScaleY(fhl, fhh)
 		f := w.ScaleX(fl, fh)
 
 		if i == 1 {
@@ -281,5 +241,5 @@ func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
 		}
 	}
 
-	return fl
+	return data
 }

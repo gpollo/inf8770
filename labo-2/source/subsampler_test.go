@@ -20,16 +20,16 @@ func TestSubsampler410(t *testing.T) {
 	}
 
 	uvExpected := ImageData{
-		{23, 38},
-		{46, 32},
+		{23.75, 38.75},
+		{46.25, 32.50},
 	}
 
 	subsampler := Subsampler410{}
 	y, u, v := subsampler.Subsample(data, data, data)
 
-	assert2DByteArrayEqual(t, y, yExpected)
-	assert2DByteArrayEqual(t, u, uvExpected)
-	assert2DByteArrayEqual(t, v, uvExpected)
+	assert2DFloat32ArrayEqual(t, y, yExpected)
+	assert2DFloat32ArrayEqual(t, u, uvExpected)
+	assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSubsampler420(t *testing.T) {
@@ -48,16 +48,16 @@ func TestSubsampler420(t *testing.T) {
 	}
 
 	uvExpected := ImageData{
-		{25, 22, 45, 32},
-		{52, 40, 27, 37},
+		{25.00, 22.50, 45.00, 32.50},
+		{52.50, 40.00, 27.50, 37.50},
 	}
 
 	subsampler := Subsampler420{}
 	y, u, v := subsampler.Subsample(data, data, data)
 
-	assert2DByteArrayEqual(t, y, yExpected)
-	assert2DByteArrayEqual(t, u, uvExpected)
-	assert2DByteArrayEqual(t, v, uvExpected)
+	assert2DFloat32ArrayEqual(t, y, yExpected)
+	assert2DFloat32ArrayEqual(t, u, uvExpected)
+	assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSubsampler422(t *testing.T) {
@@ -76,16 +76,16 @@ func TestSubsampler422(t *testing.T) {
 	}
 
 	uvExpected := ImageData{
-		{10, 20, 30, 45},
-		{40, 25, 60, 20},
-		{90, 35, 40, 40},
-		{15, 45, 15, 35},
+		{10.00, 20.00, 30.00, 45.00},
+		{40.00, 25.00, 60.00, 20.00},
+		{90.00, 35.00, 40.00, 40.00},
+		{15.00, 45.00, 15.00, 35.00},
 	}
 
 	subsampler := Subsampler422{}
 	y, u, v := subsampler.Subsample(data, data, data)
 
-	assert2DByteArrayEqual(t, y, yExpected)
-	assert2DByteArrayEqual(t, u, uvExpected)
-	assert2DByteArrayEqual(t, v, uvExpected)
+	assert2DFloat32ArrayEqual(t, y, yExpected)
+	assert2DFloat32ArrayEqual(t, u, uvExpected)
+	assert2DFloat32ArrayEqual(t, v, uvExpected)
 }

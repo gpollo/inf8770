@@ -34,27 +34,27 @@ func (s *Subsampler410) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX/4; i++ {
-			u := 0
-			u += int(u1[2*j+0][4*i+0])
-			u += int(u1[2*j+0][4*i+1])
-			u += int(u1[2*j+0][4*i+2])
-			u += int(u1[2*j+0][4*i+3])
-			u += int(u1[2*j+1][4*i+0])
-			u += int(u1[2*j+1][4*i+1])
-			u += int(u1[2*j+1][4*i+2])
-			u += int(u1[2*j+1][4*i+3])
-			u2[j][i] = byte(u / 8)
+			u := float32(0)
+			u += u1[2*j+0][4*i+0]
+			u += u1[2*j+0][4*i+1]
+			u += u1[2*j+0][4*i+2]
+			u += u1[2*j+0][4*i+3]
+			u += u1[2*j+1][4*i+0]
+			u += u1[2*j+1][4*i+1]
+			u += u1[2*j+1][4*i+2]
+			u += u1[2*j+1][4*i+3]
+			u2[j][i] = u / 8
 
-			v := 0
-			v += int(v1[2*j+0][4*i+0])
-			v += int(v1[2*j+0][4*i+1])
-			v += int(v1[2*j+0][4*i+2])
-			v += int(v1[2*j+0][4*i+3])
-			v += int(v1[2*j+1][4*i+0])
-			v += int(v1[2*j+1][4*i+1])
-			v += int(v1[2*j+1][4*i+2])
-			v += int(v1[2*j+1][4*i+3])
-			v2[j][i] = byte(v / 8)
+			v := float32(0)
+			v += v1[2*j+0][4*i+0]
+			v += v1[2*j+0][4*i+1]
+			v += v1[2*j+0][4*i+2]
+			v += v1[2*j+0][4*i+3]
+			v += v1[2*j+1][4*i+0]
+			v += v1[2*j+1][4*i+1]
+			v += v1[2*j+1][4*i+2]
+			v += v1[2*j+1][4*i+3]
+			v2[j][i] = v / 8
 		}
 	}
 
@@ -91,19 +91,19 @@ func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			u := 0
-			u += int(u1[2*j+0][2*i+0])
-			u += int(u1[2*j+1][2*i+0])
-			u += int(u1[2*j+1][2*i+1])
-			u += int(u1[2*j+0][2*i+1])
-			u2[j][i] = byte(u / 4)
+			u := float32(0)
+			u += u1[2*j+0][2*i+0]
+			u += u1[2*j+1][2*i+0]
+			u += u1[2*j+1][2*i+1]
+			u += u1[2*j+0][2*i+1]
+			u2[j][i] = u / 4
 
-			v := 0
-			v += int(v1[2*j+0][2*i+0])
-			v += int(v1[2*j+1][2*i+0])
-			v += int(v1[2*j+1][2*i+1])
-			v += int(v1[2*j+0][2*i+1])
-			v2[j][i] = byte(v / 4)
+			v := float32(0)
+			v += v1[2*j+0][2*i+0]
+			v += v1[2*j+1][2*i+0]
+			v += v1[2*j+1][2*i+1]
+			v += v1[2*j+0][2*i+1]
+			v2[j][i] = v / 4
 		}
 	}
 
@@ -140,15 +140,15 @@ func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			u := 0
-			u += int(u1[j][2*i+0])
-			u += int(u1[j][2*i+1])
-			u2[j][i] = byte(u / 2)
+			u := float32(0)
+			u += u1[j][2*i+0]
+			u += u1[j][2*i+1]
+			u2[j][i] = u / 2
 
-			v := 0
-			v += int(v1[j][2*i+0])
-			v += int(v1[j][2*i+1])
-			v2[j][i] = byte(v / 2)
+			v := float32(0)
+			v += v1[j][2*i+0]
+			v += v1[j][2*i+1]
+			v2[j][i] = v / 2
 		}
 	}
 

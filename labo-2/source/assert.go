@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func assert2DByteArrayEqual(t *testing.T, got, expected [][]byte) {
+func assert2DFloat32ArrayEqual(t *testing.T, got, expected [][]float32) {
 	if len(got) != len(expected) {
 		t.Fatalf("array Y dimension differs: got=%d, expected=%d", len(got), len(expected))
 	}
@@ -21,7 +21,7 @@ func assert2DByteArrayEqual(t *testing.T, got, expected [][]byte) {
 				continue
 			}
 
-			t.Errorf("value at (%d, %d) differs: got=%d, expected=%d", i, j, got[j][i], expected[j][i])
+			t.Errorf("value at (%d, %d) differs: got=%f, expected=%f", i, j, got[j][i], expected[j][i])
 		}
 	}
 }
