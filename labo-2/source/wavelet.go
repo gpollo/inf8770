@@ -1,7 +1,6 @@
 package main
 
 // TODO: what to do if dimensions not multiple of 2?
-// TODO: check byte arithmetic overflow
 
 func (d ImageData) GetXLowPassFilter() ImageData {
 	sizeX, sizeY := d.GetDimensions()
@@ -9,7 +8,10 @@ func (d ImageData) GetXLowPassFilter() ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			data[j][i] = (d[j][2*i+1] + d[j][2*i+1]) / 2
+			value := 0
+			value += int(d[j][2*i+0])
+			value += int(d[j][2*i+1])
+			data[j][i] = byte(value / 2)
 		}
 	}
 
@@ -22,7 +24,10 @@ func (d ImageData) GetYLowPassFilter() ImageData {
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][i] = (d[2*j+0][i] + d[2*j+1][i]) / 2
+			value := 0
+			value += int(d[2*j+0][i])
+			value += int(d[2*j+1][i])
+			data[j][i] = byte(value / 2)
 		}
 	}
 
@@ -35,7 +40,14 @@ func (d ImageData) GetXHighPassFilter() ImageData {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			data[j][i] = (d[j][2*i+1] - d[j][2*i+1]) / 2
+			value := 0
+			value += int(d[j][2*i+0])
+			value -= int(d[j][2*i+1])
+			if value < 0 {
+				data[j][i] = byte(0)
+			} else {
+				data[j][i] = byte(value / 2)
+			}
 		}
 	}
 
@@ -48,7 +60,14 @@ func (d ImageData) GetYHighPassFilter() ImageData {
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][i] = (d[2*j+0][i] - d[2*j+1][i]) / 2
+			value := 0
+			value += int(d[2*j+0][i])
+			value -= int(d[2*j+1][i])
+			if value < 0 {
+				data[j][i] = byte(0)
+			} else {
+				data[j][i] = byte(value / 2)
+			}
 		}
 	}
 

@@ -4,102 +4,78 @@ import (
 	"testing"
 )
 
-const dim = 8
-
-func assertEqual(t *testing.T, g, e int) {
-	if g != e {
-		t.Errorf("got=%d, expected=%d", g, e)
-	}
-}
-
-func assertEqualLowPass(t *testing.T, g, e1, e2 byte) {
-	assertEqual(t, int(g), int((e1+e2)/2))
-}
-
-func assertEqualHighPass(t *testing.T, g, e1, e2 byte) {
-	assertEqual(t, int(g), int((e1-e2)/2))
-}
-
 func TestGetXLowPassFilter(t *testing.T) {
-	data := NewImageData(dim, dim)
-	for j := 0; j < dim; j++ {
-		for i := 0; i < dim; i++ {
-			data[j][i] = byte(dim*j + 1)
-		}
+	data := ImageData{
+		{10, 10, 20, 20, 30, 30, 40, 50},
+		{30, 50, 10, 40, 80, 40, 20, 20},
+		{90, 90, 10, 60, 20, 60, 10, 70},
+		{10, 20, 30, 60, 10, 20, 30, 40},
+	}
+
+	expected := ImageData{
+		{10, 20, 30, 45},
+		{40, 25, 60, 20},
+		{90, 35, 40, 40},
+		{15, 45, 15, 35},
 	}
 
 	result := data.GetXLowPassFilter()
-	sizeX, sizeY := result.GetDimensions()
 
-	assertEqual(t, sizeX, dim/2)
-	assertEqual(t, sizeY, dim/1)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			assertEqualLowPass(t, result[j][i], data[j][2*i+0], data[j][2*i+1])
-		}
-	}
+	assert2DByteArrayEqual(t, result, expected)
 }
 
 func TestGetYLowPassFilter(t *testing.T) {
-	data := NewImageData(dim, dim)
-	for j := 0; j < dim; j++ {
-		for i := 0; i < dim; i++ {
-			data[j][i] = byte(dim*j + 1)
-		}
+	data := ImageData{
+		{10, 10, 20, 20, 30, 30, 40, 50},
+		{30, 50, 10, 40, 80, 40, 20, 20},
+		{90, 90, 10, 60, 20, 60, 10, 70},
+		{10, 20, 30, 60, 10, 20, 30, 40},
+	}
+
+	expected := ImageData{
+		{20, 30, 15, 30, 55, 35, 30, 35},
+		{50, 55, 20, 60, 15, 40, 20, 55},
 	}
 
 	result := data.GetYLowPassFilter()
-	sizeX, sizeY := result.GetDimensions()
 
-	assertEqual(t, sizeX, dim/1)
-	assertEqual(t, sizeY, dim/2)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			assertEqualLowPass(t, result[j][i], data[2*j+0][i], data[2*j+1][i])
-		}
-	}
+	assert2DByteArrayEqual(t, result, expected)
 }
 
 func TestGetXHighPassFilter(t *testing.T) {
-	data := NewImageData(dim, dim)
-	for j := 0; j < dim; j++ {
-		for i := 0; i < dim; i++ {
-			data[j][i] = byte(dim*j + 1)
-		}
+	data := ImageData{
+		{10, 10, 20, 20, 30, 30, 40, 50},
+		{30, 50, 10, 40, 80, 40, 20, 20},
+		{90, 90, 10, 60, 20, 60, 10, 70},
+		{10, 20, 30, 60, 10, 20, 30, 40},
+	}
+
+	expected := ImageData{
+		{0, 0, 0, 0},
+		{0, 0, 20, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
 	}
 
 	result := data.GetXHighPassFilter()
-	sizeX, sizeY := result.GetDimensions()
 
-	assertEqual(t, sizeX, dim/2)
-	assertEqual(t, sizeY, dim/1)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			assertEqualHighPass(t, result[j][i], data[j][2*i+0], data[j][2*i+1])
-		}
-	}
+	assert2DByteArrayEqual(t, result, expected)
 }
 
 func TestGetYHighPassFilter(t *testing.T) {
-	data := NewImageData(dim, dim)
-	for j := 0; j < dim; j++ {
-		for i := 0; i < dim; i++ {
-			data[j][i] = byte(dim*j + 1)
-		}
+	data := ImageData{
+		{10, 10, 20, 20, 30, 30, 40, 50},
+		{30, 50, 10, 40, 80, 40, 20, 20},
+		{90, 90, 10, 60, 20, 60, 10, 70},
+		{10, 20, 30, 60, 10, 20, 30, 40},
+	}
+
+	expected := ImageData{
+		{0, 0, 5, 0, 0, 0, 10, 15},
+		{40, 35, 0, 0, 5, 20, 0, 15},
 	}
 
 	result := data.GetYHighPassFilter()
-	sizeX, sizeY := result.GetDimensions()
 
-	assertEqual(t, sizeX, dim/1)
-	assertEqual(t, sizeY, dim/2)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			assertEqualHighPass(t, result[j][i], data[2*j+0][i], data[2*j+1][i])
-		}
-	}
+	assert2DByteArrayEqual(t, result, expected)
 }
