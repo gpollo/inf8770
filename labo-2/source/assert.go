@@ -4,7 +4,7 @@ import "testing"
 
 func assert2DByteArrayEqual(t *testing.T, got, expected [][]byte) {
 	if len(got) != len(expected) {
-		t.Fatalf("array size differs: got=%d, expected=%d", len(got), len(expected))
+		t.Fatalf("array Y dimension differs: got=%d, expected=%d", len(got), len(expected))
 	}
 
 	if len(got) == 0 {
@@ -12,7 +12,7 @@ func assert2DByteArrayEqual(t *testing.T, got, expected [][]byte) {
 	}
 
 	if len(got[0]) != len(expected[0]) {
-		t.Fatalf("array size differs: got=%d, expected=%d", len(got[0]), len(expected[0]))
+		t.Fatalf("array X dimension differs: got=%d, expected=%d", len(got[0]), len(expected[0]))
 	}
 
 	for j := 0; j < len(got); j++ {

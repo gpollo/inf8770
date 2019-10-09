@@ -1,5 +1,8 @@
 package main
 
+// TODO: images must be multiple of 4 horizontally
+// TODO: images must be multiple of 2 vertically
+
 import (
 	"fmt"
 	"image"

@@ -46,3 +46,16 @@ func (d ImageData) GetDimensions() (int, int) {
 
 	return len(d[0]), len(d)
 }
+
+func (d ImageData) Copy() ImageData {
+	sizeX, sizeY := d.GetDimensions()
+
+	copy := NewImageData(sizeX, sizeY)
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			copy[j][i] = d[j][i]
+		}
+	}
+
+	return copy
+}

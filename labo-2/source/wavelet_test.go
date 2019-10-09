@@ -76,6 +76,48 @@ func TestGetYHighPassFilter(t *testing.T) {
 	assert2DByteArrayEqual(t, result, expected)
 }
 
+func TestScaleX(t *testing.T) {
+	wavelet := HaarWavelet{}
+	data := ImageData{
+		{10, 10, 20, 20},
+		{30, 45, 10, 40},
+		{40, 40, 10, 45},
+		{10, 20, 30, 45},
+	}
+
+	expected := ImageData{
+		{20, 0, 20, 0, 40, 0, 40, 0},
+		{60, 0, 90, 0, 20, 0, 80, 0},
+		{80, 0, 80, 0, 20, 0, 90, 0},
+		{20, 0, 40, 0, 60, 0, 90, 0},
+	}
+	result := wavelet.ScaleX(data, data)
+	assert2DByteArrayEqual(t, result, expected)
+}
+
+func TestScaleY(t *testing.T) {
+	wavelet := HaarWavelet{}
+	data := ImageData{
+		{10, 10, 20, 20},
+		{30, 45, 10, 40},
+		{40, 40, 10, 45},
+		{10, 20, 30, 45},
+	}
+
+	expected := ImageData{
+		{20, 20, 40, 40},
+		{00, 00, 00, 00},
+		{60, 90, 20, 80},
+		{00, 00, 00, 00},
+		{80, 80, 20, 90},
+		{00, 00, 00, 00},
+		{20, 40, 60, 90},
+		{00, 00, 00, 00},
+	}
+	result := wavelet.ScaleY(data, data)
+	assert2DByteArrayEqual(t, result, expected)
+}
+
 func TestCopyIntoQuadrant(t *testing.T) {
 	wavelet := HaarWavelet{}
 	into := ImageData{
@@ -229,4 +271,24 @@ func TestHaarWaveletTransform(t *testing.T) {
 	}
 	result2 := wavelet2.WaveletTransform(data)
 	assert2DByteArrayEqual(t, result2, expected2)
+}
+
+func TestHaarWavelet(t *testing.T) {
+	data := ImageData{
+		{10, 10, 20, 20, 30, 30, 40, 50},
+		{30, 50, 10, 40, 80, 40, 20, 20},
+		{90, 90, 10, 60, 20, 60, 10, 70},
+		{10, 20, 30, 60, 10, 20, 30, 40},
+	}
+
+	wavelet := HaarWavelet{level: 1}
+	transformed := wavelet.WaveletTransform(data)
+	inversed := wavelet.WaveletInverse(transformed)
+	expected := ImageData{
+		{10, 20, 30, 45},
+		{40, 25, 60, 20},
+		{90, 35, 40, 40},
+		{15, 45, 15, 35},
+	}
+	assert2DByteArrayEqual(t, inversed, expected)
 }
