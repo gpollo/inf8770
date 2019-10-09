@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetXLowPassFilter(t *testing.T) {
+func TestHaarGetXLowPassFilter(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
@@ -24,7 +24,7 @@ func TestGetXLowPassFilter(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestGetYLowPassFilter(t *testing.T) {
+func TestHaarGetYLowPassFilter(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
@@ -41,7 +41,7 @@ func TestGetYLowPassFilter(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestGetXHighPassFilter(t *testing.T) {
+func TestHaarGetXHighPassFilter(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
@@ -60,7 +60,7 @@ func TestGetXHighPassFilter(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestGetYHighPassFilter(t *testing.T) {
+func TestHaarGetYHighPassFilter(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20, 30, 30, 40, 50},
@@ -77,7 +77,7 @@ func TestGetYHighPassFilter(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestScaleX(t *testing.T) {
+func TestHaarScaleX(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20},
@@ -96,7 +96,7 @@ func TestScaleX(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestScaleY(t *testing.T) {
+func TestHaarScaleY(t *testing.T) {
 	wavelet := HaarWavelet{}
 	data := ImageData{
 		{10, 10, 20, 20},
@@ -119,7 +119,7 @@ func TestScaleY(t *testing.T) {
 	assert2DFloat32ArrayEqual(t, result, expected)
 }
 
-func TestCopyIntoQuadrant(t *testing.T) {
+func TestHaarCopyIntoQuadrant(t *testing.T) {
 	wavelet := HaarWavelet{}
 	into := ImageData{
 		{0, 0, 0, 0, 0, 0, 0, 0},
