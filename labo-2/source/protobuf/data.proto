@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package main;
+
+message ProtoImageRow {
+    repeated float values = 1;
+}
+
+message ProtoImageData {
+    repeated ProtoImageRow rows = 1;
+}
+
+message ProtoDWT {
+    string mode = 1;
+    ProtoImageData data = 2;
+}

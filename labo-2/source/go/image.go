@@ -59,3 +59,32 @@ func (d ImageData) Copy() ImageData {
 
 	return copy
 }
+
+func ImageDataToProtobuf(d ImageData) ProtoImageData {
+	sizeX, sizeY := d.GetDimensions()
+
+	rows := make([]*ProtoImageRow, sizeY)
+	for j := 0; j < sizeY; j++ {
+		row := ProtoImageRow{Values: make([]float32, sizeX)}
+		for i := 0; i < sizeX; i++ {
+			row.Values[i] = d[j][i]
+		}
+		rows[j] = &row
+	}
+
+	return ProtoImageData{Rows: rows}
+}
+
+func ImageDataFromProtobuf(d ProtoImageData) ImageData {
+	sizeX := len(d.Rows[0].Values)
+	sizeY := len(d.Rows)
+
+	data := NewImageData(sizeX, sizeY)
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			data[j][i] = d.Rows[j].Values[i]
+		}
+	}
+
+	return data
+}

@@ -2,11 +2,6 @@ package main
 
 import "math"
 
-type Wavelet interface {
-	WaveletTransform(d ImageData) ImageData
-	WaveletInverse(d ImageData) ImageData
-}
-
 type HaarWavelet struct {
 	level int
 }

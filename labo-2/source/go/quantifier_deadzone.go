@@ -2,11 +2,6 @@ package main
 
 import "math"
 
-type Quantifier interface {
-	QuantifierTransform(d ImageData) ImageData
-	QuantifierInverse(d ImageData) ImageData
-}
-
 type DeadZoneQuantifier struct {
 	width  uint
 	delta  uint
