@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package main;
 
+/* data exchanged with python wavelet transform script */
+
 message ProtoImageRow {
     repeated float values = 1;
 }
@@ -14,6 +16,23 @@ message ProtoDWT {
     string mode = 1;
     ProtoImageData data = 2;
 }
+
+/* algorithm headers */
+
+enum WaveletAlgo {
+    HAAR = 0;
+    DAUBECHIES = 1;
+}
+
+enum QuantifierAlgo {
+    DEADZONE = 0;
+}
+
+enum CompressorAlgo {
+    LZW = 0;
+}
+
+/* file image format */
 
 message FileImageLayer {
     repeated bytes rows = 1;

@@ -4,6 +4,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -20,9 +21,74 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='main',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\ndata.proto\x12\x04main\"\x1f\n\rProtoImageRow\x12\x0e\n\x06values\x18\x01 \x03(\x02\"3\n\x0eProtoImageData\x12!\n\x04rows\x18\x01 \x03(\x0b\x32\x13.main.ProtoImageRow\"<\n\x08ProtoDWT\x12\x0c\n\x04mode\x18\x01 \x01(\t\x12\"\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x14.main.ProtoImageData\"\x1e\n\x0e\x46ileImageLayer\x12\x0c\n\x04rows\x18\x01 \x03(\x0c\"0\n\x0f\x46ileImageHeader\x12\r\n\x05width\x18\x01 \x01(\r\x12\x0e\n\x06height\x18\x02 \x01(\r\"r\n\rFileImageData\x12\x1f\n\x01y\x18\x01 \x01(\x0b\x32\x14.main.FileImageLayer\x12\x1f\n\x01u\x18\x02 \x01(\x0b\x32\x14.main.FileImageLayer\x12\x1f\n\x01v\x18\x03 \x01(\x0b\x32\x14.main.FileImageLayer\"U\n\tFileImage\x12%\n\x06header\x18\x01 \x01(\x0b\x32\x15.main.FileImageHeader\x12!\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x13.main.FileImageDatab\x06proto3')
+  serialized_pb=_b('\n\ndata.proto\x12\x04main\"\x1f\n\rProtoImageRow\x12\x0e\n\x06values\x18\x01 \x03(\x02\"3\n\x0eProtoImageData\x12!\n\x04rows\x18\x01 \x03(\x0b\x32\x13.main.ProtoImageRow\"<\n\x08ProtoDWT\x12\x0c\n\x04mode\x18\x01 \x01(\t\x12\"\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x14.main.ProtoImageData\"\x1e\n\x0e\x46ileImageLayer\x12\x0c\n\x04rows\x18\x01 \x03(\x0c\"0\n\x0f\x46ileImageHeader\x12\r\n\x05width\x18\x01 \x01(\r\x12\x0e\n\x06height\x18\x02 \x01(\r\"r\n\rFileImageData\x12\x1f\n\x01y\x18\x01 \x01(\x0b\x32\x14.main.FileImageLayer\x12\x1f\n\x01u\x18\x02 \x01(\x0b\x32\x14.main.FileImageLayer\x12\x1f\n\x01v\x18\x03 \x01(\x0b\x32\x14.main.FileImageLayer\"U\n\tFileImage\x12%\n\x06header\x18\x01 \x01(\x0b\x32\x15.main.FileImageHeader\x12!\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x13.main.FileImageData*\'\n\x0bWaveletAlgo\x12\x08\n\x04HAAR\x10\x00\x12\x0e\n\nDAUBECHIES\x10\x01*\x1e\n\x0eQuantifierAlgo\x12\x0c\n\x08\x44\x45\x41\x44ZONE\x10\x00*\x19\n\x0e\x43ompressorAlgo\x12\x07\n\x03LZW\x10\x00\x62\x06proto3')
 )
 
+_WAVELETALGO = _descriptor.EnumDescriptor(
+  name='WaveletAlgo',
+  full_name='main.WaveletAlgo',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='HAAR', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DAUBECHIES', index=1, number=1,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=453,
+  serialized_end=492,
+)
+_sym_db.RegisterEnumDescriptor(_WAVELETALGO)
+
+WaveletAlgo = enum_type_wrapper.EnumTypeWrapper(_WAVELETALGO)
+_QUANTIFIERALGO = _descriptor.EnumDescriptor(
+  name='QuantifierAlgo',
+  full_name='main.QuantifierAlgo',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='DEADZONE', index=0, number=0,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=494,
+  serialized_end=524,
+)
+_sym_db.RegisterEnumDescriptor(_QUANTIFIERALGO)
+
+QuantifierAlgo = enum_type_wrapper.EnumTypeWrapper(_QUANTIFIERALGO)
+_COMPRESSORALGO = _descriptor.EnumDescriptor(
+  name='CompressorAlgo',
+  full_name='main.CompressorAlgo',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='LZW', index=0, number=0,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=526,
+  serialized_end=551,
+)
+_sym_db.RegisterEnumDescriptor(_COMPRESSORALGO)
+
+CompressorAlgo = enum_type_wrapper.EnumTypeWrapper(_COMPRESSORALGO)
+HAAR = 0
+DAUBECHIES = 1
+DEADZONE = 0
+LZW = 0
 
 
 
@@ -291,6 +357,9 @@ DESCRIPTOR.message_types_by_name['FileImageLayer'] = _FILEIMAGELAYER
 DESCRIPTOR.message_types_by_name['FileImageHeader'] = _FILEIMAGEHEADER
 DESCRIPTOR.message_types_by_name['FileImageData'] = _FILEIMAGEDATA
 DESCRIPTOR.message_types_by_name['FileImage'] = _FILEIMAGE
+DESCRIPTOR.enum_types_by_name['WaveletAlgo'] = _WAVELETALGO
+DESCRIPTOR.enum_types_by_name['QuantifierAlgo'] = _QUANTIFIERALGO
+DESCRIPTOR.enum_types_by_name['CompressorAlgo'] = _COMPRESSORALGO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ProtoImageRow = _reflection.GeneratedProtocolMessageType('ProtoImageRow', (_message.Message,), dict(
