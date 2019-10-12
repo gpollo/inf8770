@@ -60,6 +60,16 @@ func (d ImageData) Copy() ImageData {
 	return copy
 }
 
+func (d ImageData) Times(factor float32) {
+	sizeX, sizeY := d.GetDimensions()
+
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			d[j][i] = factor * d[j][i]
+		}
+	}
+}
+
 func ImageDataToProtobuf(d ImageData) ProtoImageData {
 	sizeX, sizeY := d.GetDimensions()
 

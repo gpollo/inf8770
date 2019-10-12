@@ -28,7 +28,10 @@ func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	return ImageDataFromProtobuf(wavelet)
+	decoded := ImageDataFromProtobuf(wavelet)
+	decoded.Times(0.5)
+
+	return decoded
 }
 
 func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
@@ -51,5 +54,8 @@ func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	return ImageDataFromProtobuf(wavelet)
+	decoded := ImageDataFromProtobuf(wavelet)
+	decoded.Times(2.0)
+
+	return decoded
 }
