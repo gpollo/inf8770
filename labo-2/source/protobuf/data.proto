@@ -14,3 +14,23 @@ message ProtoDWT {
     string mode = 1;
     ProtoImageData data = 2;
 }
+
+message FileImageLayer {
+    repeated bytes rows = 1;
+}
+
+message FileImageHeader {
+    uint32 width = 1;
+    uint32 height = 2;
+}
+
+message FileImageData {
+    FileImageLayer y = 1;
+    FileImageLayer u = 2;
+    FileImageLayer v = 3;
+}
+
+message FileImage {
+    FileImageHeader header = 1;
+    FileImageData data = 2;
+}
