@@ -1,6 +1,8 @@
 package main
 
 import (
+	"source/data"
+
 	proto "github.com/golang/protobuf/proto"
 )
 
@@ -10,19 +12,19 @@ type PyWavelet struct {
 
 func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 	image := ImageDataToProtobuf(d)
-	dwt := ProtoDWT{Mode: w.mode, Data: &image}
-	data, err := proto.Marshal(&dwt)
+	dwt := data.ProtoDWT{Mode: w.mode, Data: &image}
+	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	args := []string{"python3", "../python/dwt.py"}
-	result, err := CallProcess(args, data)
+	result, err := CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	wavelet := ProtoImageData{}
+	wavelet := data.ProtoImageData{}
 	err = proto.Unmarshal(result, &wavelet)
 	if err != nil {
 		panic(err.Error())
@@ -36,19 +38,19 @@ func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 
 func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
 	image := ImageDataToProtobuf(d)
-	dwt := ProtoDWT{Mode: w.mode, Data: &image}
-	data, err := proto.Marshal(&dwt)
+	dwt := data.ProtoDWT{Mode: w.mode, Data: &image}
+	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	args := []string{"python3", "../python/idwt.py"}
-	result, err := CallProcess(args, data)
+	result, err := CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	wavelet := ProtoImageData{}
+	wavelet := data.ProtoImageData{}
 	err = proto.Unmarshal(result, &wavelet)
 	if err != nil {
 		panic(err.Error())

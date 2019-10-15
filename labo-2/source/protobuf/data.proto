@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package main;
+package data;
 
 /* data exchanged with python wavelet transform script */
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
+	"source/data"
 )
 
 type ImageData [][]float32
@@ -83,22 +84,22 @@ func (d ImageData) ScaleInteger(scaleX, scaleY int) ImageData {
 	return scaled
 }
 
-func ImageDataToProtobuf(d ImageData) ProtoImageData {
+func ImageDataToProtobuf(d ImageData) data.ProtoImageData {
 	sizeX, sizeY := d.GetDimensions()
 
-	rows := make([]*ProtoImageRow, sizeY)
+	rows := make([]*data.ProtoImageRow, sizeY)
 	for j := 0; j < sizeY; j++ {
-		row := ProtoImageRow{Values: make([]float32, sizeX)}
+		row := data.ProtoImageRow{Values: make([]float32, sizeX)}
 		for i := 0; i < sizeX; i++ {
 			row.Values[i] = d[j][i]
 		}
 		rows[j] = &row
 	}
 
-	return ProtoImageData{Rows: rows}
+	return data.ProtoImageData{Rows: rows}
 }
 
-func ImageDataFromProtobuf(d ProtoImageData) ImageData {
+func ImageDataFromProtobuf(d data.ProtoImageData) ImageData {
 	sizeX := len(d.Rows[0].Values)
 	sizeY := len(d.Rows)
 

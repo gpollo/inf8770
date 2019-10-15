@@ -6,6 +6,7 @@ import (
 	"compress/lzw"
 	"encoding/binary"
 	"io"
+	"source/data"
 )
 
 type LZWCompressor struct{}
@@ -14,10 +15,10 @@ func NewLZWCompressor() *LZWCompressor {
 	return &LZWCompressor{}
 }
 
-func (c *LZWCompressor) CompressLayer(d ImageData) FileImageLayer {
+func (c *LZWCompressor) CompressLayer(d ImageData) data.FileImageLayer {
 	sizeX, sizeY := d.GetDimensions()
 
-	encodedImage := FileImageLayer{Rows: make([][]byte, sizeY)}
+	encodedImage := data.FileImageLayer{Rows: make([][]byte, sizeY)}
 	for j := 0; j < sizeY; j++ {
 		encodedBuffer := bytes.NewBuffer([]byte{})
 		compressor := lzw.NewWriter(encodedBuffer, lzw.MSB, 8)
@@ -35,7 +36,7 @@ func (c *LZWCompressor) CompressLayer(d ImageData) FileImageLayer {
 	return encodedImage
 }
 
-func (c *LZWCompressor) DecompressLayer(d FileImageLayer) ImageData {
+func (c *LZWCompressor) DecompressLayer(d data.FileImageLayer) ImageData {
 	sizeY := len(d.Rows)
 
 	image := make([][]float32, sizeY)
