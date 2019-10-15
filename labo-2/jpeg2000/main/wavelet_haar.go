@@ -1,9 +1,12 @@
 package main
 
-import "math"
+import (
+	"jpeg2000/data"
+	"math"
+)
 
 type HaarWavelet struct {
-	level int
+	level uint32
 }
 
 func (w *HaarWavelet) GetXLowPassFilter(d ImageData) ImageData {
@@ -182,7 +185,7 @@ func (w *HaarWavelet) WaveletTransform(d ImageData) ImageData {
 	sizeX, sizeY := d.GetDimensions()
 	data := NewImageData(sizeX, sizeY)
 
-	level := w.level
+	level := int(w.level)
 	if level == 0 {
 		level = 2
 	}
@@ -208,7 +211,7 @@ func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
 	data := d.Copy()
 	sizeX, sizeY := data.GetDimensions()
 
-	level := w.level
+	level := int(w.level)
 	if level == 0 {
 		level = 2
 	}
@@ -237,4 +240,23 @@ func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
 	}
 
 	return data
+}
+
+func (w *HaarWavelet) ToProtobuf() *data.WaveletConfig {
+	return &data.WaveletConfig{
+		Data: &data.WaveletConfig_Haar{
+			Haar: &data.WaveletHaar{
+				Level: w.level,
+			},
+		},
+	}
+}
+
+func (w *HaarWavelet) FromProtobuf(d data.WaveletConfig) {
+	c := d.GetHaar()
+	if c == nil {
+		panic("Could not deserialize haar wavelet from protobuf")
+	}
+
+	w.level = c.Level
 }
