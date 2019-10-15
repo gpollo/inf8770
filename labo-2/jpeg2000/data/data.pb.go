@@ -20,6 +20,34 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type Subsampling int32
+
+const (
+	Subsampling_SUBSAMPLING_410 Subsampling = 0
+	Subsampling_SUBSAMPLING_420 Subsampling = 1
+	Subsampling_SUBSAMPLING_422 Subsampling = 2
+)
+
+var Subsampling_name = map[int32]string{
+	0: "SUBSAMPLING_410",
+	1: "SUBSAMPLING_420",
+	2: "SUBSAMPLING_422",
+}
+
+var Subsampling_value = map[string]int32{
+	"SUBSAMPLING_410": 0,
+	"SUBSAMPLING_420": 1,
+	"SUBSAMPLING_422": 2,
+}
+
+func (x Subsampling) String() string {
+	return proto.EnumName(Subsampling_name, int32(x))
+}
+
+func (Subsampling) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{0}
+}
+
 type WaveletAlgo int32
 
 const (
@@ -42,7 +70,7 @@ func (x WaveletAlgo) String() string {
 }
 
 func (WaveletAlgo) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{0}
+	return fileDescriptor_871986018790d2fd, []int{1}
 }
 
 type QuantifierAlgo int32
@@ -64,154 +92,273 @@ func (x QuantifierAlgo) String() string {
 }
 
 func (QuantifierAlgo) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{1}
-}
-
-type CompressorAlgo int32
-
-const (
-	CompressorAlgo_LZW CompressorAlgo = 0
-)
-
-var CompressorAlgo_name = map[int32]string{
-	0: "LZW",
-}
-
-var CompressorAlgo_value = map[string]int32{
-	"LZW": 0,
-}
-
-func (x CompressorAlgo) String() string {
-	return proto.EnumName(CompressorAlgo_name, int32(x))
-}
-
-func (CompressorAlgo) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{2}
 }
 
-type ProtoImageRow struct {
+type ImageRow struct {
 	Values               []float32 `protobuf:"fixed32,1,rep,packed,name=values,proto3" json:"values,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
 	XXX_unrecognized     []byte    `json:"-"`
 	XXX_sizecache        int32     `json:"-"`
 }
 
-func (m *ProtoImageRow) Reset()         { *m = ProtoImageRow{} }
-func (m *ProtoImageRow) String() string { return proto.CompactTextString(m) }
-func (*ProtoImageRow) ProtoMessage()    {}
-func (*ProtoImageRow) Descriptor() ([]byte, []int) {
+func (m *ImageRow) Reset()         { *m = ImageRow{} }
+func (m *ImageRow) String() string { return proto.CompactTextString(m) }
+func (*ImageRow) ProtoMessage()    {}
+func (*ImageRow) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{0}
 }
 
-func (m *ProtoImageRow) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProtoImageRow.Unmarshal(m, b)
+func (m *ImageRow) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ImageRow.Unmarshal(m, b)
 }
-func (m *ProtoImageRow) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProtoImageRow.Marshal(b, m, deterministic)
+func (m *ImageRow) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ImageRow.Marshal(b, m, deterministic)
 }
-func (m *ProtoImageRow) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProtoImageRow.Merge(m, src)
+func (m *ImageRow) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ImageRow.Merge(m, src)
 }
-func (m *ProtoImageRow) XXX_Size() int {
-	return xxx_messageInfo_ProtoImageRow.Size(m)
+func (m *ImageRow) XXX_Size() int {
+	return xxx_messageInfo_ImageRow.Size(m)
 }
-func (m *ProtoImageRow) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProtoImageRow.DiscardUnknown(m)
+func (m *ImageRow) XXX_DiscardUnknown() {
+	xxx_messageInfo_ImageRow.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ProtoImageRow proto.InternalMessageInfo
+var xxx_messageInfo_ImageRow proto.InternalMessageInfo
 
-func (m *ProtoImageRow) GetValues() []float32 {
+func (m *ImageRow) GetValues() []float32 {
 	if m != nil {
 		return m.Values
 	}
 	return nil
 }
 
-type ProtoImageData struct {
-	Rows                 []*ProtoImageRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+type ImageData struct {
+	Rows                 []*ImageRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *ProtoImageData) Reset()         { *m = ProtoImageData{} }
-func (m *ProtoImageData) String() string { return proto.CompactTextString(m) }
-func (*ProtoImageData) ProtoMessage()    {}
-func (*ProtoImageData) Descriptor() ([]byte, []int) {
+func (m *ImageData) Reset()         { *m = ImageData{} }
+func (m *ImageData) String() string { return proto.CompactTextString(m) }
+func (*ImageData) ProtoMessage()    {}
+func (*ImageData) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{1}
 }
 
-func (m *ProtoImageData) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProtoImageData.Unmarshal(m, b)
+func (m *ImageData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ImageData.Unmarshal(m, b)
 }
-func (m *ProtoImageData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProtoImageData.Marshal(b, m, deterministic)
+func (m *ImageData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ImageData.Marshal(b, m, deterministic)
 }
-func (m *ProtoImageData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProtoImageData.Merge(m, src)
+func (m *ImageData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ImageData.Merge(m, src)
 }
-func (m *ProtoImageData) XXX_Size() int {
-	return xxx_messageInfo_ProtoImageData.Size(m)
+func (m *ImageData) XXX_Size() int {
+	return xxx_messageInfo_ImageData.Size(m)
 }
-func (m *ProtoImageData) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProtoImageData.DiscardUnknown(m)
+func (m *ImageData) XXX_DiscardUnknown() {
+	xxx_messageInfo_ImageData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ProtoImageData proto.InternalMessageInfo
+var xxx_messageInfo_ImageData proto.InternalMessageInfo
 
-func (m *ProtoImageData) GetRows() []*ProtoImageRow {
+func (m *ImageData) GetRows() []*ImageRow {
 	if m != nil {
 		return m.Rows
 	}
 	return nil
 }
 
-type ProtoDWT struct {
-	Mode                 string          `protobuf:"bytes,1,opt,name=mode,proto3" json:"mode,omitempty"`
-	Data                 *ProtoImageData `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
+type PythonDWT struct {
+	Mode                 string     `protobuf:"bytes,1,opt,name=mode,proto3" json:"mode,omitempty"`
+	Data                 *ImageData `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
-func (m *ProtoDWT) Reset()         { *m = ProtoDWT{} }
-func (m *ProtoDWT) String() string { return proto.CompactTextString(m) }
-func (*ProtoDWT) ProtoMessage()    {}
-func (*ProtoDWT) Descriptor() ([]byte, []int) {
+func (m *PythonDWT) Reset()         { *m = PythonDWT{} }
+func (m *PythonDWT) String() string { return proto.CompactTextString(m) }
+func (*PythonDWT) ProtoMessage()    {}
+func (*PythonDWT) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{2}
 }
 
-func (m *ProtoDWT) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProtoDWT.Unmarshal(m, b)
+func (m *PythonDWT) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PythonDWT.Unmarshal(m, b)
 }
-func (m *ProtoDWT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProtoDWT.Marshal(b, m, deterministic)
+func (m *PythonDWT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PythonDWT.Marshal(b, m, deterministic)
 }
-func (m *ProtoDWT) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProtoDWT.Merge(m, src)
+func (m *PythonDWT) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PythonDWT.Merge(m, src)
 }
-func (m *ProtoDWT) XXX_Size() int {
-	return xxx_messageInfo_ProtoDWT.Size(m)
+func (m *PythonDWT) XXX_Size() int {
+	return xxx_messageInfo_PythonDWT.Size(m)
 }
-func (m *ProtoDWT) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProtoDWT.DiscardUnknown(m)
+func (m *PythonDWT) XXX_DiscardUnknown() {
+	xxx_messageInfo_PythonDWT.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ProtoDWT proto.InternalMessageInfo
+var xxx_messageInfo_PythonDWT proto.InternalMessageInfo
 
-func (m *ProtoDWT) GetMode() string {
+func (m *PythonDWT) GetMode() string {
 	if m != nil {
 		return m.Mode
 	}
 	return ""
 }
 
-func (m *ProtoDWT) GetData() *ProtoImageData {
+func (m *PythonDWT) GetData() *ImageData {
 	if m != nil {
 		return m.Data
 	}
 	return nil
+}
+
+type WaveletHaar struct {
+	Level                uint32   `protobuf:"varint,1,opt,name=level,proto3" json:"level,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *WaveletHaar) Reset()         { *m = WaveletHaar{} }
+func (m *WaveletHaar) String() string { return proto.CompactTextString(m) }
+func (*WaveletHaar) ProtoMessage()    {}
+func (*WaveletHaar) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{3}
+}
+
+func (m *WaveletHaar) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WaveletHaar.Unmarshal(m, b)
+}
+func (m *WaveletHaar) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WaveletHaar.Marshal(b, m, deterministic)
+}
+func (m *WaveletHaar) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WaveletHaar.Merge(m, src)
+}
+func (m *WaveletHaar) XXX_Size() int {
+	return xxx_messageInfo_WaveletHaar.Size(m)
+}
+func (m *WaveletHaar) XXX_DiscardUnknown() {
+	xxx_messageInfo_WaveletHaar.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WaveletHaar proto.InternalMessageInfo
+
+func (m *WaveletHaar) GetLevel() uint32 {
+	if m != nil {
+		return m.Level
+	}
+	return 0
+}
+
+type WaveletDaubechies struct {
+	Level                uint32   `protobuf:"varint,1,opt,name=level,proto3" json:"level,omitempty"`
+	Coefficient          uint32   `protobuf:"varint,2,opt,name=coefficient,proto3" json:"coefficient,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *WaveletDaubechies) Reset()         { *m = WaveletDaubechies{} }
+func (m *WaveletDaubechies) String() string { return proto.CompactTextString(m) }
+func (*WaveletDaubechies) ProtoMessage()    {}
+func (*WaveletDaubechies) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{4}
+}
+
+func (m *WaveletDaubechies) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WaveletDaubechies.Unmarshal(m, b)
+}
+func (m *WaveletDaubechies) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WaveletDaubechies.Marshal(b, m, deterministic)
+}
+func (m *WaveletDaubechies) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WaveletDaubechies.Merge(m, src)
+}
+func (m *WaveletDaubechies) XXX_Size() int {
+	return xxx_messageInfo_WaveletDaubechies.Size(m)
+}
+func (m *WaveletDaubechies) XXX_DiscardUnknown() {
+	xxx_messageInfo_WaveletDaubechies.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WaveletDaubechies proto.InternalMessageInfo
+
+func (m *WaveletDaubechies) GetLevel() uint32 {
+	if m != nil {
+		return m.Level
+	}
+	return 0
+}
+
+func (m *WaveletDaubechies) GetCoefficient() uint32 {
+	if m != nil {
+		return m.Coefficient
+	}
+	return 0
+}
+
+type QuantifierDeadZone struct {
+	Width                uint32   `protobuf:"varint,1,opt,name=width,proto3" json:"width,omitempty"`
+	Delta                uint32   `protobuf:"varint,2,opt,name=delta,proto3" json:"delta,omitempty"`
+	Offset               float32  `protobuf:"fixed32,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QuantifierDeadZone) Reset()         { *m = QuantifierDeadZone{} }
+func (m *QuantifierDeadZone) String() string { return proto.CompactTextString(m) }
+func (*QuantifierDeadZone) ProtoMessage()    {}
+func (*QuantifierDeadZone) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{5}
+}
+
+func (m *QuantifierDeadZone) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QuantifierDeadZone.Unmarshal(m, b)
+}
+func (m *QuantifierDeadZone) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QuantifierDeadZone.Marshal(b, m, deterministic)
+}
+func (m *QuantifierDeadZone) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuantifierDeadZone.Merge(m, src)
+}
+func (m *QuantifierDeadZone) XXX_Size() int {
+	return xxx_messageInfo_QuantifierDeadZone.Size(m)
+}
+func (m *QuantifierDeadZone) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuantifierDeadZone.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuantifierDeadZone proto.InternalMessageInfo
+
+func (m *QuantifierDeadZone) GetWidth() uint32 {
+	if m != nil {
+		return m.Width
+	}
+	return 0
+}
+
+func (m *QuantifierDeadZone) GetDelta() uint32 {
+	if m != nil {
+		return m.Delta
+	}
+	return 0
+}
+
+func (m *QuantifierDeadZone) GetOffset() float32 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
 }
 
 type FileImageLayer struct {
@@ -225,7 +372,7 @@ func (m *FileImageLayer) Reset()         { *m = FileImageLayer{} }
 func (m *FileImageLayer) String() string { return proto.CompactTextString(m) }
 func (*FileImageLayer) ProtoMessage()    {}
 func (*FileImageLayer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{3}
+	return fileDescriptor_871986018790d2fd, []int{6}
 }
 
 func (m *FileImageLayer) XXX_Unmarshal(b []byte) error {
@@ -254,18 +401,28 @@ func (m *FileImageLayer) GetRows() [][]byte {
 }
 
 type FileImageHeader struct {
-	Width                uint32   `protobuf:"varint,1,opt,name=width,proto3" json:"width,omitempty"`
-	Height               uint32   `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Width       uint32      `protobuf:"varint,1,opt,name=width,proto3" json:"width,omitempty"`
+	Height      uint32      `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+	Subsampling Subsampling `protobuf:"varint,3,opt,name=subsampling,proto3,enum=data.Subsampling" json:"subsampling,omitempty"`
+	WaveletType WaveletAlgo `protobuf:"varint,10,opt,name=wavelet_type,json=waveletType,proto3,enum=data.WaveletAlgo" json:"wavelet_type,omitempty"`
+	// Types that are valid to be assigned to WaveletTypeData:
+	//	*FileImageHeader_WaveletHaar
+	//	*FileImageHeader_WaveletDaubechies
+	WaveletTypeData isFileImageHeader_WaveletTypeData `protobuf_oneof:"wavelet_type_data"`
+	QuantifierType  QuantifierAlgo                    `protobuf:"varint,20,opt,name=quantifier_type,json=quantifierType,proto3,enum=data.QuantifierAlgo" json:"quantifier_type,omitempty"`
+	// Types that are valid to be assigned to QuantifierTypeData:
+	//	*FileImageHeader_QuantifierDeadzone
+	QuantifierTypeData   isFileImageHeader_QuantifierTypeData `protobuf_oneof:"quantifier_type_data"`
+	XXX_NoUnkeyedLiteral struct{}                             `json:"-"`
+	XXX_unrecognized     []byte                               `json:"-"`
+	XXX_sizecache        int32                                `json:"-"`
 }
 
 func (m *FileImageHeader) Reset()         { *m = FileImageHeader{} }
 func (m *FileImageHeader) String() string { return proto.CompactTextString(m) }
 func (*FileImageHeader) ProtoMessage()    {}
 func (*FileImageHeader) Descriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{4}
+	return fileDescriptor_871986018790d2fd, []int{7}
 }
 
 func (m *FileImageHeader) XXX_Unmarshal(b []byte) error {
@@ -300,6 +457,97 @@ func (m *FileImageHeader) GetHeight() uint32 {
 	return 0
 }
 
+func (m *FileImageHeader) GetSubsampling() Subsampling {
+	if m != nil {
+		return m.Subsampling
+	}
+	return Subsampling_SUBSAMPLING_410
+}
+
+func (m *FileImageHeader) GetWaveletType() WaveletAlgo {
+	if m != nil {
+		return m.WaveletType
+	}
+	return WaveletAlgo_HAAR
+}
+
+type isFileImageHeader_WaveletTypeData interface {
+	isFileImageHeader_WaveletTypeData()
+}
+
+type FileImageHeader_WaveletHaar struct {
+	WaveletHaar *WaveletHaar `protobuf:"bytes,11,opt,name=wavelet_haar,json=waveletHaar,proto3,oneof"`
+}
+
+type FileImageHeader_WaveletDaubechies struct {
+	WaveletDaubechies *WaveletDaubechies `protobuf:"bytes,12,opt,name=wavelet_daubechies,json=waveletDaubechies,proto3,oneof"`
+}
+
+func (*FileImageHeader_WaveletHaar) isFileImageHeader_WaveletTypeData() {}
+
+func (*FileImageHeader_WaveletDaubechies) isFileImageHeader_WaveletTypeData() {}
+
+func (m *FileImageHeader) GetWaveletTypeData() isFileImageHeader_WaveletTypeData {
+	if m != nil {
+		return m.WaveletTypeData
+	}
+	return nil
+}
+
+func (m *FileImageHeader) GetWaveletHaar() *WaveletHaar {
+	if x, ok := m.GetWaveletTypeData().(*FileImageHeader_WaveletHaar); ok {
+		return x.WaveletHaar
+	}
+	return nil
+}
+
+func (m *FileImageHeader) GetWaveletDaubechies() *WaveletDaubechies {
+	if x, ok := m.GetWaveletTypeData().(*FileImageHeader_WaveletDaubechies); ok {
+		return x.WaveletDaubechies
+	}
+	return nil
+}
+
+func (m *FileImageHeader) GetQuantifierType() QuantifierAlgo {
+	if m != nil {
+		return m.QuantifierType
+	}
+	return QuantifierAlgo_DEADZONE
+}
+
+type isFileImageHeader_QuantifierTypeData interface {
+	isFileImageHeader_QuantifierTypeData()
+}
+
+type FileImageHeader_QuantifierDeadzone struct {
+	QuantifierDeadzone *QuantifierDeadZone `protobuf:"bytes,21,opt,name=quantifier_deadzone,json=quantifierDeadzone,proto3,oneof"`
+}
+
+func (*FileImageHeader_QuantifierDeadzone) isFileImageHeader_QuantifierTypeData() {}
+
+func (m *FileImageHeader) GetQuantifierTypeData() isFileImageHeader_QuantifierTypeData {
+	if m != nil {
+		return m.QuantifierTypeData
+	}
+	return nil
+}
+
+func (m *FileImageHeader) GetQuantifierDeadzone() *QuantifierDeadZone {
+	if x, ok := m.GetQuantifierTypeData().(*FileImageHeader_QuantifierDeadzone); ok {
+		return x.QuantifierDeadzone
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*FileImageHeader) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*FileImageHeader_WaveletHaar)(nil),
+		(*FileImageHeader_WaveletDaubechies)(nil),
+		(*FileImageHeader_QuantifierDeadzone)(nil),
+	}
+}
+
 type FileImageData struct {
 	Y                    *FileImageLayer `protobuf:"bytes,1,opt,name=y,proto3" json:"y,omitempty"`
 	U                    *FileImageLayer `protobuf:"bytes,2,opt,name=u,proto3" json:"u,omitempty"`
@@ -313,7 +561,7 @@ func (m *FileImageData) Reset()         { *m = FileImageData{} }
 func (m *FileImageData) String() string { return proto.CompactTextString(m) }
 func (*FileImageData) ProtoMessage()    {}
 func (*FileImageData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{5}
+	return fileDescriptor_871986018790d2fd, []int{8}
 }
 
 func (m *FileImageData) XXX_Unmarshal(b []byte) error {
@@ -367,7 +615,7 @@ func (m *FileImage) Reset()         { *m = FileImage{} }
 func (m *FileImage) String() string { return proto.CompactTextString(m) }
 func (*FileImage) ProtoMessage()    {}
 func (*FileImage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{6}
+	return fileDescriptor_871986018790d2fd, []int{9}
 }
 
 func (m *FileImage) XXX_Unmarshal(b []byte) error {
@@ -403,12 +651,15 @@ func (m *FileImage) GetData() *FileImageData {
 }
 
 func init() {
+	proto.RegisterEnum("data.Subsampling", Subsampling_name, Subsampling_value)
 	proto.RegisterEnum("data.WaveletAlgo", WaveletAlgo_name, WaveletAlgo_value)
 	proto.RegisterEnum("data.QuantifierAlgo", QuantifierAlgo_name, QuantifierAlgo_value)
-	proto.RegisterEnum("data.CompressorAlgo", CompressorAlgo_name, CompressorAlgo_value)
-	proto.RegisterType((*ProtoImageRow)(nil), "data.ProtoImageRow")
-	proto.RegisterType((*ProtoImageData)(nil), "data.ProtoImageData")
-	proto.RegisterType((*ProtoDWT)(nil), "data.ProtoDWT")
+	proto.RegisterType((*ImageRow)(nil), "data.ImageRow")
+	proto.RegisterType((*ImageData)(nil), "data.ImageData")
+	proto.RegisterType((*PythonDWT)(nil), "data.PythonDWT")
+	proto.RegisterType((*WaveletHaar)(nil), "data.WaveletHaar")
+	proto.RegisterType((*WaveletDaubechies)(nil), "data.WaveletDaubechies")
+	proto.RegisterType((*QuantifierDeadZone)(nil), "data.QuantifierDeadZone")
 	proto.RegisterType((*FileImageLayer)(nil), "data.FileImageLayer")
 	proto.RegisterType((*FileImageHeader)(nil), "data.FileImageHeader")
 	proto.RegisterType((*FileImageData)(nil), "data.FileImageData")
@@ -418,28 +669,44 @@ func init() {
 func init() { proto.RegisterFile("data.proto", fileDescriptor_871986018790d2fd) }
 
 var fileDescriptor_871986018790d2fd = []byte{
-	// 363 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x92, 0xcf, 0x6b, 0xe2, 0x40,
-	0x14, 0xc7, 0x1d, 0xcd, 0xba, 0xfa, 0x34, 0xd9, 0x30, 0xba, 0x4b, 0xf6, 0x52, 0x24, 0x14, 0x0c,
-	0x42, 0x3d, 0xd8, 0x53, 0x4f, 0x25, 0x35, 0x29, 0x11, 0xa4, 0x3f, 0xa6, 0x2d, 0x82, 0xb7, 0x69,
-	0x33, 0xd5, 0x40, 0xec, 0x48, 0x9c, 0x44, 0xa4, 0xff, 0x7c, 0x99, 0x49, 0x88, 0x35, 0x87, 0xde,
-	0xe6, 0x3d, 0x3f, 0xf3, 0xfd, 0x31, 0x06, 0x20, 0xa4, 0x82, 0x8e, 0xb7, 0x09, 0x17, 0x1c, 0x6b,
-	0xf2, 0x6c, 0x0f, 0x41, 0x7f, 0x90, 0xe3, 0x6c, 0x43, 0x57, 0x8c, 0xf0, 0x3d, 0xfe, 0x07, 0xcd,
-	0x8c, 0xc6, 0x29, 0xdb, 0x59, 0x68, 0xd0, 0x70, 0xea, 0xa4, 0x98, 0xec, 0x2b, 0x30, 0x8e, 0xa0,
-	0x47, 0x05, 0xc5, 0x43, 0xd0, 0x12, 0xbe, 0xcf, 0xb9, 0xce, 0xa4, 0x37, 0x56, 0xda, 0x27, 0x62,
-	0x44, 0x01, 0x76, 0x00, 0x2d, 0xb5, 0xf6, 0x16, 0xcf, 0x18, 0x83, 0xb6, 0xe1, 0x21, 0xb3, 0xd0,
-	0x00, 0x39, 0x6d, 0xa2, 0xce, 0xd8, 0x01, 0x95, 0xc5, 0xaa, 0x0f, 0x90, 0xd3, 0x99, 0xf4, 0xab,
-	0x42, 0xd2, 0x8c, 0xe4, 0x69, 0xcf, 0xc1, 0xb8, 0x8d, 0x62, 0xa6, 0xd6, 0x73, 0x7a, 0x60, 0x89,
-	0xd4, 0x2b, 0x43, 0x74, 0x0b, 0xbf, 0x6b, 0xf8, 0x53, 0x52, 0x01, 0xa3, 0x21, 0x4b, 0x70, 0x1f,
-	0x7e, 0xed, 0xa3, 0x50, 0xac, 0x95, 0xaf, 0x4e, 0xf2, 0x41, 0x76, 0x5d, 0xb3, 0x68, 0xb5, 0x16,
-	0xca, 0x5a, 0x27, 0xc5, 0x64, 0x7f, 0x82, 0x5e, 0x0a, 0xa8, 0xaa, 0x36, 0xa0, 0x83, 0xba, 0x5a,
-	0xc6, 0x3b, 0x8d, 0x41, 0xd0, 0x41, 0x32, 0xe9, 0x69, 0x85, 0x2a, 0x93, 0x4a, 0x26, 0xb3, 0x1a,
-	0x3f, 0x31, 0x99, 0xfd, 0x06, 0xed, 0x72, 0x89, 0x2f, 0x64, 0x42, 0xd9, 0xa0, 0x70, 0xff, 0x5b,
-	0xb9, 0x95, 0xd7, 0x23, 0x05, 0x24, 0xff, 0x92, 0x6f, 0x2f, 0xd9, 0xab, 0xc0, 0xc7, 0x87, 0x1c,
-	0x0d, 0xa1, 0xb3, 0xa0, 0x19, 0x8b, 0x99, 0x70, 0xe3, 0x15, 0xc7, 0x2d, 0xd0, 0x02, 0xd7, 0x25,
-	0x66, 0x0d, 0x1b, 0x00, 0x9e, 0xfb, 0x72, 0xe3, 0x4f, 0x83, 0x99, 0xff, 0x64, 0xa2, 0xd1, 0x19,
-	0x18, 0x8f, 0x29, 0xfd, 0x10, 0xd1, 0x7b, 0xc4, 0x12, 0xc5, 0x76, 0xa1, 0xe5, 0xf9, 0xae, 0xb7,
-	0xbc, 0xbf, 0xf3, 0xcd, 0xda, 0xe8, 0x3f, 0x18, 0x53, 0xbe, 0xd9, 0x26, 0x6c, 0xb7, 0xe3, 0xf9,
-	0xef, 0xbf, 0xa1, 0x31, 0x5f, 0x2e, 0xcc, 0xda, 0x6b, 0x53, 0x7d, 0x67, 0x97, 0x5f, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x0d, 0xa6, 0x0c, 0x88, 0x75, 0x02, 0x00, 0x00,
+	// 623 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x54, 0xdd, 0x4e, 0xdb, 0x4c,
+	0x10, 0x8d, 0x21, 0x1f, 0x22, 0xe3, 0xfc, 0x6e, 0x02, 0x9f, 0xaf, 0xaa, 0xc8, 0x54, 0x02, 0x21,
+	0x95, 0xd2, 0x80, 0x7a, 0xd7, 0x0b, 0xa7, 0x4e, 0x6b, 0x04, 0xa5, 0x74, 0x03, 0xa2, 0xe2, 0x06,
+	0x2d, 0xf1, 0x24, 0xb6, 0x64, 0xec, 0xe0, 0xd8, 0x89, 0xdc, 0x3e, 0x6f, 0xdf, 0xa3, 0xda, 0xf5,
+	0x7f, 0x68, 0xee, 0x3c, 0xe3, 0x73, 0x66, 0x66, 0xcf, 0x99, 0x5d, 0x00, 0x93, 0x05, 0xec, 0x64,
+	0xee, 0x7b, 0x81, 0x47, 0xaa, 0xfc, 0x5b, 0x55, 0x61, 0xf7, 0xe2, 0x99, 0xcd, 0x90, 0x7a, 0x2b,
+	0xb2, 0x0f, 0x3b, 0x4b, 0xe6, 0x84, 0xb8, 0x50, 0xa4, 0xfe, 0xf6, 0xd1, 0x16, 0x4d, 0x22, 0xf5,
+	0x3d, 0xd4, 0x04, 0x46, 0x67, 0x01, 0x23, 0x2a, 0x54, 0x7d, 0x6f, 0x15, 0x43, 0xe4, 0x41, 0xf3,
+	0x44, 0x54, 0x4c, 0x4b, 0x50, 0xf1, 0x4f, 0xd5, 0xa1, 0x76, 0x13, 0x05, 0x96, 0xe7, 0xea, 0xf7,
+	0xb7, 0x84, 0x40, 0xf5, 0xd9, 0x33, 0x51, 0x91, 0xfa, 0xd2, 0x51, 0x8d, 0x8a, 0x6f, 0x72, 0x00,
+	0xa2, 0xbb, 0xb2, 0xd5, 0x97, 0x8e, 0xe4, 0x41, 0xab, 0x50, 0x84, 0xf7, 0xa0, 0xf1, 0x68, 0x07,
+	0x20, 0xdf, 0xb3, 0x25, 0x3a, 0x18, 0x18, 0x8c, 0xf9, 0xa4, 0x07, 0xff, 0x39, 0xb8, 0x44, 0x47,
+	0x14, 0x6a, 0xd0, 0x38, 0x50, 0x2f, 0xa1, 0x93, 0x80, 0x74, 0x16, 0x3e, 0xe1, 0xc4, 0xb2, 0x71,
+	0xf1, 0x6f, 0x28, 0xe9, 0x83, 0x3c, 0xf1, 0x70, 0x3a, 0xb5, 0x27, 0x36, 0xba, 0x81, 0xe8, 0xdd,
+	0xa0, 0xc5, 0x94, 0xfa, 0x13, 0xc8, 0x8f, 0x90, 0xb9, 0x81, 0x3d, 0xb5, 0xd1, 0xd7, 0x91, 0x99,
+	0x0f, 0x9e, 0x8b, 0xbc, 0xda, 0xca, 0x36, 0x03, 0x2b, 0xad, 0x26, 0x02, 0x9e, 0x35, 0xd1, 0x49,
+	0xce, 0xd0, 0xa0, 0x71, 0xc0, 0x25, 0xf4, 0xa6, 0xd3, 0x05, 0x06, 0xca, 0x76, 0x5f, 0xe2, 0x12,
+	0xc6, 0x91, 0xfa, 0x16, 0x9a, 0x5f, 0x6c, 0x07, 0xc5, 0x11, 0xaf, 0x58, 0x84, 0x3e, 0x97, 0x25,
+	0xd3, 0xb1, 0x9e, 0xe8, 0xf6, 0x67, 0x1b, 0x5a, 0x19, 0xcc, 0x40, 0x66, 0xa2, 0xbf, 0xa1, 0xfb,
+	0x3e, 0xec, 0x58, 0x68, 0xcf, 0xac, 0xf4, 0x18, 0x49, 0x44, 0xce, 0x40, 0x5e, 0x84, 0x4f, 0x0b,
+	0xf6, 0x3c, 0x77, 0x6c, 0x77, 0x26, 0x86, 0x68, 0x0e, 0x3a, 0xb1, 0xbe, 0xe3, 0xfc, 0x07, 0x2d,
+	0xa2, 0xc8, 0x39, 0xd4, 0x57, 0xb1, 0x86, 0x8f, 0x41, 0x34, 0x47, 0x05, 0x8a, 0xac, 0x44, 0x5d,
+	0xcd, 0x99, 0x79, 0x54, 0x4e, 0x60, 0xb7, 0xd1, 0x1c, 0xc9, 0xc7, 0x9c, 0x65, 0x31, 0xe6, 0x2b,
+	0xb2, 0xf0, 0xb2, 0xcc, 0xe2, 0xc6, 0x19, 0x95, 0x8c, 0x27, 0x7c, 0x34, 0x80, 0xa4, 0x3c, 0x33,
+	0xb3, 0x4c, 0xa9, 0x0b, 0xf6, 0xff, 0x25, 0x76, 0xee, 0xa8, 0x51, 0xa1, 0x9d, 0xd5, 0x2b, 0x9b,
+	0x3f, 0x41, 0xeb, 0x25, 0xb3, 0x2b, 0x1e, 0xbd, 0x27, 0x46, 0xef, 0xc5, 0x65, 0x72, 0x2f, 0xc5,
+	0xf4, 0xcd, 0x1c, 0x2c, 0x0e, 0x70, 0x09, 0xdd, 0x02, 0xdd, 0x44, 0x66, 0xfe, 0xf2, 0x5c, 0x54,
+	0xf6, 0xc4, 0x24, 0xca, 0x7a, 0x89, 0x74, 0x1d, 0x0c, 0x89, 0x92, 0x97, 0x52, 0x96, 0xb3, 0x86,
+	0x5d, 0xe8, 0x14, 0x35, 0x7c, 0xe4, 0xec, 0xe1, 0x3e, 0xf4, 0xd6, 0x06, 0x14, 0x79, 0xf5, 0x37,
+	0x34, 0x32, 0x9b, 0x93, 0x4b, 0x25, 0x45, 0xc2, 0x60, 0x39, 0x9d, 0xbd, 0xbc, 0x2d, 0x54, 0x8a,
+	0x38, 0x26, 0x4c, 0x2e, 0xcc, 0x06, 0x4c, 0xc8, 0x31, 0x4b, 0x61, 0xfa, 0x46, 0xcc, 0x52, 0x9d,
+	0x40, 0x2d, 0x4b, 0x92, 0x77, 0x7c, 0x8f, 0xf8, 0x9e, 0x25, 0xdd, 0xf7, 0xd6, 0x58, 0xf1, 0x12,
+	0xd2, 0x04, 0x44, 0x0e, 0x4b, 0xf7, 0xb6, 0xbb, 0x06, 0xce, 0xef, 0xee, 0xf1, 0x15, 0xc8, 0x85,
+	0x75, 0x23, 0x5d, 0x68, 0x8d, 0xef, 0x86, 0x63, 0xed, 0xdb, 0xcd, 0xd5, 0xc5, 0xf5, 0xd7, 0xc7,
+	0xf3, 0x0f, 0xa7, 0xed, 0xca, 0xab, 0xe4, 0xe0, 0xb4, 0x2d, 0xbd, 0x4e, 0x0e, 0xda, 0x5b, 0xc7,
+	0x87, 0xd9, 0x4b, 0xc0, 0x8d, 0x24, 0xbb, 0x50, 0x35, 0x34, 0x8d, 0xb6, 0x2b, 0xa4, 0x09, 0xa0,
+	0x6b, 0x77, 0xc3, 0xd1, 0x67, 0xe3, 0x62, 0x34, 0x6e, 0x4b, 0xc7, 0x6f, 0xa0, 0x59, 0x36, 0x9d,
+	0xd4, 0x61, 0x57, 0x1f, 0x69, 0xfa, 0xc3, 0xf7, 0xeb, 0x51, 0xbb, 0xf2, 0xb4, 0x23, 0x9e, 0xbe,
+	0xb3, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x5e, 0xec, 0x29, 0x7c, 0x08, 0x05, 0x00, 0x00,
 }

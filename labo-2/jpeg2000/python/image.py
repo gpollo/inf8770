@@ -19,9 +19,9 @@ def matrix_to_protobuf(matrix):
     size_x = len(matrix[0])
     size_y = len(matrix)
 
-    image_data = data_pb2.ProtoImageData()
+    image_data = data_pb2.ImageData()
     for j in range(size_y):
-        row = data_pb2.ProtoImageRow()
+        row = data_pb2.ImageRow()
         row.values.extend(matrix[j])
         image_data.rows.extend([row])
     return image_data

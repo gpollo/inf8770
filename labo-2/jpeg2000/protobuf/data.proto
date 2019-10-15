@@ -4,32 +4,49 @@ package data;
 
 /* data exchanged with python wavelet transform script */
 
-message ProtoImageRow {
+message ImageRow {
     repeated float values = 1;
 }
 
-message ProtoImageData {
-    repeated ProtoImageRow rows = 1;
+message ImageData {
+    repeated ImageRow rows = 1;
 }
 
-message ProtoDWT {
+message PythonDWT {
     string mode = 1;
-    ProtoImageData data = 2;
+    ImageData data = 2;
 }
 
 /* algorithm headers */
+
+enum Subsampling {
+    SUBSAMPLING_410 = 0;
+    SUBSAMPLING_420 = 1;
+    SUBSAMPLING_422 = 2;
+}
 
 enum WaveletAlgo {
     HAAR = 0;
     DAUBECHIES = 1;
 }
 
+message WaveletHaar {
+    uint32 level = 1;
+}
+
+message WaveletDaubechies {
+    uint32 level = 1;
+    uint32 coefficient = 2;
+}
+
 enum QuantifierAlgo {
     DEADZONE = 0;
 }
 
-enum CompressorAlgo {
-    LZW = 0;
+message QuantifierDeadZone {
+    uint32 width = 1;
+    uint32 delta = 2;
+    float offset = 3;
 }
 
 /* file image format */
@@ -41,6 +58,19 @@ message FileImageLayer {
 message FileImageHeader {
     uint32 width = 1;
     uint32 height = 2;
+
+    Subsampling subsampling = 3;
+    
+    WaveletAlgo wavelet_type = 10;
+    oneof wavelet_type_data {
+        WaveletHaar wavelet_haar = 11;
+        WaveletDaubechies wavelet_daubechies = 12;
+    }
+
+    QuantifierAlgo quantifier_type = 20;
+    oneof quantifier_type_data {
+        QuantifierDeadZone quantifier_deadzone = 21;
+    }
 }
 
 message FileImageData {

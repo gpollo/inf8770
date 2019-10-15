@@ -13,7 +13,7 @@ def apply_transform(data, mode):
     return numpy.concatenate((top, bottom), 0)
 
 if __name__== "__main__":
-    input_data = data_pb2.ProtoDWT()
+    input_data = data_pb2.PythonDWT()
     input_data.ParseFromString(sys.stdin.buffer.read())
     input_matrix = image.protobuf_to_matrix(input_data.data)
     output_matrix = apply_transform(input_matrix, input_data.mode)

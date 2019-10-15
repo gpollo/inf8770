@@ -12,7 +12,7 @@ type PyWavelet struct {
 
 func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 	image := ImageDataToProtobuf(d)
-	dwt := data.ProtoDWT{Mode: w.mode, Data: &image}
+	dwt := data.PythonDWT{Mode: w.mode, Data: &image}
 	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
 		panic(err.Error())
@@ -24,7 +24,7 @@ func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	wavelet := data.ProtoImageData{}
+	wavelet := data.ImageData{}
 	err = proto.Unmarshal(result, &wavelet)
 	if err != nil {
 		panic(err.Error())
@@ -38,7 +38,7 @@ func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 
 func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
 	image := ImageDataToProtobuf(d)
-	dwt := data.ProtoDWT{Mode: w.mode, Data: &image}
+	dwt := data.PythonDWT{Mode: w.mode, Data: &image}
 	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
 		panic(err.Error())
@@ -50,7 +50,7 @@ func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	wavelet := data.ProtoImageData{}
+	wavelet := data.ImageData{}
 	err = proto.Unmarshal(result, &wavelet)
 	if err != nil {
 		panic(err.Error())
