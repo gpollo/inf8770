@@ -84,7 +84,7 @@ func (d ImageData) ScaleInteger(scaleX, scaleY int) ImageData {
 	return scaled
 }
 
-func ImageDataToProtobuf(d ImageData) data.ImageData {
+func (d ImageData) ToProtobuf() data.ImageData {
 	sizeX, sizeY := d.GetDimensions()
 
 	rows := make([]*data.ImageRow, sizeY)
@@ -99,16 +99,14 @@ func ImageDataToProtobuf(d ImageData) data.ImageData {
 	return data.ImageData{Rows: rows}
 }
 
-func ImageDataFromProtobuf(d data.ImageData) ImageData {
-	sizeX := len(d.Rows[0].Values)
-	sizeY := len(d.Rows)
+func (d *ImageData) FromProtobuf(data data.ImageData) {
+	sizeX := len(data.Rows[0].Values)
+	sizeY := len(data.Rows)
 
-	data := NewImageData(sizeX, sizeY)
+	(*d) = NewImageData(sizeX, sizeY)
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][i] = d.Rows[j].Values[i]
+			(*d)[j][i] = data.Rows[j].Values[i]
 		}
 	}
-
-	return data
 }
