@@ -1,10 +1,13 @@
 package main
 
-import "math"
+import (
+	"jpeg2000/data"
+	"math"
+)
 
 type DeadZoneQuantifier struct {
-	width  uint
-	delta  uint
+	width  uint32
+	delta  uint32
 	offset float32
 }
 
@@ -54,4 +57,27 @@ func (q *DeadZoneQuantifier) QuantifierInverse(d ImageData) ImageData {
 	}
 
 	return data
+}
+
+func (q *DeadZoneQuantifier) ToProtobuf() *data.QuantifierConfig {
+	return &data.QuantifierConfig{
+		Data: &data.QuantifierConfig_DeadZone{
+			DeadZone: &data.QuantifierDeadZone{
+				Width:  q.width,
+				Delta:  q.delta,
+				Offset: q.offset,
+			},
+		},
+	}
+}
+
+func (q *DeadZoneQuantifier) FromProtobuf(d data.QuantifierConfig) {
+	c := d.GetDeadZone()
+	if c == nil {
+		panic("Could not deserialize dead zone quantifier from protobuf")
+	}
+
+	q.width = c.Width
+	q.delta = c.Delta
+	q.offset = c.Offset
 }

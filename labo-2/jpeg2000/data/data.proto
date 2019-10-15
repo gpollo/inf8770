@@ -49,6 +49,12 @@ message QuantifierDeadZone {
     float offset = 3;
 }
 
+message QuantifierConfig {
+    oneof data {
+        QuantifierDeadZone dead_zone = 2;
+    }
+}
+
 /* file image format */
 
 message FileImageLayer {
@@ -67,10 +73,7 @@ message FileImageHeader {
         WaveletDaubechies wavelet_daubechies = 12;
     }
 
-    QuantifierAlgo quantifier_type = 20;
-    oneof quantifier_type_data {
-        QuantifierDeadZone quantifier_deadzone = 21;
-    }
+    QuantifierConfig quantifier = 4;
 }
 
 message FileImageData {
