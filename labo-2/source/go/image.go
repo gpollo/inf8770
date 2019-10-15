@@ -70,6 +70,19 @@ func (d ImageData) Times(factor float32) {
 	}
 }
 
+func (d ImageData) ScaleInteger(scaleX, scaleY int) ImageData {
+	sizeX, sizeY := d.GetDimensions()
+
+	scaled := NewImageData(sizeX*scaleX, sizeY*scaleY)
+	for j := 0; j < sizeY*scaleY; j++ {
+		for i := 0; i < sizeX*scaleX; i++ {
+			scaled[j][i] = d[j/scaleY][i/scaleX]
+		}
+	}
+
+	return scaled
+}
+
 func ImageDataToProtobuf(d ImageData) ProtoImageData {
 	sizeX, sizeY := d.GetDimensions()
 

@@ -2,6 +2,7 @@ package main
 
 type subsampler interface {
 	Subsample(y, u, v ImageData) (ImageData, ImageData, ImageData)
+	Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData)
 }
 
 type Subsampler410 struct{}
@@ -61,6 +62,34 @@ func (s *Subsampler410) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
+func (s *Subsampler410) Supersample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+	ySizeX, ySizeY := y1.GetDimensions()
+	uSizeX, uSizeY := u1.GetDimensions()
+	vSizeX, vSizeY := v1.GetDimensions()
+
+	if 4*uSizeX != ySizeX {
+		panic("Invalid X size for U layer")
+	}
+
+	if 4*vSizeX != ySizeX {
+		panic("Invalid X size for V layer")
+	}
+
+	if 2*uSizeY != ySizeY {
+		panic("Invalid Y size for U layer")
+	}
+
+	if 2*vSizeY != ySizeY {
+		panic("Invalid Y size for V layer")
+	}
+
+	y2 := y1.Copy()
+	u2 := u1.ScaleInteger(4, 2)
+	v2 := v1.ScaleInteger(4, 2)
+
+	return y2, u2, v2
+}
+
 type Subsampler420 struct{}
 
 func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
@@ -110,6 +139,34 @@ func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
+func (s *Subsampler420) Supersample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+	ySizeX, ySizeY := y1.GetDimensions()
+	uSizeX, uSizeY := u1.GetDimensions()
+	vSizeX, vSizeY := v1.GetDimensions()
+
+	if 2*uSizeX != ySizeX {
+		panic("Invalid X size for U layer")
+	}
+
+	if 2*vSizeX != ySizeX {
+		panic("Invalid X size for V layer")
+	}
+
+	if 2*uSizeY != ySizeY {
+		panic("Invalid Y size for U layer")
+	}
+
+	if 2*vSizeY != ySizeY {
+		panic("Invalid Y size for V layer")
+	}
+
+	y2 := y1.Copy()
+	u2 := u1.ScaleInteger(2, 2)
+	v2 := v1.ScaleInteger(2, 2)
+
+	return y2, u2, v2
+}
+
 type Subsampler422 struct{}
 
 func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
@@ -151,6 +208,34 @@ func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 			v2[j][i] = v / 2
 		}
 	}
+
+	return y2, u2, v2
+}
+
+func (s *Subsampler422) Supersample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+	ySizeX, ySizeY := y1.GetDimensions()
+	uSizeX, uSizeY := u1.GetDimensions()
+	vSizeX, vSizeY := v1.GetDimensions()
+
+	if 2*uSizeX != ySizeX {
+		panic("Invalid X size for U layer")
+	}
+
+	if 2*vSizeX != ySizeX {
+		panic("Invalid X size for V layer")
+	}
+
+	if uSizeY != ySizeY {
+		panic("Invalid Y size for U layer")
+	}
+
+	if vSizeY != ySizeY {
+		panic("Invalid Y size for V layer")
+	}
+
+	y2 := y1.Copy()
+	u2 := u1.ScaleInteger(2, 1)
+	v2 := v1.ScaleInteger(2, 1)
 
 	return y2, u2, v2
 }
