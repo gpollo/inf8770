@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
-	"source/data"
+	"jpeg2000/data"
 )
 
 type ImageData [][]float32

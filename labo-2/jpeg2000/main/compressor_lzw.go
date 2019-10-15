@@ -6,7 +6,7 @@ import (
 	"compress/lzw"
 	"encoding/binary"
 	"io"
-	"source/data"
+	"jpeg2000/data"
 )
 
 type LZWCompressor struct{}

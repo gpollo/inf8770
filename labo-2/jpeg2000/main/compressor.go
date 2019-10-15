@@ -1,6 +1,6 @@
 package main
 
-import "source/data"
+import "jpeg2000/data"
 
 type Compressor interface {
 	CompressLayer(d ImageData) data.FileImageLayer

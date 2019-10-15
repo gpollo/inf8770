@@ -1,7 +1,7 @@
 package main
 
 import (
-	"source/data"
+	"jpeg2000/data"
 
 	proto "github.com/golang/protobuf/proto"
 )
