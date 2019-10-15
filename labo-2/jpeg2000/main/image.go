@@ -17,7 +17,7 @@ func NewImageData(sizeX, sizeY int) ImageData {
 	return data
 }
 
-func GetImageData(image image.Image) (ImageData, ImageData, ImageData) {
+func GetImageData(image image.Image) (ImageData, ImageData, ImageData, uint, uint) {
 	sizeX := image.Bounds().Max.X - image.Bounds().Min.X
 	sizeY := image.Bounds().Max.Y - image.Bounds().Min.Y
 
@@ -37,7 +37,7 @@ func GetImageData(image image.Image) (ImageData, ImageData, ImageData) {
 		}
 	}
 
-	return rData, gData, bData
+	return rData, gData, bData, uint(sizeX), uint(sizeY)
 }
 
 func (d ImageData) GetDimensions() (int, int) {

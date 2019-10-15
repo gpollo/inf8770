@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"jpeg2000/data"
 	"math"
 )
@@ -9,6 +10,22 @@ type DeadZoneQuantifier struct {
 	width  uint32
 	delta  uint32
 	offset float32
+}
+
+func NewDeadZoneQuantifier(width, delta int64, offset float64) (*DeadZoneQuantifier, error) {
+	if width < 0 {
+		return nil, fmt.Errorf("Dead zone width (%d) cannot be negative", width)
+	}
+
+	if delta <= 0 {
+		return nil, fmt.Errorf("Dead zone delta (%d) cannot be negative or zero", delta)
+	}
+
+	return &DeadZoneQuantifier{
+		width:  uint32(width),
+		delta:  uint32(delta),
+		offset: float32(offset),
+	}, nil
 }
 
 func (q *DeadZoneQuantifier) QuantifierTransform(d ImageData) ImageData {

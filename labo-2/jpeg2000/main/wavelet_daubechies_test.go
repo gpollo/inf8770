@@ -13,13 +13,13 @@ func TestDaubechiesWavelet(t *testing.T) {
 		{10, 20, 30, 60, 10, 20, 30, 40},
 	}
 
-	wavelet1 := NewDaubechiesWavelet()
+	wavelet1, _ := NewDaubechiesWavelet(1, 2)
 	wavelet1.SetLevel(1)
 	transformed1 := wavelet1.WaveletTransform(data)
 	inversed1 := wavelet1.WaveletInverse(transformed1)
 	assert2DFloat32ArrayAlmostEqual(t, inversed1, data, 0.0001)
 
-	wavelet2 := NewDaubechiesWavelet()
+	wavelet2, _ := NewDaubechiesWavelet(1, 2)
 	wavelet2.SetLevel(2)
 	transformed2 := wavelet2.WaveletTransform(data)
 	inversed2 := wavelet2.WaveletInverse(transformed2)
@@ -35,7 +35,7 @@ func TestDaubechiesWaveletRandom(t *testing.T) {
 		}
 	}
 
-	wavelet := NewDaubechiesWavelet()
+	wavelet, _ := NewDaubechiesWavelet(1, 2)
 	wavelet.SetLevel(3)
 	transformed := wavelet.WaveletTransform(data)
 	inversed := wavelet.WaveletInverse(transformed)

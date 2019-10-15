@@ -1,12 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"jpeg2000/data"
 	"math"
 )
 
 type HaarWavelet struct {
 	level uint32
+}
+
+func NewHaarWavelet(level int64) (*HaarWavelet, error) {
+	if level < 1 {
+		return nil, fmt.Errorf("Wavelet level (%d) cannot be negative or zero", level)
+	}
+
+	return &HaarWavelet{level: uint32(level)}, nil
 }
 
 func (w *HaarWavelet) GetXLowPassFilter(d ImageData) ImageData {

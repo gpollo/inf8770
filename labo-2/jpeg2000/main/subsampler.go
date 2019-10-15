@@ -1,8 +1,11 @@
 package main
 
-type subsampler interface {
+import "jpeg2000/data"
+
+type Subsampler interface {
 	Subsample(y, u, v ImageData) (ImageData, ImageData, ImageData)
 	Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData)
+	ToProtobuf() data.Subsampling
 }
 
 func ScaleLayers(y1, u1, v1 ImageData, xScale, yScale int) (ImageData, ImageData, ImageData) {
@@ -94,6 +97,10 @@ func (s *Subsampler410) Supersample(y, u, v ImageData) (ImageData, ImageData, Im
 	return ScaleLayers(y, u, v, 4, 2)
 }
 
+func (s *Subsampler410) ToProtobuf() data.Subsampling {
+	return data.Subsampling_SUBSAMPLING_410
+}
+
 type Subsampler420 struct{}
 
 func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
@@ -147,6 +154,10 @@ func (s *Subsampler420) Supersample(y, u, v ImageData) (ImageData, ImageData, Im
 	return ScaleLayers(y, u, v, 2, 2)
 }
 
+func (s *Subsampler420) ToProtobuf() data.Subsampling {
+	return data.Subsampling_SUBSAMPLING_420
+}
+
 type Subsampler422 struct{}
 
 func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
@@ -194,4 +205,8 @@ func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 
 func (s *Subsampler422) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
 	return ScaleLayers(y, u, v, 2, 1)
+}
+
+func (s *Subsampler422) ToProtobuf() data.Subsampling {
+	return data.Subsampling_SUBSAMPLING_422
 }

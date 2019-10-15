@@ -25,11 +25,6 @@ enum Subsampling {
     SUBSAMPLING_422 = 2;
 }
 
-enum WaveletAlgo {
-    HAAR = 0;
-    DAUBECHIES = 1;
-}
-
 message WaveletHaar {
     uint32 level = 1;
 }
@@ -39,8 +34,11 @@ message WaveletDaubechies {
     uint32 coefficient = 2;
 }
 
-enum QuantifierAlgo {
-    DEADZONE = 0;
+message WaveletConfig {
+    oneof data {
+        WaveletHaar haar = 1;
+        WaveletDaubechies daubechies = 2;
+    }
 }
 
 message QuantifierDeadZone {
@@ -66,14 +64,8 @@ message FileImageHeader {
     uint32 height = 2;
 
     Subsampling subsampling = 3;
-    
-    WaveletAlgo wavelet_type = 10;
-    oneof wavelet_type_data {
-        WaveletHaar wavelet_haar = 11;
-        WaveletDaubechies wavelet_daubechies = 12;
-    }
-
-    QuantifierConfig quantifier = 4;
+    WaveletConfig wavelet = 4;
+    QuantifierConfig quantifier = 5;
 }
 
 message FileImageData {

@@ -6,11 +6,20 @@ import (
 )
 
 type DaubechiesWavelet struct {
-	level uint32
+	level       uint32
+	coefficient uint32
 }
 
-func NewDaubechiesWavelet() DaubechiesWavelet {
-	return DaubechiesWavelet{level: 2}
+func NewDaubechiesWavelet(level int64, coefficient int64) (*DaubechiesWavelet, error) {
+	if level < 1 {
+		return nil, fmt.Errorf("Wavelet level (%d) cannot be negative or zero", level)
+	}
+
+	if coefficient < 1 {
+		return nil, fmt.Errorf("Daubechies coefficient (%d) cannot be negative or zero", coefficient)
+	}
+
+	return &DaubechiesWavelet{level: uint32(level), coefficient: uint32(coefficient)}, nil
 }
 
 func (w *DaubechiesWavelet) SetLevel(level uint32) {
@@ -22,12 +31,12 @@ func (w *DaubechiesWavelet) SetLevel(level uint32) {
 }
 
 func (w *DaubechiesWavelet) WaveletTransform(d ImageData) ImageData {
-	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.level)}
+	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.coefficient)}
 	return pyWavelet.WaveletTransform(d)
 }
 
 func (w *DaubechiesWavelet) WaveletInverse(d ImageData) ImageData {
-	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.level)}
+	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.coefficient)}
 	return pyWavelet.WaveletInverse(d)
 }
 
