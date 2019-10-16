@@ -1,6 +1,9 @@
 package main
 
-import "jpeg2000/data"
+import (
+	"errors"
+	"jpeg2000/data"
+)
 
 type Subsampler interface {
 	Subsample(y, u, v ImageData) (ImageData, ImageData, ImageData)
@@ -239,4 +242,19 @@ func (s *Subsampler444) Supersample(y, u, v ImageData) (ImageData, ImageData, Im
 
 func (s *Subsampler444) ToProtobuf() data.Subsampling {
 	return data.Subsampling_SUBSAMPLING_444
+}
+
+func SubsamplerFromProtobuf(d data.Subsampling) (Subsampler, error) {
+	switch d {
+	case data.Subsampling_SUBSAMPLING_410:
+		return &Subsampler410{}, nil
+	case data.Subsampling_SUBSAMPLING_420:
+		return &Subsampler420{}, nil
+	case data.Subsampling_SUBSAMPLING_422:
+		return &Subsampler422{}, nil
+	case data.Subsampling_SUBSAMPLING_444:
+		return &Subsampler444{}, nil
+	default:
+		return nil, errors.New("Unknown subsampling format from protobuf")
+	}
 }
