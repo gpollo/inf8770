@@ -2,6 +2,7 @@ package main
 
 import (
 	"jpeg2000/data"
+	"jpeg2000/helper"
 	"testing"
 )
 
@@ -28,9 +29,9 @@ func TestSubsample410(t *testing.T) {
 	subsampler := Subsampler410{}
 	y, u, v := subsampler.Subsample(yuvData, yuvData, yuvData)
 
-	assert2DFloat32ArrayEqual(t, y, yExpected)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yExpected)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSupersample410(t *testing.T) {
@@ -56,9 +57,9 @@ func TestSupersample410(t *testing.T) {
 	subsampler := Subsampler410{}
 	y, u, v := subsampler.Supersample(yData, uvData, uvData)
 
-	assert2DFloat32ArrayEqual(t, y, yData)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yData)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSubsample420(t *testing.T) {
@@ -84,9 +85,9 @@ func TestSubsample420(t *testing.T) {
 	subsampler := Subsampler420{}
 	y, u, v := subsampler.Subsample(yuvData, yuvData, yuvData)
 
-	assert2DFloat32ArrayEqual(t, y, yExpected)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yExpected)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSupersample420(t *testing.T) {
@@ -112,9 +113,9 @@ func TestSupersample420(t *testing.T) {
 	subsampler := Subsampler420{}
 	y, u, v := subsampler.Supersample(yData, uvData, uvData)
 
-	assert2DFloat32ArrayEqual(t, y, yData)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yData)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSubsample422(t *testing.T) {
@@ -142,9 +143,9 @@ func TestSubsample422(t *testing.T) {
 	subsampler := Subsampler422{}
 	y, u, v := subsampler.Subsample(yuvData, yuvData, yuvData)
 
-	assert2DFloat32ArrayEqual(t, y, yExpected)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yExpected)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }
 
 func TestSupersample422(t *testing.T) {
@@ -172,7 +173,7 @@ func TestSupersample422(t *testing.T) {
 	subsampler := Subsampler422{}
 	y, u, v := subsampler.Supersample(yData, uvData, uvData)
 
-	assert2DFloat32ArrayEqual(t, y, yData)
-	assert2DFloat32ArrayEqual(t, u, uvExpected)
-	assert2DFloat32ArrayEqual(t, v, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, y, yData)
+	helper.Assert2DFloat32ArrayEqual(t, u, uvExpected)
+	helper.Assert2DFloat32ArrayEqual(t, v, uvExpected)
 }

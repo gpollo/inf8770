@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"io"
 	"jpeg2000/data"
+	"jpeg2000/helper"
 )
 
 type LZWCompressor struct{}
@@ -24,7 +25,7 @@ func (c *LZWCompressor) CompressLayer(d data.Layer) *data.FileImageLayer {
 		compressor := lzw.NewWriter(encodedBuffer, lzw.MSB, 8)
 
 		for i := 0; i < sizeX; i++ {
-			if err := WriteVarint(compressor, int64(d[j][i])); err != nil {
+			if err := helper.WriteVarint(compressor, int64(d[j][i])); err != nil {
 				panic(err.Error())
 			}
 		}

@@ -10,6 +10,7 @@ import (
 	_ "image/png"
 
 	"io/ioutil"
+	"jpeg2000/helper"
 	"os"
 
 	"github.com/akamensky/argparse"
@@ -102,7 +103,7 @@ func execute() error {
 			return err
 		}
 
-		err = SaveImage(decoded, outputFile)
+		err = helper.SaveImage(decoded, outputFile)
 		if err != nil {
 			return err
 		}

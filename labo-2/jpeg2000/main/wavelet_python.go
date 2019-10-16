@@ -2,6 +2,7 @@ package main
 
 import (
 	"jpeg2000/data"
+	"jpeg2000/helper"
 
 	proto "github.com/golang/protobuf/proto"
 )
@@ -19,7 +20,7 @@ func (w *PyWavelet) WaveletTransform(l data.Layer) data.Layer {
 	}
 
 	args := []string{"python3", "../python/dwt.py"}
-	result, err := CallProcess(args, pdata)
+	result, err := helper.CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -46,7 +47,7 @@ func (w *PyWavelet) WaveletInverse(l data.Layer) data.Layer {
 	}
 
 	args := []string{"python3", "../python/idwt.py"}
-	result, err := CallProcess(args, pdata)
+	result, err := helper.CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
 	}

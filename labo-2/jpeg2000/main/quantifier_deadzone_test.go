@@ -2,6 +2,7 @@ package main
 
 import (
 	"jpeg2000/data"
+	"jpeg2000/helper"
 	"testing"
 )
 
@@ -26,5 +27,5 @@ func TestDeadZoneQuantifier(t *testing.T) {
 		{80, -80, 5, -50, 20, 50, 5, -65},
 		{5, 20, -20, 50, 5, 20, 20, 35},
 	}
-	assert2DFloat32ArrayEqual(t, result, expected)
+	helper.Assert2DFloat32ArrayEqual(t, result, expected)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"jpeg2000/data"
+	"jpeg2000/helper"
 	"math/rand"
 	"testing"
 )
@@ -18,7 +19,7 @@ func TestLZWCompressor(t *testing.T) {
 	compressed := compressor.CompressLayer(input)
 	decompressed := compressor.DecompressLayer(compressed)
 
-	assert2DFloat32ArrayEqual(t, decompressed, input)
+	helper.Assert2DFloat32ArrayEqual(t, decompressed, input)
 }
 
 func TestLZWCompressorRandom(t *testing.T) {
@@ -34,5 +35,5 @@ func TestLZWCompressorRandom(t *testing.T) {
 	compressed := compressor.CompressLayer(input)
 	decompressed := compressor.DecompressLayer(compressed)
 
-	assert2DFloat32ArrayEqual(t, decompressed, input)
+	helper.Assert2DFloat32ArrayEqual(t, decompressed, input)
 }

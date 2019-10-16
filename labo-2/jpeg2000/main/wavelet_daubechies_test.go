@@ -2,6 +2,7 @@ package main
 
 import (
 	"jpeg2000/data"
+	"jpeg2000/helper"
 	"math/rand"
 	"testing"
 )
@@ -18,13 +19,13 @@ func TestDaubechiesWavelet(t *testing.T) {
 	wavelet1.SetLevel(1)
 	transformed1 := wavelet1.WaveletTransform(input)
 	inversed1 := wavelet1.WaveletInverse(transformed1)
-	assert2DFloat32ArrayAlmostEqual(t, inversed1, input, 0.0001)
+	helper.Assert2DFloat32ArrayAlmostEqual(t, inversed1, input, 0.0001)
 
 	wavelet2, _ := NewDaubechiesWavelet(1, 2)
 	wavelet2.SetLevel(2)
 	transformed2 := wavelet2.WaveletTransform(input)
 	inversed2 := wavelet2.WaveletInverse(transformed2)
-	assert2DFloat32ArrayAlmostEqual(t, inversed2, input, 0.0001)
+	helper.Assert2DFloat32ArrayAlmostEqual(t, inversed2, input, 0.0001)
 }
 
 func TestDaubechiesWaveletRandom(t *testing.T) {
@@ -40,5 +41,5 @@ func TestDaubechiesWaveletRandom(t *testing.T) {
 	wavelet.SetLevel(3)
 	transformed := wavelet.WaveletTransform(input)
 	inversed := wavelet.WaveletInverse(transformed)
-	assert2DFloat32ArrayAlmostEqual(t, inversed, input, 0.0001)
+	helper.Assert2DFloat32ArrayAlmostEqual(t, inversed, input, 0.0001)
 }

@@ -1,11 +1,11 @@
-package main
+package helper
 
 import (
 	"math"
 	"testing"
 )
 
-func assert2DFloat32ArrayEqual(t *testing.T, got, expected [][]float32) {
+func Assert2DFloat32ArrayEqual(t *testing.T, got, expected [][]float32) {
 	if len(got) != len(expected) {
 		t.Fatalf("array Y dimension differs: got=%d, expected=%d", len(got), len(expected))
 	}
@@ -29,7 +29,7 @@ func assert2DFloat32ArrayEqual(t *testing.T, got, expected [][]float32) {
 	}
 }
 
-func assert2DFloat32ArrayAlmostEqual(t *testing.T, got, expected [][]float32, err float64) {
+func Assert2DFloat32ArrayAlmostEqual(t *testing.T, got, expected [][]float32, err float64) {
 	if len(got) != len(expected) {
 		t.Fatalf("array Y dimension differs: got=%d, expected=%d", len(got), len(expected))
 	}
