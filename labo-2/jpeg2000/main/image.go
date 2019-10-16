@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"jpeg2000/data"
 )
 
+// TODO: should probably be renamed to Layer
 type ImageData [][]float32
 
 func NewImageData(sizeX, sizeY int) ImageData {
@@ -179,5 +181,49 @@ func (d *ImageData) FromProtobuf(data data.ImageData) {
 		for i := 0; i < sizeX; i++ {
 			(*d)[j][i] = data.Rows[j].Values[i]
 		}
+	}
+}
+
+func (d ImageData) String() string {
+	sizeX, sizeY := d.GetDimensions()
+
+	str := ""
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			str += fmt.Sprintf("%8.2f ", d[j][i])
+		}
+		str += "\n"
+	}
+
+	return str
+}
+
+type Image [3]ImageData
+
+func (i *Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (i *Image) Bounds() image.Rectangle {
+	sizeX, sizeY := i[0].GetDimensions()
+
+	return image.Rectangle{
+		Min: image.Point{
+			X: 0,
+			Y: 0,
+		},
+		Max: image.Point{
+			X: sizeX,
+			Y: sizeY,
+		},
+	}
+}
+
+func (i *Image) At(x, y int) color.Color {
+	return &color.RGBA64{
+		R: uint16(i[0][y][x]),
+		G: uint16(i[1][y][x]),
+		B: uint16(i[2][y][x]),
+		A: 0xffff,
 	}
 }
