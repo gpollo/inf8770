@@ -13,7 +13,7 @@ type Wavelet interface {
 	ToProtobuf() *data.WaveletConfig
 }
 
-func WaveletFromCommandLine(arg string) (Wavelet, error) {
+func FromCommandLine(arg string) (Wavelet, error) {
 	splited := strings.Split(arg, ":")
 	if len(splited) <= 1 {
 		return nil, errors.New("Invalid number of argument for parsing wavelet")
@@ -52,7 +52,7 @@ func WaveletFromCommandLine(arg string) (Wavelet, error) {
 	}
 }
 
-func WaveletFromProtobuf(d *data.WaveletConfig) (Wavelet, error) {
+func FromProtobuf(d *data.WaveletConfig) (Wavelet, error) {
 	switch d.Data.(type) {
 	case *data.WaveletConfig_Haar:
 		haar := HaarWavelet{}

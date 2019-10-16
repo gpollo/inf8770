@@ -63,7 +63,7 @@ func execute() error {
 			return err
 		}
 
-		wavelet, err := wavelet.WaveletFromCommandLine(*waveletConfig)
+		wavelet, err := wavelet.FromCommandLine(*waveletConfig)
 		if err != nil {
 			return err
 		}

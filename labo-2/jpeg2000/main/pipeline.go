@@ -69,7 +69,7 @@ func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 		return err
 	}
 
-	p.wavelet, err = wavelet.WaveletFromProtobuf(d.Wavelet)
+	p.wavelet, err = wavelet.FromProtobuf(d.Wavelet)
 	if err != nil {
 		return err
 	}
