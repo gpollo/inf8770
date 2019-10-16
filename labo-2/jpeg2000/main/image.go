@@ -21,9 +21,6 @@ func GetImageData(image image.Image) (ImageData, ImageData, ImageData, uint, uin
 	sizeX := image.Bounds().Max.X - image.Bounds().Min.X
 	sizeY := image.Bounds().Max.Y - image.Bounds().Min.Y
 
-	fmt.Printf("Image X length: %d\n", sizeX)
-	fmt.Printf("Image Y length: %d\n", sizeY)
-
 	rData := NewImageData(sizeX, sizeY)
 	gData := NewImageData(sizeX, sizeY)
 	bData := NewImageData(sizeX, sizeY)
@@ -38,6 +35,80 @@ func GetImageData(image image.Image) (ImageData, ImageData, ImageData, uint, uin
 	}
 
 	return rData, gData, bData, uint(sizeX), uint(sizeY)
+}
+
+func RGBToYUV(r, g, b ImageData) (ImageData, ImageData, ImageData) {
+	sizeXr, sizeYr := r.GetDimensions()
+	sizeXg, sizeYg := g.GetDimensions()
+	sizeXb, sizeYb := b.GetDimensions()
+
+	if sizeXr != sizeXg || sizeXr != sizeXb {
+		panic("Mismatch in size between layers")
+	}
+
+	if sizeYr != sizeYg || sizeYr != sizeYb {
+		panic("Mismatch in size between layers")
+	}
+
+	sizeX := sizeXr
+	sizeY := sizeYr
+
+	y := NewImageData(sizeX, sizeY)
+	u := NewImageData(sizeX, sizeY)
+	v := NewImageData(sizeX, sizeY)
+
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			y[j][i] = (r[j][i] + 2*g[j][i] + b[j][i]) / 4
+			u[j][i] = (b[j][i] - g[j][i])
+			v[j][i] = (r[j][i] - g[j][i])
+		}
+	}
+
+	return y, u, v
+}
+
+func YUVToRGB(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+	sizeXy, sizeYy := y.GetDimensions()
+	sizeXu, sizeYu := u.GetDimensions()
+	sizeXv, sizeYv := v.GetDimensions()
+
+	if sizeXy != sizeXu || sizeXy != sizeXv {
+		panic("Mismatch in size between layers")
+	}
+
+	if sizeYy != sizeYu || sizeYy != sizeYv {
+		panic("Mismatch in size between layers")
+	}
+
+	sizeX := sizeXy
+	sizeY := sizeYy
+
+	r := NewImageData(sizeX, sizeY)
+	g := NewImageData(sizeX, sizeY)
+	b := NewImageData(sizeX, sizeY)
+
+	for j := 0; j < sizeY; j++ {
+		for i := 0; i < sizeX; i++ {
+			g[j][i] = y[j][i] - ((u[j][i] + v[j][i]) / 4)
+			r[j][i] = v[j][i] + g[j][i]
+			b[j][i] = u[j][i] + g[j][i]
+
+			if g[j][i] > float32(0xffff) {
+				g[j][i] = float32(0xffff)
+			}
+
+			if r[j][i] > float32(0xffff) {
+				r[j][i] = float32(0xffff)
+			}
+
+			if b[j][i] > float32(0xffff) {
+				b[j][i] = float32(0xffff)
+			}
+		}
+	}
+
+	return r, g, b
 }
 
 func (d ImageData) GetDimensions() (int, int) {
