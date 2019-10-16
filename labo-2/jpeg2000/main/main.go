@@ -18,7 +18,7 @@ import (
 
 var verbose *bool
 
-func main() {
+func execute() error {
 	parser := argparse.NewParser("jpeg2000", "JPEG2000 encoder and decoder")
 	inputFile := parser.File("i", "input", os.O_RDONLY, 0600,
 		&argparse.Options{
@@ -49,8 +49,7 @@ func main() {
 
 	err := parser.Parse(os.Args)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, parser.Usage(err))
-		os.Exit(1)
+		return err
 	}
 
 	defer inputFile.Close()
@@ -59,20 +58,17 @@ func main() {
 	if cmdEncode.Happened() {
 		inputImage, _, err := image.Decode(inputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		wavelet, err := WaveletFromCommandLine(*waveletConfig)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		quantifier, err := QuantifierFromCommandLine(*quantifierConfig)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		pipeline := Pipeline{
@@ -84,35 +80,40 @@ func main() {
 
 		encoded, err := pipeline.EncodeImage(inputImage)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		_, err = outputFile.Write(encoded)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+
+			return err
 		}
 	}
 
 	if cmdDecode.Happened() {
 		inputImage, err := ioutil.ReadAll(inputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		pipeline := Pipeline{}
 		decoded, err := pipeline.DecodeImage(inputImage)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
 
 		err = SaveImage(decoded, outputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, parser.Usage(err))
-			os.Exit(1)
+			return err
 		}
+	}
+
+	return nil
+}
+
+func main() {
+	if err := execute(); err != nil {
+		fmt.Fprintf(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 }
