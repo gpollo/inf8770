@@ -106,5 +106,5 @@ func (p *Pipeline) DecodeImage(input []byte) (image.Image, error) {
 	ys, us, vs := p.subsampler.Supersample(y, u, v)
 	r, g, b := data.YUVToRGB(ys, us, vs)
 
-	return &Image{r, g, b}, nil
+	return &data.Image{r, g, b}, nil
 }
