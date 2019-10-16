@@ -26,7 +26,13 @@ func (p *Pipeline) GetProtobufHeader(w, h uint) *data.FileImageHeader {
 
 func (p *Pipeline) EncodeImage(input image.Image) ([]byte, error) {
 	r, g, b, w, h := data.GetLayers(input)
-	ys, us, vs := data.RGBToYUV(r, g, b)
+
+	rgb := data.Image{r, g, b}
+	yuv, err := rgb.RGBToYUV()
+	if err != nil {
+		return []byte{}, err
+	}
+	ys, us, vs := yuv[0], yuv[1], yuv[2]
 	y, u, v := p.subsampler.Subsample(ys, us, vs)
 
 	yw := p.wavelet.WaveletTransform(y)
@@ -104,7 +110,11 @@ func (p *Pipeline) DecodeImage(input []byte) (image.Image, error) {
 	v := p.wavelet.WaveletInverse(vw)
 
 	ys, us, vs := p.subsampler.Supersample(y, u, v)
-	r, g, b := data.YUVToRGB(ys, us, vs)
+	yuv := data.Image{ys, us, vs}
+	rgb, err := yuv.YUVToRGB()
+	if err != nil {
+		return nil, err
+	}
 
-	return &data.Image{r, g, b}, nil
+	return &rgb, nil
 }
