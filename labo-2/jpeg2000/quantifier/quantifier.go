@@ -1,4 +1,4 @@
-package main
+package quantifier
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ type Quantifier interface {
 	ToProtobuf() *data.QuantifierConfig
 }
 
-func QuantifierFromCommandLine(arg string) (Quantifier, error) {
+func FromCommandLine(arg string) (Quantifier, error) {
 	splited := strings.Split(arg, ":")
 	if len(splited) <= 1 {
 		return nil, errors.New("Invalid number of argument for parsing quantifier")
@@ -46,7 +46,7 @@ func QuantifierFromCommandLine(arg string) (Quantifier, error) {
 	}
 }
 
-func QuantifierFromProtobuf(d *data.QuantifierConfig) (Quantifier, error) {
+func FromProtobuf(d *data.QuantifierConfig) (Quantifier, error) {
 	switch d.Data.(type) {
 	case *data.QuantifierConfig_DeadZone:
 		deadzone := DeadZoneQuantifier{}
