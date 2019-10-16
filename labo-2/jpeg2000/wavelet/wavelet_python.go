@@ -5,10 +5,20 @@ import (
 	"jpeg2000/helper"
 
 	proto "github.com/golang/protobuf/proto"
+	"os"
+	"path"
 )
 
 type PyWavelet struct {
 	mode string
+}
+
+func getPythonScript(script string) string {
+	if directory, ok := os.LookupEnv("JPEG2000_PYTHON"); ok {
+		return path.Join(directory, script)
+	} else {
+		return path.Join("../python/", script)
+	}
 }
 
 func (w *PyWavelet) WaveletTransform(l data.Layer) data.Layer {
@@ -19,7 +29,7 @@ func (w *PyWavelet) WaveletTransform(l data.Layer) data.Layer {
 		panic(err.Error())
 	}
 
-	args := []string{"python3", "../python/dwt.py"}
+	args := []string{"python3", getPythonScript("dwt.py")}
 	result, err := helper.CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
@@ -46,7 +56,7 @@ func (w *PyWavelet) WaveletInverse(l data.Layer) data.Layer {
 		panic(err.Error())
 	}
 
-	args := []string{"python3", "../python/idwt.py"}
+	args := []string{"python3", getPythonScript("idwt.py")}
 	result, err := helper.CallProcess(args, pdata)
 	if err != nil {
 		panic(err.Error())
