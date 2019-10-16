@@ -17,14 +17,15 @@ ORIGINAL=tests/1-original
 ENCODED=tests/2-encoded
 DECODED=tests/3-decoded
 
-tests: subsampling-tests \
+tests: subsampling-yuv-tests \
+       subsampling-rgb-tests \
        deadzone-width-tests \
        deadzone-delta-tests \
        deadzone-various-tests
 
-#####################
-# subsampling tests #
-#####################
+###########################
+# subsampling (YUV) tests #
+###########################
 
 $(ENCODED)/yuv410.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --subsampling 410
@@ -50,10 +51,43 @@ $(DECODED)/yuv422.png: $(ENCODED)/yuv422.data
 $(DECODED)/yuv444.png: $(ENCODED)/yuv444.data
 	$(JPEG2000) decode -i $< -o $@
 
-subsampling-tests: $(DECODED)/yuv410.png \
-                   $(DECODED)/yuv420.png \
-                   $(DECODED)/yuv422.png \
-		           $(DECODED)/yuv444.png
+subsampling-yuv-tests: $(DECODED)/yuv410.png \
+                       $(DECODED)/yuv420.png \
+                       $(DECODED)/yuv422.png \
+                       $(DECODED)/yuv444.png
+
+###########################
+# subsampling (RGB) tests #
+###########################
+
+$(ENCODED)/rgb410.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 410 --no-conversion
+
+$(ENCODED)/rgb420.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 420 --no-conversion
+
+$(ENCODED)/rgb422.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 422 --no-conversion
+
+$(ENCODED)/rgb444.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 444 --no-conversion
+
+$(DECODED)/rgb410.png: $(ENCODED)/rgb410.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/rgb420.png: $(ENCODED)/rgb420.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/rgb422.png: $(ENCODED)/rgb422.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/rgb444.png: $(ENCODED)/rgb444.data
+	$(JPEG2000) decode -i $< -o $@
+
+subsampling-rgb-tests: $(DECODED)/rgb410.png \
+                       $(DECODED)/rgb420.png \
+                       $(DECODED)/rgb422.png \
+                       $(DECODED)/rgb444.png
 
 ########################
 # deadzone width tests #
