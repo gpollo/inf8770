@@ -39,6 +39,12 @@ func execute() error {
 	cmdEncode := parser.NewCommand("encode", "Encode to JPEG2000")
 	cmdDecode := parser.NewCommand("decode", "Decode from JPEG2000")
 
+	doConversion := cmdEncode.Flag("c", "convert",
+		&argparse.Options{
+			Required: false,
+			Help:     "Convert RGB into YUV colorspace",
+			Default:  true,
+		})
 	subsamplerConfig := cmdEncode.String("s", "subsampling",
 		&argparse.Options{
 			Required: false,
@@ -89,6 +95,7 @@ func execute() error {
 		}
 
 		pipeline := Pipeline{
+			conversion: *doConversion,
 			subsampler: subsampler,
 			wavelet:    wavelet,
 			quantifier: quantifier,

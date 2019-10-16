@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='data',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\ndata.proto\x12\x04\x64\x61ta\"\x1a\n\x08ImageRow\x12\x0e\n\x06values\x18\x01 \x03(\x02\")\n\tImageData\x12\x1c\n\x04rows\x18\x01 \x03(\x0b\x32\x0e.data.ImageRow\"8\n\tPythonDWT\x12\x0c\n\x04mode\x18\x01 \x01(\t\x12\x1d\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x0f.data.ImageData\"\x1c\n\x0bWaveletHaar\x12\r\n\x05level\x18\x01 \x01(\r\"7\n\x11WaveletDaubechies\x12\r\n\x05level\x18\x01 \x01(\r\x12\x13\n\x0b\x63oefficient\x18\x02 \x01(\r\"i\n\rWaveletConfig\x12!\n\x04haar\x18\x01 \x01(\x0b\x32\x11.data.WaveletHaarH\x00\x12-\n\ndaubechies\x18\x02 \x01(\x0b\x32\x17.data.WaveletDaubechiesH\x00\x42\x06\n\x04\x64\x61ta\"B\n\x12QuantifierDeadZone\x12\r\n\x05width\x18\x01 \x01(\r\x12\r\n\x05\x64\x65lta\x18\x02 \x01(\r\x12\x0e\n\x06offset\x18\x03 \x01(\x02\"$\n\x13QuantifierMidThread\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\r\"z\n\x10QuantifierConfig\x12-\n\tdead_zone\x18\x01 \x01(\x0b\x32\x18.data.QuantifierDeadZoneH\x00\x12/\n\nmid_thread\x18\x02 \x01(\x0b\x32\x19.data.QuantifierMidThreadH\x00\x42\x06\n\x04\x64\x61ta\"\x1e\n\x0e\x46ileImageLayer\x12\x0c\n\x04rows\x18\x01 \x03(\x0c\"\xaa\x01\n\x0f\x46ileImageHeader\x12\r\n\x05width\x18\x01 \x01(\r\x12\x0e\n\x06height\x18\x02 \x01(\r\x12&\n\x0bsubsampling\x18\x03 \x01(\x0e\x32\x11.data.Subsampling\x12$\n\x07wavelet\x18\x04 \x01(\x0b\x32\x13.data.WaveletConfig\x12*\n\nquantifier\x18\x05 \x01(\x0b\x32\x16.data.QuantifierConfig\"r\n\rFileImageData\x12\x1f\n\x01y\x18\x01 \x01(\x0b\x32\x14.data.FileImageLayer\x12\x1f\n\x01u\x18\x02 \x01(\x0b\x32\x14.data.FileImageLayer\x12\x1f\n\x01v\x18\x03 \x01(\x0b\x32\x14.data.FileImageLayer\"U\n\tFileImage\x12%\n\x06header\x18\x01 \x01(\x0b\x32\x15.data.FileImageHeader\x12!\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x13.data.FileImageData*a\n\x0bSubsampling\x12\x13\n\x0fSUBSAMPLING_410\x10\x00\x12\x13\n\x0fSUBSAMPLING_420\x10\x01\x12\x13\n\x0fSUBSAMPLING_422\x10\x02\x12\x13\n\x0fSUBSAMPLING_444\x10\x03\x62\x06proto3')
+  serialized_pb=_b('\n\ndata.proto\x12\x04\x64\x61ta\"\x1a\n\x08ImageRow\x12\x0e\n\x06values\x18\x01 \x03(\x02\")\n\tImageData\x12\x1c\n\x04rows\x18\x01 \x03(\x0b\x32\x0e.data.ImageRow\"8\n\tPythonDWT\x12\x0c\n\x04mode\x18\x01 \x01(\t\x12\x1d\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x0f.data.ImageData\"\x1c\n\x0bWaveletHaar\x12\r\n\x05level\x18\x01 \x01(\r\"7\n\x11WaveletDaubechies\x12\r\n\x05level\x18\x01 \x01(\r\x12\x13\n\x0b\x63oefficient\x18\x02 \x01(\r\"i\n\rWaveletConfig\x12!\n\x04haar\x18\x01 \x01(\x0b\x32\x11.data.WaveletHaarH\x00\x12-\n\ndaubechies\x18\x02 \x01(\x0b\x32\x17.data.WaveletDaubechiesH\x00\x42\x06\n\x04\x64\x61ta\"B\n\x12QuantifierDeadZone\x12\r\n\x05width\x18\x01 \x01(\r\x12\r\n\x05\x64\x65lta\x18\x02 \x01(\r\x12\x0e\n\x06offset\x18\x03 \x01(\x02\"$\n\x13QuantifierMidThread\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\r\"z\n\x10QuantifierConfig\x12-\n\tdead_zone\x18\x01 \x01(\x0b\x32\x18.data.QuantifierDeadZoneH\x00\x12/\n\nmid_thread\x18\x02 \x01(\x0b\x32\x19.data.QuantifierMidThreadH\x00\x42\x06\n\x04\x64\x61ta\"\x1e\n\x0e\x46ileImageLayer\x12\x0c\n\x04rows\x18\x01 \x03(\x0c\"\xbe\x01\n\x0f\x46ileImageHeader\x12\r\n\x05width\x18\x01 \x01(\r\x12\x0e\n\x06height\x18\x02 \x01(\r\x12\x12\n\nconversion\x18\x03 \x01(\x08\x12&\n\x0bsubsampling\x18\x04 \x01(\x0e\x32\x11.data.Subsampling\x12$\n\x07wavelet\x18\x05 \x01(\x0b\x32\x13.data.WaveletConfig\x12*\n\nquantifier\x18\x06 \x01(\x0b\x32\x16.data.QuantifierConfig\"r\n\rFileImageData\x12\x1f\n\x01y\x18\x01 \x01(\x0b\x32\x14.data.FileImageLayer\x12\x1f\n\x01u\x18\x02 \x01(\x0b\x32\x14.data.FileImageLayer\x12\x1f\n\x01v\x18\x03 \x01(\x0b\x32\x14.data.FileImageLayer\"U\n\tFileImage\x12%\n\x06header\x18\x01 \x01(\x0b\x32\x15.data.FileImageHeader\x12!\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x13.data.FileImageData*a\n\x0bSubsampling\x12\x13\n\x0fSUBSAMPLING_410\x10\x00\x12\x13\n\x0fSUBSAMPLING_420\x10\x01\x12\x13\n\x0fSUBSAMPLING_422\x10\x02\x12\x13\n\x0fSUBSAMPLING_444\x10\x03\x62\x06proto3')
 )
 
 _SUBSAMPLING = _descriptor.EnumDescriptor(
@@ -49,8 +49,8 @@ _SUBSAMPLING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=981,
-  serialized_end=1078,
+  serialized_start=1001,
+  serialized_end=1098,
 )
 _sym_db.RegisterEnumDescriptor(_SUBSAMPLING)
 
@@ -442,22 +442,29 @@ _FILEIMAGEHEADER = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='subsampling', full_name='data.FileImageHeader.subsampling', index=2,
-      number=3, type=14, cpp_type=8, label=1,
+      name='conversion', full_name='data.FileImageHeader.conversion', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='subsampling', full_name='data.FileImageHeader.subsampling', index=3,
+      number=4, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='wavelet', full_name='data.FileImageHeader.wavelet', index=3,
-      number=4, type=11, cpp_type=10, label=1,
+      name='wavelet', full_name='data.FileImageHeader.wavelet', index=4,
+      number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='quantifier', full_name='data.FileImageHeader.quantifier', index=4,
-      number=5, type=11, cpp_type=10, label=1,
+      name='quantifier', full_name='data.FileImageHeader.quantifier', index=5,
+      number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -475,7 +482,7 @@ _FILEIMAGEHEADER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=606,
-  serialized_end=776,
+  serialized_end=796,
 )
 
 
@@ -519,8 +526,8 @@ _FILEIMAGEDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=778,
-  serialized_end=892,
+  serialized_start=798,
+  serialized_end=912,
 )
 
 
@@ -557,8 +564,8 @@ _FILEIMAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=894,
-  serialized_end=979,
+  serialized_start=914,
+  serialized_end=999,
 )
 
 _IMAGEDATA.fields_by_name['rows'].message_type = _IMAGEROW

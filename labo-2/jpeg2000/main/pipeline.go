@@ -12,6 +12,7 @@ import (
 )
 
 type Pipeline struct {
+	conversion bool
 	subsampler subsampler.Subsampler
 	wavelet    wavelet.Wavelet
 	quantifier quantifier.Quantifier
@@ -22,6 +23,7 @@ func (p *Pipeline) GetProtobufHeader(w, h uint) *data.FileImageHeader {
 	return &data.FileImageHeader{
 		Width:       uint32(w),
 		Height:      uint32(h),
+		Conversion:  p.conversion,
 		Subsampling: p.subsampler.ToProtobuf(),
 		Wavelet:     p.wavelet.ToProtobuf(),
 		Quantifier:  p.quantifier.ToProtobuf(),
@@ -29,14 +31,22 @@ func (p *Pipeline) GetProtobufHeader(w, h uint) *data.FileImageHeader {
 }
 
 func (p *Pipeline) EncodeImage(input image.Image) ([]byte, error) {
-	r, g, b, w, h := data.GetLayers(input)
+	var err error
 
+	r, g, b, w, h := data.GetLayers(input)
 	rgb := data.Image{r, g, b}
-	yuv, err := rgb.RGBToYUV()
-	if err != nil {
-		return []byte{}, err
+
+	yuv := data.Image{}
+	if p.conversion {
+		yuv, err = rgb.RGBToYUV()
+		if err != nil {
+			return []byte{}, err
+		}
+	} else {
+		yuv = rgb
 	}
 	ys, us, vs := yuv[0], yuv[1], yuv[2]
+
 	y, u, v := p.subsampler.Subsample(ys, us, vs)
 
 	yw := p.wavelet.WaveletTransform(y)
@@ -67,6 +77,8 @@ func (p *Pipeline) EncodeImage(input image.Image) ([]byte, error) {
 func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 	var err error
 
+	p.conversion = d.Conversion
+
 	p.subsampler, err = subsampler.FromProtobuf(d.Subsampling)
 	if err != nil {
 		return err
@@ -88,12 +100,14 @@ func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 }
 
 func (p *Pipeline) DecodeImage(input []byte) (image.Image, error) {
+	var err error
+
 	encoded := &data.FileImage{}
-	if err := proto.Unmarshal(input, encoded); err != nil {
+	if err = proto.Unmarshal(input, encoded); err != nil {
 		return nil, err
 	}
 
-	if err := p.SetupFromProtobufHeader(encoded.Header); err != nil {
+	if err = p.SetupFromProtobufHeader(encoded.Header); err != nil {
 		return nil, err
 	}
 
@@ -115,9 +129,15 @@ func (p *Pipeline) DecodeImage(input []byte) (image.Image, error) {
 
 	ys, us, vs := p.subsampler.Supersample(y, u, v)
 	yuv := data.Image{ys, us, vs}
-	rgb, err := yuv.YUVToRGB()
-	if err != nil {
-		return nil, err
+
+	rgb := data.Image{}
+	if p.conversion {
+		rgb, err = yuv.YUVToRGB()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		rgb = yuv
 	}
 
 	return &rgb, nil
