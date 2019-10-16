@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"jpeg2000/compressor"
 	"jpeg2000/data"
 	"jpeg2000/wavelet"
 
@@ -12,7 +13,7 @@ type Pipeline struct {
 	subsampler Subsampler
 	wavelet    wavelet.Wavelet
 	quantifier Quantifier
-	compressor Compressor
+	compressor compressor.Compressor
 }
 
 func (p *Pipeline) GetProtobufHeader(w, h uint) *data.FileImageHeader {
@@ -79,7 +80,7 @@ func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 		return err
 	}
 
-	p.compressor = &LZWCompressor{}
+	p.compressor = &compressor.LZWCompressor{}
 
 	return nil
 }

@@ -1,4 +1,4 @@
-package main
+package compressor
 
 import (
 	"jpeg2000/data"

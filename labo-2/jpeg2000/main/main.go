@@ -10,6 +10,7 @@ import (
 	_ "image/png"
 
 	"io/ioutil"
+	"jpeg2000/compressor"
 	"jpeg2000/helper"
 	"jpeg2000/wavelet"
 	"os"
@@ -77,7 +78,7 @@ func execute() error {
 			subsampler: &Subsampler444{},
 			wavelet:    wavelet,
 			quantifier: quantifier,
-			compressor: &LZWCompressor{},
+			compressor: &compressor.LZWCompressor{},
 		}
 
 		encoded, err := pipeline.EncodeImage(inputImage)
