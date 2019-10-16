@@ -60,7 +60,8 @@ func execute() error {
 
 	err := parser.Parse(os.Args)
 	if err != nil {
-		return err
+		fmt.Print(parser.Usage(err))
+		os.Exit(1)
 	}
 
 	defer inputFile.Close()
