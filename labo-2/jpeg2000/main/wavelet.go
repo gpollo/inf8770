@@ -51,3 +51,26 @@ func WaveletFromCommandLine(arg string) (Wavelet, error) {
 		return nil, errors.New("Unrecognized wavelet type")
 	}
 }
+
+func WaveletFromProtobuf(d *data.WaveletConfig) (Wavelet, error) {
+	switch d.Data.(type) {
+	case *data.WaveletConfig_Haar:
+		haar := HaarWavelet{}
+		if err := haar.FromProtobuf(d); err != nil {
+			return nil, err
+		} else {
+			return &haar, nil
+		}
+	case *data.WaveletConfig_Daubechies:
+		daubechies := DaubechiesWavelet{}
+		if err := daubechies.FromProtobuf(d); err != nil {
+			return nil, err
+		} else {
+			return &daubechies, nil
+		}
+	case nil:
+		return nil, errors.New("Wavelet configuration not found in protobuf data")
+	default:
+		return nil, errors.New("Unexpected wavelet configuration in protobuf data")
+	}
+}

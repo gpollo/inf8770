@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"jpeg2000/data"
 	"math"
@@ -261,11 +262,13 @@ func (w *HaarWavelet) ToProtobuf() *data.WaveletConfig {
 	}
 }
 
-func (w *HaarWavelet) FromProtobuf(d data.WaveletConfig) {
+func (w *HaarWavelet) FromProtobuf(d *data.WaveletConfig) error {
 	c := d.GetHaar()
 	if c == nil {
-		panic("Could not deserialize haar wavelet from protobuf")
+		return errors.New("Could not deserialize haar wavelet from protobuf data")
 	}
 
 	w.level = c.Level
+
+	return nil
 }

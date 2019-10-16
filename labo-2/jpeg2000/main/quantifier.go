@@ -45,3 +45,19 @@ func QuantifierFromCommandLine(arg string) (Quantifier, error) {
 		return nil, errors.New("Unrecognized quantifier type")
 	}
 }
+
+func QuantifierFromProtobuf(d *data.QuantifierConfig) (Quantifier, error) {
+	switch d.Data.(type) {
+	case *data.QuantifierConfig_DeadZone:
+		deadzone := DeadZoneQuantifier{}
+		if err := deadzone.FromProtobuf(d); err != nil {
+			return nil, err
+		} else {
+			return &deadzone, nil
+		}
+	case nil:
+		return nil, errors.New("Quantifier configuration not found in protobuf data")
+	default:
+		return nil, errors.New("Unexpected quantifier configuration in protobuf data")
+	}
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"jpeg2000/data"
 )
@@ -44,17 +45,21 @@ func (w *DaubechiesWavelet) ToProtobuf() *data.WaveletConfig {
 	return &data.WaveletConfig{
 		Data: &data.WaveletConfig_Daubechies{
 			Daubechies: &data.WaveletDaubechies{
-				Level: w.level,
+				Level:       w.level,
+				Coefficient: w.coefficient,
 			},
 		},
 	}
 }
 
-func (w *DaubechiesWavelet) FromProtobuf(d data.WaveletConfig) {
+func (w *DaubechiesWavelet) FromProtobuf(d *data.WaveletConfig) error {
 	c := d.GetDaubechies()
 	if c == nil {
-		panic("Could not deserialize daubechies wavelet from protobuf")
+		return errors.New("Could not deserialize daubechies wavelet from protobuf data")
 	}
 
 	w.level = c.Level
+	w.coefficient = c.Coefficient
+
+	return nil
 }

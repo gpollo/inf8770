@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"jpeg2000/data"
 	"math"
@@ -88,13 +89,15 @@ func (q *DeadZoneQuantifier) ToProtobuf() *data.QuantifierConfig {
 	}
 }
 
-func (q *DeadZoneQuantifier) FromProtobuf(d data.QuantifierConfig) {
+func (q *DeadZoneQuantifier) FromProtobuf(d *data.QuantifierConfig) error {
 	c := d.GetDeadZone()
 	if c == nil {
-		panic("Could not deserialize dead zone quantifier from protobuf")
+		return errors.New("Could not deserialize dead zone quantifier from protobuf data")
 	}
 
 	q.width = c.Width
 	q.delta = c.Delta
 	q.offset = c.Offset
+
+	return nil
 }
