@@ -23,6 +23,7 @@ enum Subsampling {
     SUBSAMPLING_410 = 0;
     SUBSAMPLING_420 = 1;
     SUBSAMPLING_422 = 2;
+    SUBSAMPLING_444 = 3;
 }
 
 message WaveletHaar {

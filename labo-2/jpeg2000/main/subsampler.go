@@ -210,3 +210,33 @@ func (s *Subsampler422) Supersample(y, u, v ImageData) (ImageData, ImageData, Im
 func (s *Subsampler422) ToProtobuf() data.Subsampling {
 	return data.Subsampling_SUBSAMPLING_422
 }
+
+type Subsampler444 struct{}
+
+func (s *Subsampler444) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+	ySizeX, ySizeY := y1.GetDimensions()
+	uSizeX, uSizeY := u1.GetDimensions()
+	vSizeX, vSizeY := v1.GetDimensions()
+
+	if ySizeX != uSizeX || ySizeX != vSizeX {
+		panic("X dimensions aren't equal")
+	}
+
+	if ySizeY != uSizeY || ySizeY != vSizeY {
+		panic("Y dimensions aren't equal")
+	}
+
+	y2 := y1.Copy()
+	u2 := u1.Copy()
+	v2 := v1.Copy()
+
+	return y2, u2, v2
+}
+
+func (s *Subsampler444) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+	return y.Copy(), u.Copy(), v.Copy()
+}
+
+func (s *Subsampler444) ToProtobuf() data.Subsampling {
+	return data.Subsampling_SUBSAMPLING_444
+}
