@@ -14,7 +14,7 @@ func ReadAll(r io.Reader) ([]byte, error) {
 		buffer := make([]byte, 1024)
 
 		n, err := r.Read(buffer)
-		if err != nil {
+		if err != nil && err != io.EOF {
 			return []byte{}, err
 		}
 
@@ -28,23 +28,27 @@ func ReadAll(r io.Reader) ([]byte, error) {
 }
 
 func CallProcess(args []string, data []byte) ([]byte, error) {
-	inputR, inputW := io.Pipe()
-	outputR, outputW := io.Pipe()
-
 	command := exec.Command(args[0], args[1:]...)
-	command.Stdin = inputR
-	command.Stdout = outputW
 	command.Stderr = os.Stderr
 
-	if err := command.Start(); err != nil {
-		panic(err.Error())
-	}
-
-	_, err := inputW.Write(data)
+	inputW, err := command.StdinPipe()
 	if err != nil {
 		return []byte{}, err
 	}
-	inputR.Close()
+
+	outputR, err := command.StdoutPipe()
+	if err != nil {
+		return []byte{}, err
+	}
+
+	if err := command.Start(); err != nil {
+		return []byte{}, err
+	}
+
+	_, err = inputW.Write(data)
+	if err != nil {
+		return []byte{}, err
+	}
 	inputW.Close()
 
 	result, err := ReadAll(outputR)
@@ -52,7 +56,6 @@ func CallProcess(args []string, data []byte) ([]byte, error) {
 		return []byte{}, err
 	}
 	outputR.Close()
-	outputW.Close()
 
 	command.Wait()
 	return result, nil
