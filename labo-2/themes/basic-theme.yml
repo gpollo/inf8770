@@ -1,0 +1,4 @@
+extends: default
+
+caption:
+  align: center
