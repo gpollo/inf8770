@@ -244,6 +244,21 @@ func (s *Subsampler444) ToProtobuf() data.Subsampling {
 	return data.Subsampling_SUBSAMPLING_444
 }
 
+func FromCommandLine(arg string) (Subsampler, error) {
+	switch arg {
+	case "410":
+		return &Subsampler410{}, nil
+	case "420":
+		return &Subsampler420{}, nil
+	case "422":
+		return &Subsampler422{}, nil
+	case "444":
+		return &Subsampler444{}, nil
+	default:
+		return nil, errors.New("Unrecognized subsampling format")
+	}
+}
+
 func FromProtobuf(d data.Subsampling) (Subsampler, error) {
 	switch d {
 	case data.Subsampling_SUBSAMPLING_410:

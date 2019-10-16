@@ -39,16 +39,22 @@ func execute() error {
 	cmdEncode := parser.NewCommand("encode", "Encode to JPEG2000")
 	cmdDecode := parser.NewCommand("decode", "Decode from JPEG2000")
 
+	subsamplerConfig := cmdEncode.String("s", "subsampling",
+		&argparse.Options{
+			Required: false,
+			Help:     "The subsampling format",
+			Default:  "420",
+		})
 	waveletConfig := cmdEncode.String("w", "wavelet",
 		&argparse.Options{
 			Required: false,
-			Help:     "The wavelet to use",
+			Help:     "The wavelet configuration",
 			Default:  "haar:2",
 		})
 	quantifierConfig := cmdEncode.String("q", "quantifier",
 		&argparse.Options{
 			Required: false,
-			Help:     "The quantifier to use",
+			Help:     "The quantifier configuration",
 			Default:  "deadzone:5:2:0.0",
 		})
 
@@ -66,6 +72,11 @@ func execute() error {
 			return err
 		}
 
+		subsampler, err := subsampler.FromCommandLine(*subsamplerConfig)
+		if err != nil {
+			return err
+		}
+
 		wavelet, err := wavelet.FromCommandLine(*waveletConfig)
 		if err != nil {
 			return err
@@ -77,7 +88,7 @@ func execute() error {
 		}
 
 		pipeline := Pipeline{
-			subsampler: &subsampler.Subsampler444{},
+			subsampler: subsampler,
 			wavelet:    wavelet,
 			quantifier: quantifier,
 			compressor: &compressor.LZWCompressor{},
