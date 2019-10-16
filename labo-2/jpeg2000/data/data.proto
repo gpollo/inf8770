@@ -48,9 +48,14 @@ message QuantifierDeadZone {
     float offset = 3;
 }
 
+message QuantifierMidThread {
+    uint32 delta = 1;
+}
+
 message QuantifierConfig {
     oneof data {
-        QuantifierDeadZone dead_zone = 2;
+        QuantifierDeadZone dead_zone = 1;
+        QuantifierMidThread mid_thread = 2;
     }
 }
 

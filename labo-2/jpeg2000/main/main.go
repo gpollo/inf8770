@@ -49,7 +49,7 @@ func execute() error {
 		&argparse.Options{
 			Required: false,
 			Help:     "The wavelet configuration",
-			Default:  "haar:2",
+			Default:  "haar:8",
 		})
 	quantifierConfig := cmdEncode.String("q", "quantifier",
 		&argparse.Options{
