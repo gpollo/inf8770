@@ -1,4 +1,4 @@
-package main
+package wavelet
 
 import (
 	"jpeg2000/data"

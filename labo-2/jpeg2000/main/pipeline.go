@@ -3,13 +3,14 @@ package main
 import (
 	"image"
 	"jpeg2000/data"
+	"jpeg2000/wavelet"
 
 	proto "github.com/golang/protobuf/proto"
 )
 
 type Pipeline struct {
 	subsampler Subsampler
-	wavelet    Wavelet
+	wavelet    wavelet.Wavelet
 	quantifier Quantifier
 	compressor Compressor
 }
@@ -68,7 +69,7 @@ func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 		return err
 	}
 
-	p.wavelet, err = WaveletFromProtobuf(d.Wavelet)
+	p.wavelet, err = wavelet.WaveletFromProtobuf(d.Wavelet)
 	if err != nil {
 		return err
 	}

@@ -11,6 +11,7 @@ import (
 
 	"io/ioutil"
 	"jpeg2000/helper"
+	"jpeg2000/wavelet"
 	"os"
 
 	"github.com/akamensky/argparse"
@@ -62,7 +63,7 @@ func execute() error {
 			return err
 		}
 
-		wavelet, err := WaveletFromCommandLine(*waveletConfig)
+		wavelet, err := wavelet.WaveletFromCommandLine(*waveletConfig)
 		if err != nil {
 			return err
 		}
