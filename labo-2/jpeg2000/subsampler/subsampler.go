@@ -1,4 +1,4 @@
-package main
+package subsampler
 
 import (
 	"errors"
@@ -244,7 +244,7 @@ func (s *Subsampler444) ToProtobuf() data.Subsampling {
 	return data.Subsampling_SUBSAMPLING_444
 }
 
-func SubsamplerFromProtobuf(d data.Subsampling) (Subsampler, error) {
+func FromProtobuf(d data.Subsampling) (Subsampler, error) {
 	switch d {
 	case data.Subsampling_SUBSAMPLING_410:
 		return &Subsampler410{}, nil

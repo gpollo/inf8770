@@ -1,4 +1,4 @@
-package main
+package subsampler
 
 import (
 	"jpeg2000/data"

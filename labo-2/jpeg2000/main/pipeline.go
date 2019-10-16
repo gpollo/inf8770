@@ -5,13 +5,14 @@ import (
 	"jpeg2000/compressor"
 	"jpeg2000/data"
 	"jpeg2000/quantifier"
+	"jpeg2000/subsampler"
 	"jpeg2000/wavelet"
 
 	proto "github.com/golang/protobuf/proto"
 )
 
 type Pipeline struct {
-	subsampler Subsampler
+	subsampler subsampler.Subsampler
 	wavelet    wavelet.Wavelet
 	quantifier quantifier.Quantifier
 	compressor compressor.Compressor
@@ -66,7 +67,7 @@ func (p *Pipeline) EncodeImage(input image.Image) ([]byte, error) {
 func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 	var err error
 
-	p.subsampler, err = SubsamplerFromProtobuf(d.Subsampling)
+	p.subsampler, err = subsampler.FromProtobuf(d.Subsampling)
 	if err != nil {
 		return err
 	}

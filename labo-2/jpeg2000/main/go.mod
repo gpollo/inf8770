@@ -8,6 +8,7 @@ require (
 	jpeg2000/data v0.0.0
 	jpeg2000/helper v0.0.0
 	jpeg2000/quantifier v0.0.0
+	jpeg2000/subsampler v0.0.0
 	jpeg2000/wavelet v0.0.0
 )
 
@@ -18,6 +19,8 @@ replace jpeg2000/data => ../data
 replace jpeg2000/helper => ../helper
 
 replace jpeg2000/quantifier => ../quantifier
+
+replace jpeg2000/subsampler => ../subsampler
 
 replace jpeg2000/wavelet => ../wavelet
 
