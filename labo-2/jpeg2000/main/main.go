@@ -9,6 +9,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
+	"io/ioutil"
 	"os"
 
 	"github.com/akamensky/argparse"
@@ -31,7 +32,7 @@ func main() {
 		})
 
 	cmdEncode := parser.NewCommand("encode", "Encode to JPEG2000")
-	cmdDecode := parser.NewCommand("encode", "Decode from JPEG2000")
+	cmdDecode := parser.NewCommand("decode", "Decode from JPEG2000")
 
 	waveletConfig := cmdEncode.String("w", "wavelet",
 		&argparse.Options{
@@ -55,13 +56,13 @@ func main() {
 	defer inputFile.Close()
 	defer outputFile.Close()
 
-	inputImage, _, err := image.Decode(inputFile)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, parser.Usage(err))
-		os.Exit(1)
-	}
-
 	if cmdEncode.Happened() {
+		inputImage, _, err := image.Decode(inputFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, parser.Usage(err))
+			os.Exit(1)
+		}
+
 		wavelet, err := WaveletFromCommandLine(*waveletConfig)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, parser.Usage(err))
@@ -75,7 +76,7 @@ func main() {
 		}
 
 		pipeline := Pipeline{
-			subsampler: &Subsampler420{},
+			subsampler: &Subsampler444{},
 			wavelet:    wavelet,
 			quantifier: quantifier,
 			compressor: &LZWCompressor{},
@@ -95,9 +96,23 @@ func main() {
 	}
 
 	if cmdDecode.Happened() {
-		//if err = DecodeImage(inputImage, outputFile); err != nil {
-		//	fmt.Fprintf(os.Stderr, parser.Usage(err))
-		//	os.Exit(1)
-		//}
+		inputImage, err := ioutil.ReadAll(inputFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, parser.Usage(err))
+			os.Exit(1)
+		}
+
+		pipeline := Pipeline{}
+		decoded, err := pipeline.DecodeImage(inputImage)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, parser.Usage(err))
+			os.Exit(1)
+		}
+
+		err = SaveImage(decoded, outputFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, parser.Usage(err))
+			os.Exit(1)
+		}
 	}
 }
