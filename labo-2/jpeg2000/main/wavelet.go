@@ -8,8 +8,8 @@ import (
 )
 
 type Wavelet interface {
-	WaveletTransform(d ImageData) ImageData
-	WaveletInverse(d ImageData) ImageData
+	WaveletTransform(l data.Layer) data.Layer
+	WaveletInverse(l data.Layer) data.Layer
 	ToProtobuf() *data.WaveletConfig
 }
 

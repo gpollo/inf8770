@@ -8,8 +8,8 @@ import (
 )
 
 type Quantifier interface {
-	QuantifierTransform(d ImageData) ImageData
-	QuantifierInverse(d ImageData) ImageData
+	QuantifierTransform(l data.Layer) data.Layer
+	QuantifierInverse(l data.Layer) data.Layer
 	ToProtobuf() *data.QuantifierConfig
 }
 

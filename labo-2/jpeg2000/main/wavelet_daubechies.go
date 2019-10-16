@@ -31,14 +31,14 @@ func (w *DaubechiesWavelet) SetLevel(level uint32) {
 	w.level = level
 }
 
-func (w *DaubechiesWavelet) WaveletTransform(d ImageData) ImageData {
+func (w *DaubechiesWavelet) WaveletTransform(l data.Layer) data.Layer {
 	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.coefficient)}
-	return pyWavelet.WaveletTransform(d)
+	return pyWavelet.WaveletTransform(l)
 }
 
-func (w *DaubechiesWavelet) WaveletInverse(d ImageData) ImageData {
+func (w *DaubechiesWavelet) WaveletInverse(l data.Layer) data.Layer {
 	pyWavelet := PyWavelet{mode: fmt.Sprintf("db%d", w.coefficient)}
-	return pyWavelet.WaveletInverse(d)
+	return pyWavelet.WaveletInverse(l)
 }
 
 func (w *DaubechiesWavelet) ToProtobuf() *data.WaveletConfig {

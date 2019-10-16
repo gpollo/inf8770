@@ -19,59 +19,59 @@ func NewHaarWavelet(level int64) (*HaarWavelet, error) {
 	return &HaarWavelet{level: uint32(level)}, nil
 }
 
-func (w *HaarWavelet) GetXLowPassFilter(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX/2, sizeY)
+func (w *HaarWavelet) GetXLowPassFilter(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX/2, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			data[j][i] = (d[j][2*i+0] + d[j][2*i+1]) / 2
+			data[j][i] = (l[j][2*i+0] + l[j][2*i+1]) / 2
 		}
 	}
 
 	return data
 }
 
-func (w *HaarWavelet) GetYLowPassFilter(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX, sizeY/2)
+func (w *HaarWavelet) GetYLowPassFilter(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX, sizeY/2)
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][i] = (d[2*j+0][i] + d[2*j+1][i]) / 2
+			data[j][i] = (l[2*j+0][i] + l[2*j+1][i]) / 2
 		}
 	}
 
 	return data
 }
 
-func (w *HaarWavelet) GetXHighPassFilter(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX/2, sizeY)
+func (w *HaarWavelet) GetXHighPassFilter(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX/2, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX/2; i++ {
-			data[j][i] = (d[j][2*i+0] - d[j][2*i+1]) / 2
+			data[j][i] = (l[j][2*i+0] - l[j][2*i+1]) / 2
 		}
 	}
 
 	return data
 }
 
-func (w *HaarWavelet) GetYHighPassFilter(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX, sizeY/2)
+func (w *HaarWavelet) GetYHighPassFilter(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX, sizeY/2)
 
 	for j := 0; j < sizeY/2; j++ {
 		for i := 0; i < sizeX; i++ {
-			data[j][i] = (d[2*j+0][i] - d[2*j+1][i]) / 2
+			data[j][i] = (l[2*j+0][i] - l[2*j+1][i]) / 2
 		}
 	}
 
 	return data
 }
 
-func (w *HaarWavelet) ScaleX(f1, f2 ImageData) ImageData {
+func (w *HaarWavelet) ScaleX(f1, f2 data.Layer) data.Layer {
 	sizeX1, sizeY1 := f1.GetDimensions()
 	sizeX2, sizeY2 := f2.GetDimensions()
 
@@ -81,7 +81,7 @@ func (w *HaarWavelet) ScaleX(f1, f2 ImageData) ImageData {
 
 	sizeX := sizeX1
 	sizeY := sizeY1
-	data := NewImageData(2*sizeX, sizeY)
+	data := data.NewLayer(2*sizeX, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -93,7 +93,7 @@ func (w *HaarWavelet) ScaleX(f1, f2 ImageData) ImageData {
 	return data
 }
 
-func (w *HaarWavelet) ScaleY(f1, f2 ImageData) ImageData {
+func (w *HaarWavelet) ScaleY(f1, f2 data.Layer) data.Layer {
 	sizeX1, sizeY1 := f1.GetDimensions()
 	sizeX2, sizeY2 := f2.GetDimensions()
 
@@ -103,7 +103,7 @@ func (w *HaarWavelet) ScaleY(f1, f2 ImageData) ImageData {
 
 	sizeX := sizeX1
 	sizeY := sizeY1
-	data := NewImageData(sizeX, 2*sizeY)
+	data := data.NewLayer(sizeX, 2*sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -115,7 +115,7 @@ func (w *HaarWavelet) ScaleY(f1, f2 ImageData) ImageData {
 	return data
 }
 
-func (w *HaarWavelet) CopyIntoQuadrant(from, into ImageData, quadrant int) {
+func (w *HaarWavelet) CopyIntoQuadrant(from, into data.Layer, quadrant int) {
 	sizeFromX, sizeFromY := from.GetDimensions()
 	sizeIntoX, sizeIntoY := into.GetDimensions()
 
@@ -153,7 +153,7 @@ func (w *HaarWavelet) CopyIntoQuadrant(from, into ImageData, quadrant int) {
 	}
 }
 
-func (w *HaarWavelet) CopyFromQuadrant(from, into ImageData, quadrant int) {
+func (w *HaarWavelet) CopyFromQuadrant(from, into data.Layer, quadrant int) {
 	sizeFromX, sizeFromY := from.GetDimensions()
 	sizeIntoX, sizeIntoY := into.GetDimensions()
 
@@ -191,9 +191,9 @@ func (w *HaarWavelet) CopyFromQuadrant(from, into ImageData, quadrant int) {
 	}
 }
 
-func (w *HaarWavelet) WaveletTransform(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX, sizeY)
+func (w *HaarWavelet) WaveletTransform(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX, sizeY)
 
 	level := int(w.level)
 	if level == 0 {
@@ -201,25 +201,25 @@ func (w *HaarWavelet) WaveletTransform(d ImageData) ImageData {
 	}
 
 	for i := 0; i < level; i++ {
-		fll := w.GetYLowPassFilter(w.GetXLowPassFilter(d))
-		flh := w.GetYHighPassFilter(w.GetXLowPassFilter(d))
-		fhl := w.GetYLowPassFilter(w.GetXHighPassFilter(d))
-		fhh := w.GetYHighPassFilter(w.GetXHighPassFilter(d))
+		fll := w.GetYLowPassFilter(w.GetXLowPassFilter(l))
+		flh := w.GetYHighPassFilter(w.GetXLowPassFilter(l))
+		fhl := w.GetYLowPassFilter(w.GetXHighPassFilter(l))
+		fhh := w.GetYHighPassFilter(w.GetXHighPassFilter(l))
 
 		w.CopyIntoQuadrant(flh, data, 1)
 		w.CopyIntoQuadrant(fll, data, 2)
 		w.CopyIntoQuadrant(fhl, data, 3)
 		w.CopyIntoQuadrant(fhh, data, 4)
 
-		d = fll
+		l = fll
 	}
 
 	return data
 }
 
-func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
-	data := d.Copy()
-	sizeX, sizeY := data.GetDimensions()
+func (w *HaarWavelet) WaveletInverse(l data.Layer) data.Layer {
+	copy := l.Copy()
+	sizeX, sizeY := copy.GetDimensions()
 
 	level := int(w.level)
 	if level == 0 {
@@ -228,28 +228,28 @@ func (w *HaarWavelet) WaveletInverse(d ImageData) ImageData {
 
 	for i := level; i > 0; i-- {
 		factor := int(math.Pow(2.0, float64(i)))
-		fll := NewImageData(sizeX/factor, sizeY/factor)
-		flh := NewImageData(sizeX/factor, sizeY/factor)
-		fhl := NewImageData(sizeX/factor, sizeY/factor)
-		fhh := NewImageData(sizeX/factor, sizeY/factor)
+		fll := data.NewLayer(sizeX/factor, sizeY/factor)
+		flh := data.NewLayer(sizeX/factor, sizeY/factor)
+		fhl := data.NewLayer(sizeX/factor, sizeY/factor)
+		fhh := data.NewLayer(sizeX/factor, sizeY/factor)
 
-		w.CopyFromQuadrant(data, flh, 1)
-		w.CopyFromQuadrant(data, fll, 2)
-		w.CopyFromQuadrant(data, fhl, 3)
-		w.CopyFromQuadrant(data, fhh, 4)
+		w.CopyFromQuadrant(copy, flh, 1)
+		w.CopyFromQuadrant(copy, fll, 2)
+		w.CopyFromQuadrant(copy, fhl, 3)
+		w.CopyFromQuadrant(copy, fhh, 4)
 
 		fl := w.ScaleY(fll, flh)
 		fh := w.ScaleY(fhl, fhh)
 		f := w.ScaleX(fl, fh)
 
 		if i == 1 {
-			data = f
+			copy = f
 		} else {
-			w.CopyIntoQuadrant(f, data, 2)
+			w.CopyIntoQuadrant(f, copy, 2)
 		}
 	}
 
-	return data
+	return copy
 }
 
 func (w *HaarWavelet) ToProtobuf() *data.WaveletConfig {

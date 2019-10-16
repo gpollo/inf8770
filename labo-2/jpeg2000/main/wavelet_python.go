@@ -10,8 +10,8 @@ type PyWavelet struct {
 	mode string
 }
 
-func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
-	image := d.ToProtobuf()
+func (w *PyWavelet) WaveletTransform(l data.Layer) data.Layer {
+	image := l.ToProtobuf()
 	dwt := data.PythonDWT{Mode: w.mode, Data: &image}
 	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
@@ -30,15 +30,15 @@ func (w *PyWavelet) WaveletTransform(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	decoded := ImageData{}
+	decoded := data.Layer{}
 	decoded.FromProtobuf(wavelet)
 	decoded.Times(0.5)
 
 	return decoded
 }
 
-func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
-	image := d.ToProtobuf()
+func (w *PyWavelet) WaveletInverse(l data.Layer) data.Layer {
+	image := l.ToProtobuf()
 	dwt := data.PythonDWT{Mode: w.mode, Data: &image}
 	pdata, err := proto.Marshal(&dwt)
 	if err != nil {
@@ -57,7 +57,7 @@ func (w *PyWavelet) WaveletInverse(d ImageData) ImageData {
 		panic(err.Error())
 	}
 
-	decoded := ImageData{}
+	decoded := data.Layer{}
 	decoded.FromProtobuf(wavelet)
 	decoded.Times(2.0)
 

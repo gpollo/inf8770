@@ -29,20 +29,20 @@ func NewDeadZoneQuantifier(width, delta int64, offset float64) (*DeadZoneQuantif
 	}, nil
 }
 
-func (q *DeadZoneQuantifier) QuantifierTransform(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX, sizeY)
+func (q *DeadZoneQuantifier) QuantifierTransform(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
 			var sign float64
-			if d[j][i] < 0 {
+			if l[j][i] < 0 {
 				sign = -1.0
 			} else {
 				sign = 1.0
 			}
 
-			value := math.Abs(float64(d[j][i]))
+			value := math.Abs(float64(l[j][i]))
 			width := float64(q.width)
 			delta := float64(q.delta)
 
@@ -53,20 +53,20 @@ func (q *DeadZoneQuantifier) QuantifierTransform(d ImageData) ImageData {
 	return data
 }
 
-func (q *DeadZoneQuantifier) QuantifierInverse(d ImageData) ImageData {
-	sizeX, sizeY := d.GetDimensions()
-	data := NewImageData(sizeX, sizeY)
+func (q *DeadZoneQuantifier) QuantifierInverse(l data.Layer) data.Layer {
+	sizeX, sizeY := l.GetDimensions()
+	data := data.NewLayer(sizeX, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
 			var sign float32
-			if d[j][i] < 0 {
+			if l[j][i] < 0 {
 				sign = -1.0
 			} else {
 				sign = 1.0
 			}
 
-			value := float32(math.Abs(float64(d[j][i])))
+			value := float32(math.Abs(float64(l[j][i])))
 			width := float32(q.width)
 			delta := float32(q.delta)
 

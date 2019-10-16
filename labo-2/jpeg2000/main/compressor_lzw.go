@@ -15,7 +15,7 @@ func NewLZWCompressor() *LZWCompressor {
 	return &LZWCompressor{}
 }
 
-func (c *LZWCompressor) CompressLayer(d ImageData) *data.FileImageLayer {
+func (c *LZWCompressor) CompressLayer(d data.Layer) *data.FileImageLayer {
 	sizeX, sizeY := d.GetDimensions()
 
 	encodedImage := data.FileImageLayer{Rows: make([][]byte, sizeY)}
@@ -36,7 +36,7 @@ func (c *LZWCompressor) CompressLayer(d ImageData) *data.FileImageLayer {
 	return &encodedImage
 }
 
-func (c *LZWCompressor) DecompressLayer(d *data.FileImageLayer) ImageData {
+func (c *LZWCompressor) DecompressLayer(d *data.FileImageLayer) data.Layer {
 	sizeY := len(d.Rows)
 
 	image := make([][]float32, sizeY)

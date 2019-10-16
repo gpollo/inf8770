@@ -6,12 +6,12 @@ import (
 )
 
 type Subsampler interface {
-	Subsample(y, u, v ImageData) (ImageData, ImageData, ImageData)
-	Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData)
+	Subsample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer)
+	Supersample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer)
 	ToProtobuf() data.Subsampling
 }
 
-func ScaleLayers(y1, u1, v1 ImageData, xScale, yScale int) (ImageData, ImageData, ImageData) {
+func ScaleLayers(y1, u1, v1 data.Layer, xScale, yScale int) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y1.GetDimensions()
 	uSizeX, uSizeY := u1.GetDimensions()
 	vSizeX, vSizeY := v1.GetDimensions()
@@ -41,7 +41,7 @@ func ScaleLayers(y1, u1, v1 ImageData, xScale, yScale int) (ImageData, ImageData
 
 type Subsampler410 struct{}
 
-func (s *Subsampler410) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler410) Subsample(y1, u1, v1 data.Layer) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y1.GetDimensions()
 	uSizeX, uSizeY := u1.GetDimensions()
 	vSizeX, vSizeY := v1.GetDimensions()
@@ -57,9 +57,9 @@ func (s *Subsampler410) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	sizeX := ySizeX
 	sizeY := ySizeY
 
-	y2 := NewImageData(sizeX, sizeY)
-	u2 := NewImageData(sizeX/4, sizeY/2)
-	v2 := NewImageData(sizeX/4, sizeY/2)
+	y2 := data.NewLayer(sizeX, sizeY)
+	u2 := data.NewLayer(sizeX/4, sizeY/2)
+	v2 := data.NewLayer(sizeX/4, sizeY/2)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -96,7 +96,7 @@ func (s *Subsampler410) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
-func (s *Subsampler410) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler410) Supersample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer) {
 	return ScaleLayers(y, u, v, 4, 2)
 }
 
@@ -106,7 +106,7 @@ func (s *Subsampler410) ToProtobuf() data.Subsampling {
 
 type Subsampler420 struct{}
 
-func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler420) Subsample(y1, u1, v1 data.Layer) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y1.GetDimensions()
 	uSizeX, uSizeY := u1.GetDimensions()
 	vSizeX, vSizeY := v1.GetDimensions()
@@ -122,9 +122,9 @@ func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	sizeX := ySizeX
 	sizeY := ySizeY
 
-	y2 := NewImageData(sizeX, sizeY)
-	u2 := NewImageData(sizeX/2, sizeY/2)
-	v2 := NewImageData(sizeX/2, sizeY/2)
+	y2 := data.NewLayer(sizeX, sizeY)
+	u2 := data.NewLayer(sizeX/2, sizeY/2)
+	v2 := data.NewLayer(sizeX/2, sizeY/2)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -153,7 +153,7 @@ func (s *Subsampler420) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
-func (s *Subsampler420) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler420) Supersample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer) {
 	return ScaleLayers(y, u, v, 2, 2)
 }
 
@@ -163,7 +163,7 @@ func (s *Subsampler420) ToProtobuf() data.Subsampling {
 
 type Subsampler422 struct{}
 
-func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler422) Subsample(y1, u1, v1 data.Layer) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y1.GetDimensions()
 	uSizeX, uSizeY := u1.GetDimensions()
 	vSizeX, vSizeY := v1.GetDimensions()
@@ -179,9 +179,9 @@ func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	sizeX := ySizeX
 	sizeY := ySizeY
 
-	y2 := NewImageData(sizeX, sizeY)
-	u2 := NewImageData(sizeX/2, sizeY)
-	v2 := NewImageData(sizeX/2, sizeY)
+	y2 := data.NewLayer(sizeX, sizeY)
+	u2 := data.NewLayer(sizeX/2, sizeY)
+	v2 := data.NewLayer(sizeX/2, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -206,7 +206,7 @@ func (s *Subsampler422) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
-func (s *Subsampler422) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler422) Supersample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer) {
 	return ScaleLayers(y, u, v, 2, 1)
 }
 
@@ -216,7 +216,7 @@ func (s *Subsampler422) ToProtobuf() data.Subsampling {
 
 type Subsampler444 struct{}
 
-func (s *Subsampler444) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler444) Subsample(y1, u1, v1 data.Layer) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y1.GetDimensions()
 	uSizeX, uSizeY := u1.GetDimensions()
 	vSizeX, vSizeY := v1.GetDimensions()
@@ -236,7 +236,7 @@ func (s *Subsampler444) Subsample(y1, u1, v1 ImageData) (ImageData, ImageData, I
 	return y2, u2, v2
 }
 
-func (s *Subsampler444) Supersample(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+func (s *Subsampler444) Supersample(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer) {
 	return y.Copy(), u.Copy(), v.Copy()
 }
 

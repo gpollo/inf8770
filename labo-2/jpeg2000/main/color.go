@@ -1,6 +1,8 @@
 package main
 
-func ConvertRGBToYUV(r, g, b ImageData) (ImageData, ImageData, ImageData) {
+import "jpeg2000/data"
+
+func ConvertRGBToYUV(r, g, b data.Layer) (data.Layer, data.Layer, data.Layer) {
 	rSizeX, rSizeY := r.GetDimensions()
 	gSizeX, gSizeY := g.GetDimensions()
 	bSizeX, bSizeY := b.GetDimensions()
@@ -16,9 +18,9 @@ func ConvertRGBToYUV(r, g, b ImageData) (ImageData, ImageData, ImageData) {
 	sizeX := rSizeX
 	sizeY := rSizeY
 
-	y := NewImageData(sizeX, sizeY)
-	u := NewImageData(sizeX, sizeY)
-	v := NewImageData(sizeX, sizeY)
+	y := data.NewLayer(sizeX, sizeY)
+	u := data.NewLayer(sizeX, sizeY)
+	v := data.NewLayer(sizeX, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
@@ -31,7 +33,7 @@ func ConvertRGBToYUV(r, g, b ImageData) (ImageData, ImageData, ImageData) {
 	return y, u, v
 }
 
-func ConvertYUVToRGB(y, u, v ImageData) (ImageData, ImageData, ImageData) {
+func ConvertYUVToRGB(y, u, v data.Layer) (data.Layer, data.Layer, data.Layer) {
 	ySizeX, ySizeY := y.GetDimensions()
 	uSizeX, uSizeY := u.GetDimensions()
 	vSizeX, vSizeY := v.GetDimensions()
@@ -47,9 +49,9 @@ func ConvertYUVToRGB(y, u, v ImageData) (ImageData, ImageData, ImageData) {
 	sizeX := ySizeX
 	sizeY := ySizeY
 
-	r := NewImageData(sizeX, sizeY)
-	g := NewImageData(sizeX, sizeY)
-	b := NewImageData(sizeX, sizeY)
+	r := data.NewLayer(sizeX, sizeY)
+	g := data.NewLayer(sizeX, sizeY)
+	b := data.NewLayer(sizeX, sizeY)
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
