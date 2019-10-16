@@ -60,7 +60,7 @@ func execute() error {
 		&argparse.Options{
 			Required: false,
 			Help:     "The quantifier configuration",
-			Default:  "deadzone:5:2:0.0",
+			Default:  "deadzone:32:64:0.0",
 		})
 
 	err := parser.Parse(os.Args)
