@@ -363,6 +363,7 @@ table/stats-midthread-delta.asc: $(ENCODED)/midthread-delta-1.data \
 ############
 
 rapport.pdf: README.asc \
+             themes/basic-theme.yml \
              table/stats-subsampling.asc \
              table/stats-haar-recursion.asc \
              table/stats-deadzone-width.asc \
