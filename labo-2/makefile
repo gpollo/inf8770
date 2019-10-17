@@ -304,8 +304,9 @@ midthread-delta-tests: $(DECODED)/midthread-delta-1.png \
 
 table/stats-subsampling.asc: export TABLE_TITLE=Comparaison de différentes méthodes de sous-échantillonnage
 table/stats-subsampling.asc: export ADDITIONAL_COLUMNS=colorspace
-table/stats-subsampling.asc: scripts/compress-stats.sh
-table/stats-subsampling.asc: $(ENCODED)/yuv410.data \
+table/stats-subsampling.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude1.bmp
+table/stats-subsampling.asc: scripts/compress-stats.sh \
+                             $(ENCODED)/yuv410.data \
                              $(ENCODED)/yuv420.data \
                              $(ENCODED)/yuv422.data \
                              $(ENCODED)/yuv444.data \
@@ -313,50 +314,54 @@ table/stats-subsampling.asc: $(ENCODED)/yuv410.data \
                              $(ENCODED)/rgb420.data \
                              $(ENCODED)/rgb444.data \
                              $(ENCODED)/rgb422.data
-	scripts/compress-stats.sh $(ORIGINAL)/claude1.bmp $^ > $@
+	scripts/compress-stats.sh $^ > $@
 
 table/stats-haar-recursion.asc: export TABLE_TITLE=Comparaison de différentes récursions pour les ondelettes de Haar
 table/stats-haar-recursion.asc: export ADDITIONAL_COLUMNS=haar_recursion
-table/stats-haar-recursion.asc: scripts/compress-stats.sh
-table/stats-haar-recursion.asc: $(ENCODED)/haar-1.data \
+table/stats-haar-recursion.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude3.bmp
+table/stats-haar-recursion.asc: scripts/compress-stats.sh \
+                                $(ENCODED)/haar-1.data \
                                 $(ENCODED)/haar-2.data \
                                 $(ENCODED)/haar-4.data \
                                 $(ENCODED)/haar-8.data \
                                 $(ENCODED)/haar-10.data
-	scripts/compress-stats.sh $(ORIGINAL)/claude3.bmp $^ > $@
+	scripts/compress-stats.sh $^ > $@
 
 table/stats-deadzone-width.asc: export TABLE_TITLE=Comparaison de différentes largeurs de zone morte
 table/stats-deadzone-width.asc: export ADDITIONAL_COLUMNS=deadzone_width
-table/stats-deadzone-width.asc: scripts/compress-stats.sh
-table/stats-deadzone-width.asc: $(ENCODED)/deadzone-width-1.data \
+table/stats-deadzone-width.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude2.bmp
+table/stats-deadzone-width.asc: scripts/compress-stats.sh \
+                                $(ENCODED)/deadzone-width-1.data \
                                 $(ENCODED)/deadzone-width-64.data \
                                 $(ENCODED)/deadzone-width-128.data \
                                 $(ENCODED)/deadzone-width-256.data \
                                 $(ENCODED)/deadzone-width-512.data \
                                 $(ENCODED)/deadzone-width-1024.data
-	scripts/compress-stats.sh $(ORIGINAL)/claude2.bmp $^ > $@
+	scripts/compress-stats.sh $^ > $@
 
 table/stats-deadzone-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à zone morte
 table/stats-deadzone-delta.asc: export ADDITIONAL_COLUMNS=deadzone_delta
-table/stats-deadzone-delta.asc: scripts/compress-stats.sh
-table/stats-deadzone-delta.asc: $(ENCODED)/deadzone-delta-1.data \
+table/stats-deadzone-delta.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude2.bmp
+table/stats-deadzone-delta.asc: scripts/compress-stats.sh \
+                                $(ENCODED)/deadzone-delta-1.data \
                                 $(ENCODED)/deadzone-delta-64.data \
                                 $(ENCODED)/deadzone-delta-128.data \
                                 $(ENCODED)/deadzone-delta-256.data \
                                 $(ENCODED)/deadzone-delta-512.data \
                                 $(ENCODED)/deadzone-delta-1024.data
-	scripts/compress-stats.sh $(ORIGINAL)/claude2.bmp $^ > $@
+	scripts/compress-stats.sh $^ > $@
 
 table/stats-midthread-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à moyenne
 table/stats-midthread-delta.asc: export ADDITIONAL_COLUMNS=midthread_delta
-table/stats-midthread-delta.asc: scripts/compress-stats.sh
-table/stats-midthread-delta.asc: $(ENCODED)/midthread-delta-1.data \
+table/stats-midthread-delta.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude2.bmp
+table/stats-midthread-delta.asc: scripts/compress-stats.sh \
+                                 $(ENCODED)/midthread-delta-1.data \
                                  $(ENCODED)/midthread-delta-64.data \
                                  $(ENCODED)/midthread-delta-128.data \
                                  $(ENCODED)/midthread-delta-256.data \
                                  $(ENCODED)/midthread-delta-512.data \
                                  $(ENCODED)/midthread-delta-1024.data
-	scripts/compress-stats.sh $(ORIGINAL)/claude2.bmp $^ > $@
+	scripts/compress-stats.sh $^ > $@
 
 ############
 # document #

@@ -159,6 +159,11 @@ function output_footer() {
     echo "|==="
 }
 
+if [[ -z ${ORIGINAL_IMAGE+x} ]]; then
+    echo "ORIGINAL_IMAGE variable is not set"
+    exit 1
+fi
+
 output_header
-output_table "$1" "${*:2}"
+output_table "$ORIGINAL_IMAGE" "${*}"
 output_footer
