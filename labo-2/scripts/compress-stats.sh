@@ -65,11 +65,11 @@ function output_table_deadzone_delta() {
 ##########################
 
 function output_header_deadzone_width() {
-    echo "^|Largeur de la Zone Morte"
+    echo "^|Largeur de la Zone"
 }
 
 
-function output_table_deadzone_delta() {
+function output_table_deadzone_width() {
     local filename=$1
     local width
 
