@@ -71,126 +71,6 @@ func (w *HaarWavelet) GetYHighPassFilter(l data.Layer) data.Layer {
 	return data
 }
 
-func (w *HaarWavelet) ScaleX(f1, f2 data.Layer) data.Layer {
-	sizeX1, sizeY1 := f1.GetDimensions()
-	sizeX2, sizeY2 := f2.GetDimensions()
-
-	if sizeX1 != sizeX2 || sizeY1 != sizeY2 {
-		panic("Image dimensions aren't equal")
-	}
-
-	sizeX := sizeX1
-	sizeY := sizeY1
-	data := data.NewLayer(2*sizeX, sizeY)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			data[j][2*i+0] = f1[j][i] + f2[j][i]
-			data[j][2*i+1] = f1[j][i] - f2[j][i]
-		}
-	}
-
-	return data
-}
-
-func (w *HaarWavelet) ScaleY(f1, f2 data.Layer) data.Layer {
-	sizeX1, sizeY1 := f1.GetDimensions()
-	sizeX2, sizeY2 := f2.GetDimensions()
-
-	if sizeX1 != sizeX2 || sizeY1 != sizeY2 {
-		panic("Image dimensions aren't equal")
-	}
-
-	sizeX := sizeX1
-	sizeY := sizeY1
-	data := data.NewLayer(sizeX, 2*sizeY)
-
-	for j := 0; j < sizeY; j++ {
-		for i := 0; i < sizeX; i++ {
-			data[2*j+0][i] = f1[j][i] + f2[j][i]
-			data[2*j+1][i] = f1[j][i] - f2[j][i]
-		}
-	}
-
-	return data
-}
-
-func (w *HaarWavelet) CopyIntoQuadrant(from, into data.Layer, quadrant int) {
-	sizeFromX, sizeFromY := from.GetDimensions()
-	sizeIntoX, sizeIntoY := into.GetDimensions()
-
-	if 2*sizeFromX > sizeIntoX {
-		panic("Invalid X size for copying from")
-	}
-
-	if 2*sizeFromY > sizeIntoY {
-		panic("Invalid Y size for copying from")
-	}
-
-	var offsetX int
-	var offsetY int
-	switch quadrant {
-	case 1:
-		offsetX = sizeFromX
-		offsetY = 0
-	case 2:
-		offsetX = 0
-		offsetY = 0
-	case 3:
-		offsetX = 0
-		offsetY = sizeFromY
-	case 4:
-		offsetX = sizeFromX
-		offsetY = sizeFromY
-	default:
-		panic("Invalid quadrant selected for copying")
-	}
-
-	for j := 0; j < sizeFromY; j++ {
-		for i := 0; i < sizeFromX; i++ {
-			into[j+offsetY][i+offsetX] = from[j][i]
-		}
-	}
-}
-
-func (w *HaarWavelet) CopyFromQuadrant(from, into data.Layer, quadrant int) {
-	sizeFromX, sizeFromY := from.GetDimensions()
-	sizeIntoX, sizeIntoY := into.GetDimensions()
-
-	if 2*sizeIntoX > sizeFromX {
-		panic("Invalid X size for copying into")
-	}
-
-	if 2*sizeIntoY > sizeFromY {
-		panic("Invalid Y size for copying into")
-	}
-
-	var offsetX int
-	var offsetY int
-	switch quadrant {
-	case 1:
-		offsetX = sizeIntoX
-		offsetY = 0
-	case 2:
-		offsetX = 0
-		offsetY = 0
-	case 3:
-		offsetX = 0
-		offsetY = sizeIntoY
-	case 4:
-		offsetX = sizeIntoX
-		offsetY = sizeIntoY
-	default:
-		panic("Invalid quadrant selected for copying")
-	}
-
-	for j := 0; j < sizeIntoY; j++ {
-		for i := 0; i < sizeIntoX; i++ {
-			into[j][i] = from[j+offsetY][i+offsetX]
-		}
-	}
-}
-
 func (w *HaarWavelet) WaveletTransform(l data.Layer) data.Layer {
 	sizeX, sizeY := l.GetDimensions()
 	data := data.NewLayer(sizeX, sizeY)
@@ -206,10 +86,10 @@ func (w *HaarWavelet) WaveletTransform(l data.Layer) data.Layer {
 		fhl := w.GetYLowPassFilter(w.GetXHighPassFilter(l))
 		fhh := w.GetYHighPassFilter(w.GetXHighPassFilter(l))
 
-		w.CopyIntoQuadrant(flh, data, 1)
-		w.CopyIntoQuadrant(fll, data, 2)
-		w.CopyIntoQuadrant(fhl, data, 3)
-		w.CopyIntoQuadrant(fhh, data, 4)
+		copyIntoQuadrant(flh, data, 1)
+		copyIntoQuadrant(fll, data, 2)
+		copyIntoQuadrant(fhl, data, 3)
+		copyIntoQuadrant(fhh, data, 4)
 
 		l = fll
 	}
@@ -233,19 +113,19 @@ func (w *HaarWavelet) WaveletInverse(l data.Layer) data.Layer {
 		fhl := data.NewLayer(sizeX/factor, sizeY/factor)
 		fhh := data.NewLayer(sizeX/factor, sizeY/factor)
 
-		w.CopyFromQuadrant(copy, flh, 1)
-		w.CopyFromQuadrant(copy, fll, 2)
-		w.CopyFromQuadrant(copy, fhl, 3)
-		w.CopyFromQuadrant(copy, fhh, 4)
+		copyFromQuadrant(copy, flh, 1)
+		copyFromQuadrant(copy, fll, 2)
+		copyFromQuadrant(copy, fhl, 3)
+		copyFromQuadrant(copy, fhh, 4)
 
-		fl := w.ScaleY(fll, flh)
-		fh := w.ScaleY(fhl, fhh)
-		f := w.ScaleX(fl, fh)
+		fl := scaleY(fll, flh)
+		fh := scaleY(fhl, fhh)
+		f := scaleX(fl, fh)
 
 		if i == 1 {
 			copy = f
 		} else {
-			w.CopyIntoQuadrant(f, copy, 2)
+			copyIntoQuadrant(f, copy, 2)
 		}
 	}
 
