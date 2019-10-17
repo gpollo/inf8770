@@ -25,7 +25,7 @@ func (q *MidThreadQuantifier) QuantifierTransform(l data.Layer) data.Layer {
 
 	for j := 0; j < sizeY; j++ {
 		for i := 0; i < sizeX; i++ {
-			value := math.Abs(float64(l[j][i]))
+			value := float64(l[j][i])
 			delta := float64(q.delta)
 
 			data[j][i] = float32(math.Round(value / delta))
