@@ -22,7 +22,8 @@ tests: subsampling-yuv-tests \
        haar-wavelet-tests \
        deadzone-width-tests \
        deadzone-delta-tests \
-       deadzone-various-tests
+       deadzone-various-tests \
+       midthread-delta-tests
 
 ###########################
 # subsampling (YUV) tests #
@@ -181,9 +182,9 @@ deadzone-width-tests: $(DECODED)/deadzone-width-1.png \
                       $(DECODED)/deadzone-width-1024.png
 .PHONY: deadzone-width-tests
 
-########################
-# deadzone delta tests #
-########################
+#########################
+# dead zone delta tests #
+#########################
 
 $(ENCODED)/deadzone-delta-1.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:1:1:0.0
@@ -229,9 +230,9 @@ deadzone-delta-tests: $(DECODED)/deadzone-delta-1.png \
                       $(DECODED)/deadzone-delta-1024.png
 .PHONY: deadzone-delta-tests
 
-##########################
-# deadzone various tests #
-##########################
+###########################
+# dead zone various tests #
+###########################
 
 $(ENCODED)/deadzone-various-128-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:128:64:0.0
@@ -248,6 +249,54 @@ $(DECODED)/deadzone-various-128-128.png: $(ENCODED)/deadzone-various-128-128.dat
 deadzone-various-tests: $(DECODED)/deadzone-various-128-64.png \
                         $(DECODED)/deadzone-various-128-128.png
 .PHONY: deadzone-various-tests
+
+########################
+# mid-thread delta tests #
+########################
+
+$(ENCODED)/midthread-delta-1.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1
+
+$(ENCODED)/midthread-delta-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:64
+
+$(ENCODED)/midthread-delta-128.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:128
+
+$(ENCODED)/midthread-delta-256.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:256
+
+$(ENCODED)/midthread-delta-512.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:512
+
+$(ENCODED)/midthread-delta-1024.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1024
+
+$(DECODED)/midthread-delta-1.png: $(ENCODED)/midthread-delta-1.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/midthread-delta-64.png: $(ENCODED)/midthread-delta-64.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/midthread-delta-128.png: $(ENCODED)/midthread-delta-128.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/midthread-delta-256.png: $(ENCODED)/midthread-delta-256.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/midthread-delta-512.png: $(ENCODED)/midthread-delta-512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/midthread-delta-1024.png: $(ENCODED)/midthread-delta-1024.data
+	$(JPEG2000) decode -i $< -o $@
+
+midthread-delta-tests: $(DECODED)/midthread-delta-1.png \
+                       $(DECODED)/midthread-delta-64.png \
+                       $(DECODED)/midthread-delta-128.png \
+                       $(DECODED)/midthread-delta-256.png \
+                       $(DECODED)/midthread-delta-512.png \
+                       $(DECODED)/midthread-delta-1024.png
+.PHONY: midthread-delta-tests
 
 ##########
 # tables #
@@ -277,7 +326,8 @@ table/stats-haar-recursion.asc: $(ENCODED)/haar-1.data \
 	scripts/compress-stats.sh $(ORIGINAL)/claude3.bmp $^ > $@
 
 table/stats-deadzone-width.asc: export TABLE_TITLE=Comparaison de différentes largeurs de zone morte
-table/stats-deadzone-width.asc: export ADDITIONAL_COLUMNS=deadzone_delta
+table/stats-deadzone-width.asc: export ADDITIONAL_COLUMNS=deadzone_width
+table/stats-deadzone-width.asc: scripts/compress-stats.sh
 table/stats-deadzone-width.asc: $(ENCODED)/deadzone-width-1.data \
                                 $(ENCODED)/deadzone-width-64.data \
                                 $(ENCODED)/deadzone-width-128.data \
@@ -297,6 +347,17 @@ table/stats-deadzone-delta.asc: $(ENCODED)/deadzone-delta-1.data \
                                 $(ENCODED)/deadzone-delta-1024.data
 	scripts/compress-stats.sh $(ORIGINAL)/claude2.bmp $^ > $@
 
+table/stats-midthread-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à moyenne
+table/stats-midthread-delta.asc: export ADDITIONAL_COLUMNS=midthread_delta
+table/stats-midthread-delta.asc: scripts/compress-stats.sh
+table/stats-midthread-delta.asc: $(ENCODED)/midthread-delta-1.data \
+                                 $(ENCODED)/midthread-delta-64.data \
+                                 $(ENCODED)/midthread-delta-128.data \
+                                 $(ENCODED)/midthread-delta-256.data \
+                                 $(ENCODED)/midthread-delta-512.data \
+                                 $(ENCODED)/midthread-delta-1024.data
+	scripts/compress-stats.sh $(ORIGINAL)/claude2.bmp $^ > $@
+
 ############
 # document #
 ############
@@ -306,6 +367,7 @@ rapport.pdf: README.asc \
              table/stats-haar-recursion.asc \
              table/stats-deadzone-width.asc \
              table/stats-deadzone-delta.asc \
+             table/stats-midthread-delta.asc \
              $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
              $(DECODED)/rgb410.png \
@@ -316,7 +378,10 @@ rapport.pdf: README.asc \
              $(DECODED)/deadzone-width-1024.png \
              $(DECODED)/deadzone-delta-1.png \
              $(DECODED)/deadzone-delta-256.png \
-             $(DECODED)/deadzone-delta-1024.png
+             $(DECODED)/deadzone-delta-1024.png \
+             $(DECODED)/midthread-delta-1.png \
+             $(DECODED)/midthread-delta-256.png \
+             $(DECODED)/midthread-delta-1024.png
 	asciidoctor-pdf -r asciidoctor-mathematical $< -a pdf-themesdir=$(PWD)/themes -a pdf-theme=basic
 	mv README.pdf rapport.pdf
 

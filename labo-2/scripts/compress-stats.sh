@@ -80,6 +80,26 @@ function output_table_deadzone_width() {
     echo "^| $width"
 }
 
+###########################
+# midthread_delta columns #
+###########################
+
+function output_header_midthread_delta() {
+    echo "^|Taille du Pas"
+}
+
+
+function output_table_midthread_delta() {
+    local filename=$1
+    local delta
+
+    delta=$(basename "$filename")
+    delta=${delta%.*}
+    delta=${delta//midthread-delta-/}
+    
+    echo "^| $delta"
+}
+
 ##################
 # normal columns #
 ##################
