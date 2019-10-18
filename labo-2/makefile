@@ -559,8 +559,6 @@ rapport.pdf: README.asc \
 
 clean:
 	rm -vf $(JPEG2000)
-	rm -vf $(ENCODED)/*
-	rm -vf $(DECODED)/*
-
-distclean: clean
-	rm -vf table/*
+	rm -vf $(ENCODED)/*.data
+	rm -vf $(DECODED)/*.png
+	rm -vf table/*.asc
