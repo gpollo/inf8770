@@ -143,7 +143,7 @@ function output_table() {
         compression=$(printf "%2.2f" "$compression")
 
         echo ""
-        echo "| \`$(basename $encoded)\`"
+        echo "| \`$(basename "$encoded")\`"
 
         if [[ -n ${ADDITIONAL_COLUMNS+x} ]]; then
             additional_output_function="output_table_$ADDITIONAL_COLUMNS"
