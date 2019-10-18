@@ -103,10 +103,22 @@ func (i *Image) Bounds() image.Rectangle {
 }
 
 func (i *Image) At(x, y int) color.Color {
+	r := float64(i[0][y][x])
+	g := float64(i[1][y][x])
+	b := float64(i[2][y][x])
+
+	r = math.Min(float64(0xffff), r)
+	g = math.Min(float64(0xffff), g)
+	b = math.Min(float64(0xffff), b)
+
+	r = math.Max(float64(0x0000), r)
+	g = math.Max(float64(0x0000), g)
+	b = math.Max(float64(0x0000), b)
+
 	return &color.RGBA64{
-		R: uint16(i[0][y][x]),
-		G: uint16(i[1][y][x]),
-		B: uint16(i[2][y][x]),
+		R: uint16(r),
+		G: uint16(g),
+		B: uint16(b),
 		A: 0xffff,
 	}
 }
