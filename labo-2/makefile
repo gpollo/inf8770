@@ -24,7 +24,8 @@ tests: subsampling-yuv-tests \
        deadzone-delta-tests \
        deadzone-various-tests \
        midthread-delta-tests \
-       mixed-tests
+       mixed-tests \
+       various-tests
 
 ###########################
 # subsampling (YUV) tests #
@@ -347,6 +348,72 @@ mixed-tests: $(DECODED)/mixed-h1-dz512.png \
              $(DECODED)/mixed-daub-mt512.png
 .PHONY: mixed-tests
 
+#######################
+# various image tests #
+#######################
+
+OPTIMAL_SETTINGS=--subsampling 410 \
+                 --wavelet daubechies:1:2 \
+                 --quantifier deadzone:256:256:0.0
+
+$(ENCODED)/various-black.data: $(ORIGINAL)/black.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-colorful.data: $(ORIGINAL)/colorful.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-dark.data: $(ORIGINAL)/dark.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-normal.data: $(ORIGINAL)/normal.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-gradient1.data: $(ORIGINAL)/gradient1.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-gradient2.data: $(ORIGINAL)/gradient2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-gradient3.data: $(ORIGINAL)/gradient3.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(ENCODED)/various-white.data: $(ORIGINAL)/white.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+$(DECODED)/various-black.png: $(ENCODED)/various-black.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-colorful.png: $(ENCODED)/various-colorful.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-dark.png: $(ENCODED)/various-dark.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-normal.png: $(ENCODED)/various-normal.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-gradient1.png: $(ENCODED)/various-gradient1.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-gradient2.png: $(ENCODED)/various-gradient2.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-gradient3.png: $(ENCODED)/various-gradient3.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/various-white.png: $(ENCODED)/various-white.data
+	$(JPEG2000) decode -i $< -o $@
+
+various-tests: $(DECODED)/various-black.png \
+               $(DECODED)/various-colorful.png \
+               $(DECODED)/various-dark.png \
+               $(DECODED)/various-normal.png \
+               $(DECODED)/various-gradient1.png \
+               $(DECODED)/various-gradient2.png \
+               $(DECODED)/various-gradient3.png \
+               $(DECODED)/various-white.png
+.PHONY: various-tests
+
 ##########
 # tables #
 ##########
@@ -363,7 +430,7 @@ table/stats-subsampling.asc: scripts/compress-stats.sh \
                              $(ENCODED)/rgb420.data \
                              $(ENCODED)/rgb444.data \
                              $(ENCODED)/rgb422.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
 
 table/stats-haar-recursion.asc: export TABLE_TITLE=Comparaison de différentes récursions pour les ondelettes de Haar
 table/stats-haar-recursion.asc: export ADDITIONAL_COLUMNS=haar_recursion
@@ -374,7 +441,7 @@ table/stats-haar-recursion.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/haar-4.data \
                                 $(ENCODED)/haar-8.data \
                                 $(ENCODED)/haar-10.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
 
 table/stats-deadzone-width.asc: export TABLE_TITLE=Comparaison de différentes largeurs de zone morte
 table/stats-deadzone-width.asc: export ADDITIONAL_COLUMNS=deadzone_width
@@ -386,7 +453,7 @@ table/stats-deadzone-width.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/deadzone-width-256.data \
                                 $(ENCODED)/deadzone-width-512.data \
                                 $(ENCODED)/deadzone-width-1024.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
 
 table/stats-deadzone-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à zone morte
 table/stats-deadzone-delta.asc: export ADDITIONAL_COLUMNS=deadzone_delta
@@ -398,7 +465,7 @@ table/stats-deadzone-delta.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/deadzone-delta-256.data \
                                 $(ENCODED)/deadzone-delta-512.data \
                                 $(ENCODED)/deadzone-delta-1024.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
 
 table/stats-midthread-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à moyenne
 table/stats-midthread-delta.asc: export ADDITIONAL_COLUMNS=midthread_delta
@@ -410,10 +477,10 @@ table/stats-midthread-delta.asc: scripts/compress-stats.sh \
                                  $(ENCODED)/midthread-delta-256.data \
                                  $(ENCODED)/midthread-delta-512.data \
                                  $(ENCODED)/midthread-delta-1024.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
 
 table/stats-mixed.asc: export TABLE_TITLE=Comparaison de combinaisons d'ondelette et quantificateur différents
-#table/stats-mixed.asc: export ADDITIONAL_COLUMNS=midthread_delta
+#table/stats-mixed.asc: export ADDITIONAL_COLUMNS=midthread_delta TODO
 table/stats-mixed.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude4.bmp
 table/stats-mixed.asc: scripts/compress-stats.sh \
                        $(ENCODED)/mixed-h1-dz512.data \
@@ -422,7 +489,32 @@ table/stats-mixed.asc: scripts/compress-stats.sh \
                        $(ENCODED)/mixed-h4-mt512.data \
                        $(ENCODED)/mixed-daub-dz512.data \
                        $(ENCODED)/mixed-daub-mt512.data
-	scripts/compress-stats.sh $^ > $@
+	$< $^ > $@
+
+table/stats-various-images.asc: export TABLE_TITLE=Comparaison des différents types d'images utilisées
+table/stats-various-images.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/black.bmp
+table/stats-various-images.asc: scripts/compress-stats.sh \
+                                $(ENCODED)/various-black.data \
+                                $(ENCODED)/various-colorful.data \
+                                $(ENCODED)/various-dark.data \
+                                $(ENCODED)/various-normal.data \
+                                $(ENCODED)/various-gradient1.data \
+                                $(ENCODED)/various-gradient2.data \
+                                $(ENCODED)/various-gradient3.data \
+                                $(ENCODED)/various-white.data
+	$< $^ > $@
+
+table/various-images.asc: export TABLE_TITLE=Liste des différents types d'images utilisées
+table/various-images.asc: scripts/table-images.sh \
+                          $(DECODED)/various-black.png \
+                          $(DECODED)/various-colorful.png \
+                          $(DECODED)/various-dark.png \
+                          $(DECODED)/various-normal.png \
+                          $(DECODED)/various-gradient1.png \
+                          $(DECODED)/various-gradient2.png \
+                          $(DECODED)/various-gradient3.png \
+                          $(DECODED)/various-white.png
+	$< $^ > $@
 
 ############
 # document #
@@ -436,6 +528,8 @@ rapport.pdf: README.asc \
              table/stats-deadzone-delta.asc \
              table/stats-midthread-delta.asc \
              table/stats-mixed.asc \
+             table/stats-various-images.asc \
+             table/various-images.asc \
              $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
              $(DECODED)/rgb410.png \
