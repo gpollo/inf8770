@@ -26,6 +26,10 @@ tests: subsampling-yuv-tests \
        midthread-delta-tests \
        mixed-tests \
        various-tests
+.PHONY: tests
+
+$(DECODED)/%.png: $(ENCODED)/%.data
+	$(JPEG2000) decode -i $< -o $@
 
 ###########################
 # subsampling (YUV) tests #
@@ -42,18 +46,6 @@ $(ENCODED)/yuv422.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
 
 $(ENCODED)/yuv444.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --subsampling 444 --wavelet haar:4
-
-$(DECODED)/yuv410.png: $(ENCODED)/yuv410.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/yuv420.png: $(ENCODED)/yuv420.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/yuv422.png: $(ENCODED)/yuv422.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/yuv444.png: $(ENCODED)/yuv444.data
-	$(JPEG2000) decode -i $< -o $@
 
 subsampling-yuv-tests: $(DECODED)/yuv410.png \
                        $(DECODED)/yuv420.png \
@@ -76,18 +68,6 @@ $(ENCODED)/rgb422.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
 
 $(ENCODED)/rgb444.data: $(ORIGINAL)/claude1.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --subsampling 444 --wavelet haar:4 --no-conversion
-
-$(DECODED)/rgb410.png: $(ENCODED)/rgb410.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/rgb420.png: $(ENCODED)/rgb420.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/rgb422.png: $(ENCODED)/rgb422.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/rgb444.png: $(ENCODED)/rgb444.data
-	$(JPEG2000) decode -i $< -o $@
 
 subsampling-rgb-tests: $(DECODED)/rgb410.png \
                        $(DECODED)/rgb420.png \
@@ -113,21 +93,6 @@ $(ENCODED)/haar-8.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
 
 $(ENCODED)/haar-10.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --wavelet haar:10
-
-$(DECODED)/haar-1.png: $(ENCODED)/haar-1.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/haar-2.png: $(ENCODED)/haar-2.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/haar-4.png: $(ENCODED)/haar-4.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/haar-8.png: $(ENCODED)/haar-8.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/haar-10.png: $(ENCODED)/haar-10.data
-	$(JPEG2000) decode -i $< -o $@
 
 haar-wavelet-tests: $(DECODED)/haar-1.png \
                     $(DECODED)/haar-2.png \
@@ -157,24 +122,6 @@ $(ENCODED)/deadzone-width-512.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 
 $(ENCODED)/deadzone-width-1024.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:1024:1:0.0
-
-$(DECODED)/deadzone-width-1.png: $(ENCODED)/deadzone-width-1.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-width-64.png: $(ENCODED)/deadzone-width-64.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-width-128.png: $(ENCODED)/deadzone-width-128.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-width-256.png: $(ENCODED)/deadzone-width-256.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-width-512.png: $(ENCODED)/deadzone-width-512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-width-1024.png: $(ENCODED)/deadzone-width-1024.data
-	$(JPEG2000) decode -i $< -o $@
 
 deadzone-width-tests: $(DECODED)/deadzone-width-1.png \
                       $(DECODED)/deadzone-width-64.png \
@@ -206,24 +153,6 @@ $(ENCODED)/deadzone-delta-512.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 $(ENCODED)/deadzone-delta-1024.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:1:1024:0.0
 
-$(DECODED)/deadzone-delta-1.png: $(ENCODED)/deadzone-delta-1.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-delta-64.png: $(ENCODED)/deadzone-delta-64.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-delta-128.png: $(ENCODED)/deadzone-delta-128.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-delta-256.png: $(ENCODED)/deadzone-delta-256.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-delta-512.png: $(ENCODED)/deadzone-delta-512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-delta-1024.png: $(ENCODED)/deadzone-delta-1024.data
-	$(JPEG2000) decode -i $< -o $@
-
 deadzone-delta-tests: $(DECODED)/deadzone-delta-1.png \
                       $(DECODED)/deadzone-delta-64.png \
                       $(DECODED)/deadzone-delta-128.png \
@@ -241,12 +170,6 @@ $(ENCODED)/deadzone-various-128-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 
 $(ENCODED)/deadzone-various-128-128.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:128:128:0.0
-
-$(DECODED)/deadzone-various-128-64.png: $(ENCODED)/deadzone-various-128-64.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/deadzone-various-128-128.png: $(ENCODED)/deadzone-various-128-128.data
-	$(JPEG2000) decode -i $< -o $@
 
 deadzone-various-tests: $(DECODED)/deadzone-various-128-64.png \
                         $(DECODED)/deadzone-various-128-128.png
@@ -273,24 +196,6 @@ $(ENCODED)/midthread-delta-512.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 
 $(ENCODED)/midthread-delta-1024.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1024
-
-$(DECODED)/midthread-delta-1.png: $(ENCODED)/midthread-delta-1.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/midthread-delta-64.png: $(ENCODED)/midthread-delta-64.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/midthread-delta-128.png: $(ENCODED)/midthread-delta-128.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/midthread-delta-256.png: $(ENCODED)/midthread-delta-256.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/midthread-delta-512.png: $(ENCODED)/midthread-delta-512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/midthread-delta-1024.png: $(ENCODED)/midthread-delta-1024.data
-	$(JPEG2000) decode -i $< -o $@
 
 midthread-delta-tests: $(DECODED)/midthread-delta-1.png \
                        $(DECODED)/midthread-delta-64.png \
@@ -321,24 +226,6 @@ $(ENCODED)/mixed-daub-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
 
 $(ENCODED)/mixed-daub-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier midthread:512
-
-$(DECODED)/mixed-h1-dz512.png: $(ENCODED)/mixed-h1-dz512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/mixed-h1-mt512.png: $(ENCODED)/mixed-h1-mt512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/mixed-h4-dz512.png: $(ENCODED)/mixed-h4-dz512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/mixed-h4-mt512.png: $(ENCODED)/mixed-h4-mt512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/mixed-daub-dz512.png: $(ENCODED)/mixed-daub-dz512.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/mixed-daub-mt512.png: $(ENCODED)/mixed-daub-mt512.data
-	$(JPEG2000) decode -i $< -o $@
 
 mixed-tests: $(DECODED)/mixed-h1-dz512.png \
              $(DECODED)/mixed-h1-mt512.png \
@@ -379,30 +266,6 @@ $(ENCODED)/various-gradient3.data: $(ORIGINAL)/gradient3.bmp $(JPEG2000)
 
 $(ENCODED)/various-white.data: $(ORIGINAL)/white.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
-
-$(DECODED)/various-black.png: $(ENCODED)/various-black.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-colorful.png: $(ENCODED)/various-colorful.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-dark.png: $(ENCODED)/various-dark.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-normal.png: $(ENCODED)/various-normal.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-gradient1.png: $(ENCODED)/various-gradient1.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-gradient2.png: $(ENCODED)/various-gradient2.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-gradient3.png: $(ENCODED)/various-gradient3.data
-	$(JPEG2000) decode -i $< -o $@
-
-$(DECODED)/various-white.png: $(ENCODED)/various-white.data
-	$(JPEG2000) decode -i $< -o $@
 
 various-tests: $(DECODED)/various-black.png \
                $(DECODED)/various-colorful.png \
@@ -562,3 +425,4 @@ clean:
 	rm -vf $(ENCODED)/*.data
 	rm -vf $(DECODED)/*.png
 	rm -vf table/*.asc
+.PHONY: clean
