@@ -1,4 +1,4 @@
-export JPEG2000_PYTHON="$(PWD)/jpeg2000/python"
+export JPEG2000_PYTHON=$(PWD)/jpeg2000/python
 
 JPEG2000=bin/jpeg2000
 
@@ -23,7 +23,8 @@ tests: subsampling-yuv-tests \
        deadzone-width-tests \
        deadzone-delta-tests \
        deadzone-various-tests \
-       midthread-delta-tests
+       midthread-delta-tests \
+       mixed-tests
 
 ###########################
 # subsampling (YUV) tests #
@@ -250,9 +251,9 @@ deadzone-various-tests: $(DECODED)/deadzone-various-128-64.png \
                         $(DECODED)/deadzone-various-128-128.png
 .PHONY: deadzone-various-tests
 
-########################
+##########################
 # mid-thread delta tests #
-########################
+##########################
 
 $(ENCODED)/midthread-delta-1.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1
@@ -297,6 +298,54 @@ midthread-delta-tests: $(DECODED)/midthread-delta-1.png \
                        $(DECODED)/midthread-delta-512.png \
                        $(DECODED)/midthread-delta-1024.png
 .PHONY: midthread-delta-tests
+
+###############
+# mixed tests #
+###############
+
+$(ENCODED)/mixed-h1-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier deadzone:512:512:0.0
+
+$(ENCODED)/mixed-h1-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier midthread:512
+
+$(ENCODED)/mixed-h4-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier deadzone:512:512:0.0
+
+$(ENCODED)/mixed-h4-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier midthread:512
+
+$(ENCODED)/mixed-daub-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier deadzone:512:512:0.0
+
+$(ENCODED)/mixed-daub-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier midthread:512
+
+$(DECODED)/mixed-h1-dz512.png: $(ENCODED)/mixed-h1-dz512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/mixed-h1-mt512.png: $(ENCODED)/mixed-h1-mt512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/mixed-h4-dz512.png: $(ENCODED)/mixed-h4-dz512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/mixed-h4-mt512.png: $(ENCODED)/mixed-h4-mt512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/mixed-daub-dz512.png: $(ENCODED)/mixed-daub-dz512.data
+	$(JPEG2000) decode -i $< -o $@
+
+$(DECODED)/mixed-daub-mt512.png: $(ENCODED)/mixed-daub-mt512.data
+	$(JPEG2000) decode -i $< -o $@
+
+mixed-tests: $(DECODED)/mixed-h1-dz512.png \
+             $(DECODED)/mixed-h1-mt512.png \
+             $(DECODED)/mixed-h4-dz512.png \
+             $(DECODED)/mixed-h4-mt512.png \
+             $(DECODED)/mixed-daub-dz512.png \
+             $(DECODED)/mixed-daub-mt512.png
+.PHONY: mixed-tests
 
 ##########
 # tables #
@@ -363,6 +412,18 @@ table/stats-midthread-delta.asc: scripts/compress-stats.sh \
                                  $(ENCODED)/midthread-delta-1024.data
 	scripts/compress-stats.sh $^ > $@
 
+table/stats-mixed.asc: export TABLE_TITLE=Comparaison de combinaisons d'ondelette et quantificateur différents
+#table/stats-mixed.asc: export ADDITIONAL_COLUMNS=midthread_delta
+table/stats-mixed.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude4.bmp
+table/stats-mixed.asc: scripts/compress-stats.sh \
+                       $(ENCODED)/mixed-h1-dz512.data \
+                       $(ENCODED)/mixed-h1-mt512.data \
+                       $(ENCODED)/mixed-h4-dz512.data \
+                       $(ENCODED)/mixed-h4-mt512.data \
+                       $(ENCODED)/mixed-daub-dz512.data \
+                       $(ENCODED)/mixed-daub-mt512.data
+	scripts/compress-stats.sh $^ > $@
+
 ############
 # document #
 ############
@@ -374,6 +435,7 @@ rapport.pdf: README.asc \
              table/stats-deadzone-width.asc \
              table/stats-deadzone-delta.asc \
              table/stats-midthread-delta.asc \
+             table/stats-mixed.asc \
              $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
              $(DECODED)/rgb410.png \
@@ -387,7 +449,13 @@ rapport.pdf: README.asc \
              $(DECODED)/deadzone-delta-1024.png \
              $(DECODED)/midthread-delta-1.png \
              $(DECODED)/midthread-delta-256.png \
-             $(DECODED)/midthread-delta-1024.png
+             $(DECODED)/midthread-delta-1024.png \
+             $(DECODED)/mixed-h1-dz512.png \
+             $(DECODED)/mixed-h1-mt512.png \
+             $(DECODED)/mixed-h4-dz512.png \
+             $(DECODED)/mixed-h4-mt512.png \
+             $(DECODED)/mixed-daub-dz512.png \
+             $(DECODED)/mixed-daub-mt512.png
 	asciidoctor-pdf -r asciidoctor-mathematical $< -a pdf-themesdir=$(PWD)/themes -a pdf-theme=basic
 	mv README.pdf rapport.pdf
 
