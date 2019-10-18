@@ -24,7 +24,7 @@ function output_table() {
         filename=${filename//png/bmp}
         echo "^| \`$(basename "$filename")\`"
 
-        queue+=($encoded)
+        queue+=("$encoded")
         if [[ "${#queue[@]}" == "4" ]]; then
             for image in ${queue[*]}; do
                 echo "^|image:${image}[width=140]"
