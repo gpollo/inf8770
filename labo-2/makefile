@@ -13,6 +13,7 @@ $(JPEG2000): $(shell find . -type f -name "*.go")
 # tests  #
 ##########
 
+DOWNLOADED=tests/0-downloaded
 ORIGINAL=tests/1-original
 ENCODED=tests/2-encoded
 DECODED=tests/3-decoded
@@ -25,7 +26,8 @@ tests: subsampling-yuv-tests \
        deadzone-various-tests \
        midthread-delta-tests \
        mixed-tests \
-       various-tests
+       various-tests \
+       kodak-files-tests
 .PHONY: tests
 
 $(DECODED)/%.png: $(ENCODED)/%.data
@@ -277,6 +279,46 @@ various-tests: $(DECODED)/various-black.png \
                $(DECODED)/various-white.png
 .PHONY: various-tests
 
+########################
+# kodak database tests #
+########################
+
+$(DOWNLOADED)/kodim%.png: scripts/download-kodak-file.sh
+	$< $@
+
+$(ORIGINAL)/kodim%.jpg: $(DOWNLOADED)/kodim%.png
+	convert $< -flatten $@
+.PRECIOUS: $(ORIGINAL)/kodim%.jpg
+
+$(ENCODED)/kodim%.data: $(DOWNLOADED)/kodim%.png $(ORIGINAL)/kodim%.jpg $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+
+kodak-files-tests: $(DECODED)/kodim01.png \
+                   $(DECODED)/kodim02.png \
+                   $(DECODED)/kodim03.png \
+                   $(DECODED)/kodim04.png \
+                   $(DECODED)/kodim05.png \
+                   $(DECODED)/kodim06.png \
+                   $(DECODED)/kodim07.png \
+                   $(DECODED)/kodim08.png \
+                   $(DECODED)/kodim09.png \
+                   $(DECODED)/kodim10.png \
+                   $(DECODED)/kodim11.png \
+                   $(DECODED)/kodim12.png \
+                   $(DECODED)/kodim13.png \
+                   $(DECODED)/kodim14.png \
+                   $(DECODED)/kodim15.png \
+                   $(DECODED)/kodim16.png \
+                   $(DECODED)/kodim17.png \
+                   $(DECODED)/kodim18.png \
+                   $(DECODED)/kodim19.png \
+                   $(DECODED)/kodim20.png \
+                   $(DECODED)/kodim21.png \
+                   $(DECODED)/kodim22.png \
+                   $(DECODED)/kodim23.png \
+                   $(DECODED)/kodim24.png
+.PHONY: kodak-files-tests
+
 ##########
 # tables #
 ##########
@@ -367,6 +409,36 @@ table/stats-various-images.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/various-white.data
 	$< $^ > $@
 
+table/stat-kodak.asc: export ORIGINAL_DIR=$(DOWNLOADED)
+table/stat-kodak.asc: export JPEG_DIR=$(ORIGINAL)
+table/stat-kodak.asc: export JPEG2000_DIR=$(DECODED)
+table/stat-kodak.asc: scripts/kodak-stats.sh \
+                      $(DECODED)/kodim01.png \
+                      $(DECODED)/kodim02.png \
+                      $(DECODED)/kodim03.png \
+                      $(DECODED)/kodim04.png \
+                      $(DECODED)/kodim05.png \
+                      $(DECODED)/kodim06.png \
+                      $(DECODED)/kodim07.png \
+                      $(DECODED)/kodim08.png \
+                      $(DECODED)/kodim09.png \
+                      $(DECODED)/kodim10.png \
+                      $(DECODED)/kodim11.png \
+                      $(DECODED)/kodim12.png \
+                      $(DECODED)/kodim13.png \
+                      $(DECODED)/kodim14.png \
+                      $(DECODED)/kodim15.png \
+                      $(DECODED)/kodim16.png \
+                      $(DECODED)/kodim17.png \
+                      $(DECODED)/kodim18.png \
+                      $(DECODED)/kodim19.png \
+                      $(DECODED)/kodim20.png \
+                      $(DECODED)/kodim21.png \
+                      $(DECODED)/kodim22.png \
+                      $(DECODED)/kodim23.png \
+                      $(DECODED)/kodim24.png
+	$< $^ > $@
+
 table/various-images.asc: export TABLE_TITLE=Liste des différents types d'images utilisées
 table/various-images.asc: scripts/table-images.sh \
                           $(DECODED)/various-black.png \
@@ -393,6 +465,7 @@ rapport.pdf: README.asc \
              table/stats-mixed.asc \
              table/stats-various-images.asc \
              table/various-images.asc \
+             table/stat-kodak.asc \
              $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
              $(DECODED)/rgb410.png \
@@ -422,6 +495,8 @@ rapport.pdf: README.asc \
 
 clean:
 	rm -vf $(JPEG2000)
+	rm -vf $(DOWNLOADED)/*.png
+	rm -vf $(ORIGINAL)/*.jpg
 	rm -vf $(ENCODED)/*.data
 	rm -vf $(DECODED)/*.png
 	rm -vf table/*.asc
