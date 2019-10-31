@@ -12,11 +12,12 @@ import (
 )
 
 type Pipeline struct {
-	conversion bool
-	subsampler subsampler.Subsampler
-	wavelet    wavelet.Wavelet
-	quantifier quantifier.Quantifier
-	compressor compressor.Compressor
+	conversion    bool
+	ignoreWavelet bool
+	subsampler    subsampler.Subsampler
+	wavelet       wavelet.Wavelet
+	quantifier    quantifier.Quantifier
+	compressor    compressor.Compressor
 }
 
 func (p *Pipeline) GetProtobufHeader(w, h uint) *data.FileImageHeader {
@@ -84,9 +85,13 @@ func (p *Pipeline) SetupFromProtobufHeader(d *data.FileImageHeader) error {
 		return err
 	}
 
-	p.wavelet, err = wavelet.FromProtobuf(d.Wavelet)
-	if err != nil {
-		return err
+	if p.ignoreWavelet {
+		p.wavelet = wavelet.NewDummyWavelet()
+	} else {
+		p.wavelet, err = wavelet.FromProtobuf(d.Wavelet)
+		if err != nil {
+			return err
+		}
 	}
 
 	p.quantifier, err = quantifier.FromProtobuf(d.Quantifier)

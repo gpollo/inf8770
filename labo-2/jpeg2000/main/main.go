@@ -44,6 +44,11 @@ func execute() error {
 			Required: false,
 			Help:     "Disable RGB to YUV conversion",
 		})
+	ignoreWavelet := cmdDecode.Flag("c", "ignore-wavelet",
+		&argparse.Options{
+			Required: false,
+			Help:     "Don't perform inverse wavelet transform",
+		})
 	subsamplerConfig := cmdEncode.String("s", "subsampling",
 		&argparse.Options{
 			Required: false,
@@ -119,7 +124,9 @@ func execute() error {
 			return err
 		}
 
-		pipeline := Pipeline{}
+		pipeline := Pipeline{
+			ignoreWavelet: *ignoreWavelet,
+		}
 		decoded, err := pipeline.DecodeImage(inputImage)
 		if err != nil {
 			return err
