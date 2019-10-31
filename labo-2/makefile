@@ -491,6 +491,9 @@ rapport.pdf: README.asc \
              $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
              $(DECODED)/rgb410.png \
+             $(DECODED)/dummy0.png \
+             $(DECODED)/dummy1.png \
+             $(DECODED)/dummy2.png \
              $(DECODED)/haar-1.png \
              $(DECODED)/haar-10.png \
              $(DECODED)/deadzone-width-1.png \
