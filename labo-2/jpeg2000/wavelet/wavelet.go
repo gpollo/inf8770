@@ -135,7 +135,7 @@ func copyFromQuadrant(from, into data.Layer, quadrant int) {
 
 func FromCommandLine(arg string) (Wavelet, error) {
 	splited := strings.Split(arg, ":")
-	if len(splited) <= 1 {
+	if len(splited) < 1 {
 		return nil, errors.New("Invalid number of argument for parsing wavelet")
 	}
 
@@ -167,6 +167,12 @@ func FromCommandLine(arg string) (Wavelet, error) {
 		}
 
 		return NewDaubechiesWavelet(level, coefficient)
+	case "dummy":
+		if len(splited) != 1 {
+			return nil, errors.New("Invalid number of argument for parsing dummy wavelet")
+		}
+
+		return NewDummyWavelet(), nil
 	default:
 		return nil, errors.New("Unrecognized wavelet type")
 	}
@@ -187,6 +193,13 @@ func FromProtobuf(d *data.WaveletConfig) (Wavelet, error) {
 			return nil, err
 		} else {
 			return &daubechies, nil
+		}
+	case *data.WaveletConfig_Dummy:
+		dummy := DummyWavelet{}
+		if err := dummy.FromProtobuf(d); err != nil {
+			return nil, err
+		} else {
+			return &dummy, nil
 		}
 	case nil:
 		return nil, errors.New("Wavelet configuration not found in protobuf data")

@@ -35,10 +35,15 @@ message WaveletDaubechies {
     uint32 coefficient = 2;
 }
 
+message WaveletDummy {
+
+}
+
 message WaveletConfig {
     oneof data {
         WaveletHaar haar = 1;
         WaveletDaubechies daubechies = 2;
+        WaveletDummy dummy = 3;
     }
 }
 
