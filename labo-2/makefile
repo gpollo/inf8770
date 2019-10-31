@@ -488,8 +488,8 @@ rapport.pdf: README.asc \
              table/stats-various-images.asc \
              table/various-images.asc \
              table/stat-kodak.asc \
-             $(DECODED)/yuv410.png \
              $(DECODED)/yuv444.png \
+             $(DECODED)/yuv410.png \
              $(DECODED)/rgb410.png \
              $(DECODED)/dummy0.png \
              $(DECODED)/dummy1.png \
