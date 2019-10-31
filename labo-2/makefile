@@ -20,6 +20,7 @@ DECODED=tests/3-decoded
 
 tests: subsampling-yuv-tests \
        subsampling-rgb-tests \
+       dummy-tests \
        haar-wavelet-tests \
        deadzone-width-tests \
        deadzone-delta-tests \
@@ -76,6 +77,27 @@ subsampling-rgb-tests: $(DECODED)/rgb410.png \
                        $(DECODED)/rgb422.png \
                        $(DECODED)/rgb444.png
 .PHONY: subsampling-rgb-tests
+
+##########################
+# dummy wavelet decoding #
+##########################
+
+$(ENCODED)/dummy0.data: $(ORIGINAL)/claude5.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 410 --wavelet dummy
+
+$(ENCODED)/dummy1.data: $(ORIGINAL)/claude5.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 420 --wavelet haar:1
+
+$(ENCODED)/dummy2.data: $(ORIGINAL)/claude5.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --subsampling 422 --wavelet haar:2
+
+$(DECODED)/dummy%.png: $(ENCODED)/dummy%.data
+	$(JPEG2000) decode -i $< -o $@ --ignore-wavelet
+
+dummy-tests: $(DECODED)/dummy0.png \
+             $(DECODED)/dummy1.png \
+             $(DECODED)/dummy2.png
+.PHONY: dummy-tests
 
 ################################
 # haar wavelet recursion tests #
