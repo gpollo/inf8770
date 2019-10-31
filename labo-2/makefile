@@ -103,22 +103,26 @@ dummy-tests: $(DECODED)/dummy0.png \
 # haar wavelet recursion tests #
 ################################
 
+$(ENCODED)/haar-0.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet dummy --quantifier deadzone:1:1:0.0
+
 $(ENCODED)/haar-1.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier deadzone:1:1:0.0
 
 $(ENCODED)/haar-2.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:2
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:2 --quantifier deadzone:1:1:0.0
 
 $(ENCODED)/haar-4.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier deadzone:1:1:0.0
 
 $(ENCODED)/haar-8.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:8
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:8 --quantifier deadzone:1:1:0.0
 
 $(ENCODED)/haar-10.data: $(ORIGINAL)/claude3.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:10
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:10 --quantifier deadzone:1:1:0.0
 
-haar-wavelet-tests: $(DECODED)/haar-1.png \
+haar-wavelet-tests: $(DECODED)/haar-0.png \
+                    $(DECODED)/haar-1.png \
                     $(DECODED)/haar-2.png \
                     $(DECODED)/haar-4.png \
                     $(DECODED)/haar-8.png \
@@ -363,6 +367,7 @@ table/stats-haar-recursion.asc: export TABLE_TITLE=Comparaison de différentes r
 table/stats-haar-recursion.asc: export ADDITIONAL_COLUMNS=haar_recursion
 table/stats-haar-recursion.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude3.bmp
 table/stats-haar-recursion.asc: scripts/compress-stats.sh \
+                                $(ENCODED)/haar-0.data \
                                 $(ENCODED)/haar-1.data \
                                 $(ENCODED)/haar-2.data \
                                 $(ENCODED)/haar-4.data \
