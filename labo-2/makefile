@@ -25,7 +25,6 @@ tests: subsampling-yuv-tests \
        deadzone-width-tests \
        deadzone-delta-tests \
        deadzone-various-tests \
-       midthread-delta-tests \
        mixed-tests \
        various-tests \
        kodak-files-tests
@@ -193,74 +192,36 @@ deadzone-delta-tests: $(DECODED)/deadzone-delta-1.png \
 # dead zone various tests #
 ###########################
 
+$(ENCODED)/deadzone-various-64-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:64:64:0.0
+
 $(ENCODED)/deadzone-various-128-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:128:64:0.0
 
-$(ENCODED)/deadzone-various-128-128.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:128:128:0.0
+$(ENCODED)/deadzone-various-192-128.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --quantifier deadzone:192:128:0.0
 
-deadzone-various-tests: $(DECODED)/deadzone-various-128-64.png \
-                        $(DECODED)/deadzone-various-128-128.png
+deadzone-various-tests: $(DECODED)/deadzone-various-64-64.png \
+                        $(DECODED)/deadzone-various-128-64.png \
+                        $(DECODED)/deadzone-various-192-128.png
 .PHONY: deadzone-various-tests
-
-##########################
-# mid-thread delta tests #
-##########################
-
-$(ENCODED)/midthread-delta-1.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1
-
-$(ENCODED)/midthread-delta-64.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:64
-
-$(ENCODED)/midthread-delta-128.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:128
-
-$(ENCODED)/midthread-delta-256.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:256
-
-$(ENCODED)/midthread-delta-512.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:512
-
-$(ENCODED)/midthread-delta-1024.data: $(ORIGINAL)/claude2.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --quantifier midthread:1024
-
-midthread-delta-tests: $(DECODED)/midthread-delta-1.png \
-                       $(DECODED)/midthread-delta-64.png \
-                       $(DECODED)/midthread-delta-128.png \
-                       $(DECODED)/midthread-delta-256.png \
-                       $(DECODED)/midthread-delta-512.png \
-                       $(DECODED)/midthread-delta-1024.png
-.PHONY: midthread-delta-tests
 
 ###############
 # mixed tests #
 ###############
 
-$(ENCODED)/mixed-h1-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier deadzone:512:512:0.0
+$(ENCODED)/mixed-haar1.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier deadzone:64:64:0.0
 
-$(ENCODED)/mixed-h1-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:1 --quantifier midthread:512
+$(ENCODED)/mixed-haar4.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier deadzone:64:64:0.0
 
-$(ENCODED)/mixed-h4-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier deadzone:512:512:0.0
+$(ENCODED)/mixed-daub.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
+	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier deadzone:64:64:0.0
 
-$(ENCODED)/mixed-h4-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet haar:4 --quantifier midthread:512
-
-$(ENCODED)/mixed-daub-dz512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier deadzone:512:512:0.0
-
-$(ENCODED)/mixed-daub-mt512.data: $(ORIGINAL)/claude4.bmp $(JPEG2000)
-	$(JPEG2000) encode -i $< -o $@ --wavelet daubechies:1:2 --quantifier midthread:512
-
-mixed-tests: $(DECODED)/mixed-h1-dz512.png \
-             $(DECODED)/mixed-h1-mt512.png \
-             $(DECODED)/mixed-h4-dz512.png \
-             $(DECODED)/mixed-h4-mt512.png \
-             $(DECODED)/mixed-daub-dz512.png \
-             $(DECODED)/mixed-daub-mt512.png
+mixed-tests: $(DECODED)/mixed-haar1.png \
+             $(DECODED)/mixed-haar4.png \
+             $(DECODED)/mixed-daub.png
 .PHONY: mixed-tests
 
 #######################
@@ -268,8 +229,8 @@ mixed-tests: $(DECODED)/mixed-h1-dz512.png \
 #######################
 
 OPTIMAL_SETTINGS=--subsampling 410 \
-                 --wavelet daubechies:1:2 \
-                 --quantifier deadzone:256:256:0.0
+                 --wavelet haar:8 \
+                 --quantifier deadzone:128:64:0.0
 
 $(ENCODED)/various-black.data: $(ORIGINAL)/black.bmp $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
@@ -313,11 +274,12 @@ $(DOWNLOADED)/kodim%.png: scripts/download-kodak-file.sh
 	$< $@
 
 $(ORIGINAL)/kodim%.jpg: $(DOWNLOADED)/kodim%.png
-	convert $< -flatten $@
+	convert $< -flatten -quality 98% $@
 .PRECIOUS: $(ORIGINAL)/kodim%.jpg
 
 $(ENCODED)/kodim%.data: $(DOWNLOADED)/kodim%.png $(ORIGINAL)/kodim%.jpg $(JPEG2000)
 	$(JPEG2000) encode -i $< -o $@ $(OPTIMAL_SETTINGS)
+.PRECIOUS: $(ENCODED)/kodim%.data
 
 kodak-files-tests: $(DECODED)/kodim01.png \
                    $(DECODED)/kodim02.png \
@@ -399,28 +361,22 @@ table/stats-deadzone-delta.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/deadzone-delta-1024.data
 	$< $^ > $@
 
-table/stats-midthread-delta.asc: export TABLE_TITLE=Comparaison de différents pas pour la quantification à moyenne
-table/stats-midthread-delta.asc: export ADDITIONAL_COLUMNS=midthread_delta
-table/stats-midthread-delta.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude2.bmp
-table/stats-midthread-delta.asc: scripts/compress-stats.sh \
-                                 $(ENCODED)/midthread-delta-1.data \
-                                 $(ENCODED)/midthread-delta-64.data \
-                                 $(ENCODED)/midthread-delta-128.data \
-                                 $(ENCODED)/midthread-delta-256.data \
-                                 $(ENCODED)/midthread-delta-512.data \
-                                 $(ENCODED)/midthread-delta-1024.data
+table/stats-deadzone-various.asc: export TABLE_TITLE=Comparaison de différentes variations de quantification par zone morte
+table/stats-deadzone-various.asc: export ADDITIONAL_COLUMNS=deadzone_various
+table/stats-deadzone-various.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude2.bmp
+table/stats-deadzone-various.asc: scripts/compress-stats.sh \
+                                  $(ENCODED)/deadzone-various-64-64.data \
+                                  $(ENCODED)/deadzone-various-128-64.data \
+                                  $(ENCODED)/deadzone-various-192-128.data
 	$< $^ > $@
 
-table/stats-mixed.asc: export TABLE_TITLE=Comparaison de combinaisons d'ondelette et quantificateur différents
-#table/stats-mixed.asc: export ADDITIONAL_COLUMNS=midthread_delta TODO
+table/stats-mixed.asc: export TABLE_TITLE=Comparaison avec différentes ondelettes
+table/stats-mixed.asc: export ADDITIONAL_COLUMNS=mixed
 table/stats-mixed.asc: export ORIGINAL_IMAGE=$(ORIGINAL)/claude4.bmp
 table/stats-mixed.asc: scripts/compress-stats.sh \
-                       $(ENCODED)/mixed-h1-dz512.data \
-                       $(ENCODED)/mixed-h1-mt512.data \
-                       $(ENCODED)/mixed-h4-dz512.data \
-                       $(ENCODED)/mixed-h4-mt512.data \
-                       $(ENCODED)/mixed-daub-dz512.data \
-                       $(ENCODED)/mixed-daub-mt512.data
+                       $(ENCODED)/mixed-haar1.data \
+                       $(ENCODED)/mixed-haar4.data \
+                       $(ENCODED)/mixed-daub.data
 	$< $^ > $@
 
 table/stats-various-images.asc: export TABLE_TITLE=Comparaison des différents types d'images utilisées
@@ -436,9 +392,11 @@ table/stats-various-images.asc: scripts/compress-stats.sh \
                                 $(ENCODED)/various-white.data
 	$< $^ > $@
 
+table/stat-kodak.asc: export TABLE_TITLE=Comparaison entre JPEG et JPEG2000
 table/stat-kodak.asc: export ORIGINAL_DIR=$(DOWNLOADED)
 table/stat-kodak.asc: export JPEG_DIR=$(ORIGINAL)
 table/stat-kodak.asc: export JPEG2000_DIR=$(DECODED)
+table/stat-kodak.asc: export JPEG2000_DATA_DIR=$(ENCODED)
 table/stat-kodak.asc: scripts/kodak-stats.sh \
                       $(DECODED)/kodim01.png \
                       $(DECODED)/kodim02.png \
@@ -466,7 +424,7 @@ table/stat-kodak.asc: scripts/kodak-stats.sh \
                       $(DECODED)/kodim24.png
 	$< $^ > $@
 
-table/various-images.asc: export TABLE_TITLE=Liste des différents types d'images utilisées
+table/various-images.asc: export TABLE_TITLE=Liste des différentes images utilisées
 table/various-images.asc: scripts/table-images.sh \
                           $(DECODED)/various-black.png \
                           $(DECODED)/various-colorful.png \
@@ -488,7 +446,7 @@ rapport.pdf: README.asc \
              table/stats-haar-recursion.asc \
              table/stats-deadzone-width.asc \
              table/stats-deadzone-delta.asc \
-             table/stats-midthread-delta.asc \
+             table/stats-deadzone-various.asc \
              table/stats-mixed.asc \
              table/stats-various-images.asc \
              table/various-images.asc \
@@ -507,15 +465,12 @@ rapport.pdf: README.asc \
              $(DECODED)/deadzone-delta-1.png \
              $(DECODED)/deadzone-delta-256.png \
              $(DECODED)/deadzone-delta-1024.png \
-             $(DECODED)/midthread-delta-1.png \
-             $(DECODED)/midthread-delta-256.png \
-             $(DECODED)/midthread-delta-1024.png \
-             $(DECODED)/mixed-h1-dz512.png \
-             $(DECODED)/mixed-h1-mt512.png \
-             $(DECODED)/mixed-h4-dz512.png \
-             $(DECODED)/mixed-h4-mt512.png \
-             $(DECODED)/mixed-daub-dz512.png \
-             $(DECODED)/mixed-daub-mt512.png
+             $(DECODED)/deadzone-various-64-64.png \
+             $(DECODED)/deadzone-various-128-64.png \
+             $(DECODED)/deadzone-various-192-128.png \
+             $(DECODED)/mixed-haar1.png \
+             $(DECODED)/mixed-haar4.png \
+             $(DECODED)/mixed-daub.png
 	asciidoctor-pdf -r asciidoctor-mathematical $< -a pdf-themesdir=$(PWD)/themes -a pdf-theme=basic
 	mv README.pdf rapport.pdf
 
@@ -531,3 +486,8 @@ clean:
 	rm -vf $(DECODED)/*.png
 	rm -vf table/*.asc
 .PHONY: clean
+
+remise: rapport.pdf
+	ps2pdf rapport.pdf rapport-compressed.pdf
+	mv rapport-compressed.pdf rapport.pdf
+	tar cvf - rapport.pdf makefile jpeg2000 | gzip -9 - > INF8770_1837776_LABO2.tar.gz
