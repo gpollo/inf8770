@@ -68,7 +68,8 @@ function output_table() {
     local original_directory="$1"
     local jpeg_directory="$2"
     local jpeg2000_directory="$3"
-    local test_names="${*:4}"
+    local jpeg2000_data_directory="$4"
+    local test_names="${*:5}"
 
     local original_file
     local jpeg_file
@@ -90,6 +91,7 @@ function output_table() {
         original_file="$original_directory/$test_name.png"
         jpeg_file="$jpeg_directory/$test_name.jpg"
         jpeg2000_file="$jpeg2000_directory/$test_name.png"
+        jpeg2000_data_file="$jpeg2000_data_directory/$test_name.data"
 
         jpeg_psnr=($(get_psnr "$original_file" "$jpeg_file"))
         jpeg2000_psnr=($(get_psnr "$original_file" "$jpeg2000_file"))
@@ -98,7 +100,7 @@ function output_table() {
         jpeg2000_ssim=$(get_ssim "$original_file" "$jpeg2000_file")
 
         jpeg_compression=$(get_compression "$original_file" "$jpeg_file")
-        jpeg2000_compression=$(get_compression "$original_file" "$jpeg2000_file")
+        jpeg2000_compression=$(get_compression "$original_file" "$jpeg2000_data_file")
 
         echo ""
         echo ".^| \`$(basename "$test_name")\`"
@@ -134,6 +136,11 @@ if [[ -z ${JPEG2000_DIR+x} ]]; then
     exit 1
 fi
 
+if [[ -z ${JPEG2000_DATA_DIR+x} ]]; then
+    echo "JPEG2000_DATA_DIR variable is not set"
+    exit 1
+fi
+
 output_header
-output_table "$ORIGINAL_DIR" "$JPEG_DIR" "$JPEG2000_DIR" "${*}"
+output_table "$ORIGINAL_DIR" "$JPEG_DIR" "$JPEG2000_DIR" "$JPEG2000_DATA_DIR" "${*}"
 output_footer

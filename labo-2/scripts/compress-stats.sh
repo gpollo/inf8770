@@ -45,7 +45,7 @@ function output_table_haar_recursion() {
 ##########################
 
 function output_header_deadzone_delta() {
-    echo "^|Taille du Pas"
+    echo "^|Pas"
 }
 
 
@@ -65,7 +65,7 @@ function output_table_deadzone_delta() {
 ##########################
 
 function output_header_deadzone_width() {
-    echo "^|Largeur de la Zone"
+    echo "^|Zone"
 }
 
 
@@ -78,6 +78,60 @@ function output_table_deadzone_width() {
     width=${width//deadzone-width-/}
     
     echo "^| $width"
+}
+
+############################
+# deadzone_various columns #
+############################
+
+function output_header_deadzone_various() {
+    echo "^|Zone ^|Pas"
+}
+
+
+function output_table_deadzone_various() {
+    local filename=$1
+    local width
+    local delta
+
+    filename=$(basename "$filename")
+    filename=${filename%.*}
+    width=${filename//deadzone-various-/}
+    width=${width//-*/}
+    delta=${filename//deadzone-various-/}
+    delta=${delta//*-/}
+    
+    echo "^| $width"
+    echo "^| $delta"
+}
+
+#################
+# mixed columns #
+#################
+
+function output_header_mixed() {
+    echo "^|Ondelette"
+}
+
+
+function output_table_mixed() {
+    local filename=$1
+    local wavelet
+
+    filename=$(basename "$filename")
+    filename=${filename%.*}
+    filename=${filename//mixed-/}
+    
+    if echo "$filename" | grep "haar" > /dev/null; then
+        wavelet=${filename//haar/}
+        wavelet="Haar de récursion $wavelet"
+    fi
+
+    if echo "$filename" | grep "daub" > /dev/null; then
+        wavelet="Daubechies"
+    fi
+
+    echo "^| $wavelet"
 }
 
 ###########################
