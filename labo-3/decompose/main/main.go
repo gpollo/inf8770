@@ -1,16 +1,14 @@
 package main
 
 import (
+	"decompose/expected"
 	"decompose/sequence"
 	"errors"
 	"fmt"
-	_ "image/jpeg"
-	_ "image/png"
 
 	"os"
 
 	"github.com/akamensky/argparse"
-	_ "golang.org/x/image/bmp"
 )
 
 func execute() error {
@@ -23,6 +21,16 @@ func execute() error {
 		Required: false,
 		Help:     "The filename format",
 		Default:  "%04d.jpg",
+	})
+	expectedFilename := parser.String("e", "expected", &argparse.Options{
+		Required: false,
+		Help:     "The filename of the expected results",
+		Default:  "anni005.txt",
+	})
+	save := parser.Flag("s", "save", &argparse.Options{
+		Required: false,
+		Help:     "Save intermediary images",
+		Default:  false,
 	})
 
 	err := parser.Parse(os.Args)
@@ -40,10 +48,12 @@ func execute() error {
 		return errors.New("The specified path is not a directory")
 	}
 
-	_, err = sequence.FromDirectory(*directory, *format)
+	expected, err := expected.FromFile(*expectedFilename)
 	if err != nil {
 		return err
 	}
+
+	sequence.FromDirectory(*directory, *format).Run(expected, *save)
 
 	return nil
 }

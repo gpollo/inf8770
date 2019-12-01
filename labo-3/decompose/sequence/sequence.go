@@ -2,8 +2,8 @@ package sequence
 
 import (
 	"decompose/edges"
+	"decompose/expected"
 	"decompose/helper"
-	"decompose/histogram"
 	"decompose/layer"
 	"decompose/sobel"
 	"fmt"
@@ -11,64 +11,123 @@ import (
 	"os"
 )
 
-type Sequence struct {
-	frameCount    uint
-	histogramBins uint
-	histogramLast *histogram.Histogram
+type FrameFilename struct {
+	position int
+	filename string
 }
 
-func FromDirectory(directory, expr string) (*Sequence, error) {
-	s := Sequence{
-		frameCount:    0,
-		histogramBins: 100,
-		histogramLast: nil,
+type FrameImage struct {
+	FrameFilename
+	image image.Image
+}
+
+type FrameSobel struct {
+	FrameImage
+	layerBW       layer.Layer
+	layerSobel    layer.Layer
+	edgesInitial  edges.Edges
+	edgesExpanded edges.Edges
+}
+
+type FrameSobelPair struct {
+	FrameSobel
+	nextFrame *FrameSobel
+}
+
+type FrameEdges struct {
+	FrameSobelPair
+	edgesEntering edges.Edges
+	edgesExiting  edges.Edges
+	pOut          float64
+	pIn           float64
+	p             float64
+}
+
+type Sequence struct {
+	WorkerCount    int
+	inputDirectory string
+	inputExpr      string
+	tempDirectory  string
+	tempExpr       string
+}
+
+func FromDirectory(directory, expr string) *Sequence {
+	return &Sequence{
+		WorkerCount:    200,
+		inputDirectory: directory,
+		inputExpr:      expr,
+		tempDirectory:  "tmp/",
+		tempExpr:       expr,
+	}
+}
+
+func (s *Sequence) Run(e *expected.Expected, save bool) {
+	bufferSize := 500
+	queueFilenames := make(chan *FrameFilename, bufferSize)
+	queueImages := make(chan *FrameImage, bufferSize)
+	queueUnorderedSobel := make(chan *FrameSobel, bufferSize)
+	queueOrderedSobel := make(chan *FrameSobel, bufferSize)
+	queueSobelPair := make(chan *FrameSobelPair, bufferSize)
+	queueUnorderedEdges := make(chan *FrameEdges, bufferSize)
+	queueOrderedEdges := make(chan *FrameEdges, bufferSize)
+	filter := sobel.With33Kernel()
+	read := NewReadFilePipeline(queueFilenames, queueImages, 3)
+	sobel := NewSobelPipeline(queueImages, queueUnorderedSobel, 20, filter)
+	sobelOrderer := NewSobelOrdererPipeline(queueUnorderedSobel, queueOrderedSobel)
+	sobelPair := NewSobelPairPipeline(queueOrderedSobel, queueSobelPair)
+	edges := NewEdgesPipeline(queueSobelPair, queueUnorderedEdges, 10)
+	edgesOrderer := NewEdgesOrdererPipeline(queueUnorderedEdges, queueOrderedEdges)
+	sinkSave := NewEdgesSavePipelineSink(queueOrderedEdges, 6, s.tempDirectory+s.tempExpr)
+	sinkFind := NewTransitionPipelineSink(queueOrderedEdges, e)
+
+	read.Start()
+	sobel.Start()
+	sobelOrderer.Start()
+	sobelPair.Start()
+	edges.Start()
+	edgesOrderer.Start()
+	if save {
+		sinkSave.Start()
+	} else {
+		sinkFind.Start()
 	}
 
-	for frame := 1; true; frame++ {
-		filename := directory + "/" + fmt.Sprintf(expr, frame)
+	position := 0
+	for {
+		position += 1
+		filename := s.inputDirectory + "/" + fmt.Sprintf(s.inputExpr, position)
+
 		_, err := os.Stat(filename)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			break
 		}
 
-		file, err := os.Open(filename)
-		if err != nil {
-			return nil, err
+		queueFilenames <- &FrameFilename{
+			position: position,
+			filename: filename,
 		}
-
-		image, _, err := image.Decode(file)
-		if err != nil {
-			return nil, err
-		}
-
-		filter := sobel.With55Kernel()
-
-		layerBW := layer.FromImageBW(image)
-		layerSobel := filter.Apply(layerBW)
-		layerEdges := edges.FromLayer(layerSobel, 35000)
-		layerExpanded := layerEdges.ExpandRadius(5)
-		filename = "tmp/" + fmt.Sprintf(expr, frame)
-		if err = helper.SaveImage(layerExpanded, filename); err != nil {
-			return nil, err
-		}
-
-		s.AddFrame(image)
-		file.Close()
 	}
+	close(queueFilenames)
 
-	return &s, nil
+	read.Wait()
+	sobel.Wait()
+	sobelOrderer.Wait()
+	sobelPair.Wait()
+	edges.Wait()
+	edgesOrderer.Wait()
+	if save {
+		sinkSave.Wait()
+	} else {
+		sinkFind.Wait()
+	}
 }
 
-func (s *Sequence) AddFrame(i image.Image) {
-	s.frameCount++
-	if s.histogramLast == nil {
-		s.histogramLast = histogram.FromImage(i, s.histogramBins)
-		return
+func (s *Sequence) saveTempImage(position int, i image.Image) error {
+	filename := s.tempDirectory + fmt.Sprintf(s.tempExpr, position)
+	if err := helper.SaveImage(i, filename); err != nil {
+		return err
 	}
 
-	histogramThis := histogram.FromImage(i, s.histogramBins)
-	fmt.Println(s.frameCount)
-	fmt.Println(histogramThis.DifferenceNorm(s.histogramLast))
-	s.histogramLast = histogramThis
+	return nil
 }

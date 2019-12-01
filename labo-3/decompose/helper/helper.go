@@ -44,3 +44,12 @@ func SaveImage(i image.Image, filename string) error {
 
 	return nil
 }
+
+func AreAllUIntEquals(a []uint) bool {
+	for i := 1; i < len(a); i++ {
+		if a[i] != a[0] {
+			return false
+		}
+	}
+	return true
+}
