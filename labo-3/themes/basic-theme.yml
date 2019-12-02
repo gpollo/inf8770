@@ -1,0 +1,8 @@
+extends: default
+
+caption:
+  align: center
+
+blockquote:
+  border-width: 0
+  padding: [0, 0, 0, 0]
