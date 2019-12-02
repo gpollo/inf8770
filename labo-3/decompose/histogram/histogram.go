@@ -42,6 +42,19 @@ func (h *Histogram) AddImage(i image.Image) {
 	for y := i.Bounds().Min.Y; y < i.Bounds().Max.Y; y++ {
 		for x := i.Bounds().Min.X; x < i.Bounds().Max.X; x++ {
 			r, g, b, _ := i.At(x, y).RGBA()
+
+			if r == 0xffff {
+				r--
+			}
+
+			if g == 0xffff {
+				g--
+			}
+
+			if b == 0xffff {
+				b--
+			}
+
 			step := math.Ceil(float64(0xffff) / float64(h.bins))
 			h.R[int(math.Floor(float64(r)/step))]++
 			h.G[int(math.Floor(float64(g)/step))]++

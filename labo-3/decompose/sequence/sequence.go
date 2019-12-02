@@ -3,7 +3,7 @@ package sequence
 import (
 	"decompose/edges"
 	"decompose/expected"
-	"decompose/helper"
+	"decompose/histogram"
 	"decompose/layer"
 	"decompose/sobel"
 	"fmt"
@@ -43,6 +43,16 @@ type FrameEdges struct {
 	p             float64
 }
 
+type FrameHistogram struct {
+	FrameImage
+	histogram *histogram.Histogram
+}
+
+type FrameDistance struct {
+	FrameHistogram
+	distance float64
+}
+
 type Sequence struct {
 	WorkerCount    int
 	inputDirectory string
@@ -61,7 +71,7 @@ func FromDirectory(directory, expr string) *Sequence {
 	}
 }
 
-func (s *Sequence) Run(e *expected.Expected, save bool) {
+func (s *Sequence) RunSobel(e *expected.Expected, save bool, skip int) {
 	bufferSize := 500
 	queueFilenames := make(chan *FrameFilename, bufferSize)
 	queueImages := make(chan *FrameImage, bufferSize)
@@ -70,13 +80,13 @@ func (s *Sequence) Run(e *expected.Expected, save bool) {
 	queueSobelPair := make(chan *FrameSobelPair, bufferSize)
 	queueUnorderedEdges := make(chan *FrameEdges, bufferSize)
 	queueOrderedEdges := make(chan *FrameEdges, bufferSize)
-	filter := sobel.With33Kernel()
+	filter := sobel.With55Kernel()
 	read := NewReadFilePipeline(queueFilenames, queueImages, 3)
 	sobel := NewSobelPipeline(queueImages, queueUnorderedSobel, 20, filter)
-	sobelOrderer := NewSobelOrdererPipeline(queueUnorderedSobel, queueOrderedSobel)
+	sobelOrderer := NewSobelOrdererPipeline(queueUnorderedSobel, queueOrderedSobel, skip)
 	sobelPair := NewSobelPairPipeline(queueOrderedSobel, queueSobelPair)
 	edges := NewEdgesPipeline(queueSobelPair, queueUnorderedEdges, 10)
-	edgesOrderer := NewEdgesOrdererPipeline(queueUnorderedEdges, queueOrderedEdges)
+	edgesOrderer := NewEdgesOrdererPipeline(queueUnorderedEdges, queueOrderedEdges, skip)
 	sinkSave := NewEdgesSavePipelineSink(queueOrderedEdges, 6, s.tempDirectory+s.tempExpr)
 	sinkFind := NewTransitionPipelineSink(queueOrderedEdges, e)
 
@@ -92,22 +102,7 @@ func (s *Sequence) Run(e *expected.Expected, save bool) {
 		sinkFind.Start()
 	}
 
-	position := 0
-	for {
-		position += 1
-		filename := s.inputDirectory + "/" + fmt.Sprintf(s.inputExpr, position)
-
-		_, err := os.Stat(filename)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-			break
-		}
-
-		queueFilenames <- &FrameFilename{
-			position: position,
-			filename: filename,
-		}
-	}
+	s.queueFilenames(queueFilenames, skip)
 	close(queueFilenames)
 
 	read.Wait()
@@ -123,11 +118,48 @@ func (s *Sequence) Run(e *expected.Expected, save bool) {
 	}
 }
 
-func (s *Sequence) saveTempImage(position int, i image.Image) error {
-	filename := s.tempDirectory + fmt.Sprintf(s.tempExpr, position)
-	if err := helper.SaveImage(i, filename); err != nil {
-		return err
-	}
+func (s *Sequence) RunHistogram(e *expected.Expected, bins uint, skip int) {
+	bufferSize := 500
+	queueFilenames := make(chan *FrameFilename, bufferSize)
+	queueImages := make(chan *FrameImage, bufferSize)
+	queueUnorderedHistogram := make(chan *FrameHistogram, bufferSize)
+	queueOrderedHistogram := make(chan *FrameHistogram, bufferSize)
 
-	return nil
+	read := NewReadFilePipeline(queueFilenames, queueImages, 5)
+	histogram := NewHistogramPipeline(queueImages, queueUnorderedHistogram, 20, bins)
+	histogramOrderer := NewHistogramOrdererPipeline(queueUnorderedHistogram, queueOrderedHistogram, skip)
+	histogramSink := NewHistogramSink(queueOrderedHistogram)
+
+	read.Start()
+	histogram.Start()
+	histogramOrderer.Start()
+	histogramSink.Start()
+
+	s.queueFilenames(queueFilenames, skip)
+	close(queueFilenames)
+
+	read.Wait()
+	histogram.Wait()
+	histogramOrderer.Wait()
+	histogramSink.Wait()
+}
+
+func (s *Sequence) queueFilenames(queue chan *FrameFilename, skip int) {
+	position := 1
+	for {
+		filename := s.inputDirectory + "/" + fmt.Sprintf(s.inputExpr, position)
+
+		_, err := os.Stat(filename)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			break
+		}
+
+		queue <- &FrameFilename{
+			position: position,
+			filename: filename,
+		}
+
+		position += skip
+	}
 }

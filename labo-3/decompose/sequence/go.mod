@@ -1,6 +1,7 @@
 module decompose/sequence
 
 require (
+	decompose/average v0.0.0
 	decompose/edges v0.0.0
 	decompose/expected v0.0.0
 	decompose/helper v0.0.0
@@ -20,5 +21,7 @@ replace decompose/sobel => ../sobel
 replace decompose/edges => ../edges
 
 replace decompose/expected => ../expected
+
+replace decompose/average => ../average
 
 go 1.13

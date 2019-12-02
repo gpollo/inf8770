@@ -14,23 +14,38 @@ import (
 func execute() error {
 	parser := argparse.NewParser("jpeg2000", "JPEG2000 encoder and decoder")
 	directory := parser.String("d", "directory", &argparse.Options{
-		Required: true,
+		Required: false,
 		Help:     "The directory containing the image",
+		Default:  "images",
 	})
 	format := parser.String("f", "format", &argparse.Options{
 		Required: false,
 		Help:     "The filename format",
-		Default:  "%04d.jpg",
+		Default:  "%04d.png",
 	})
 	expectedFilename := parser.String("e", "expected", &argparse.Options{
 		Required: false,
 		Help:     "The filename of the expected results",
 		Default:  "anni005.txt",
 	})
-	save := parser.Flag("s", "save", &argparse.Options{
+	skip := parser.Int("s", "skip", &argparse.Options{
+		Required: false,
+		Help:     "The number of frame to skip",
+		Default:  1,
+	})
+
+	cmdSobel := parser.NewCommand("do-sobel", "Use sobel filter method")
+	save := cmdSobel.Flag("s", "save", &argparse.Options{
 		Required: false,
 		Help:     "Save intermediary images",
 		Default:  false,
+	})
+
+	cmdHistogram := parser.NewCommand("do-histogram", "Use histogram method")
+	bins := cmdHistogram.Int("b", "bins", &argparse.Options{
+		Required: false,
+		Help:     "Number of bins in the histograms",
+		Default:  20,
 	})
 
 	err := parser.Parse(os.Args)
@@ -53,7 +68,13 @@ func execute() error {
 		return err
 	}
 
-	sequence.FromDirectory(*directory, *format).Run(expected, *save)
+	if cmdSobel.Happened() {
+		sequence.FromDirectory(*directory, *format).RunSobel(expected, *save, *skip)
+	}
+
+	if cmdHistogram.Happened() {
+		sequence.FromDirectory(*directory, *format).RunHistogram(expected, uint(*bins), *skip)
+	}
 
 	return nil
 }

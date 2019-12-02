@@ -49,8 +49,8 @@ func (p *SobelPipeline) worker() {
 
 		layerBW := layer.FromImageBW(image.image)
 		layerSobel := p.filter.Apply(layerBW)
-		layerEdges := edges.FromLayer(layerSobel, 45000)
-		layerExpanded := layerEdges.ExpandRadius(4)
+		layerEdges := edges.FromLayer(layerSobel, 40000)
+		layerExpanded := layerEdges.ExpandRadius(7)
 
 		p.queueSobel <- &FrameSobel{
 			FrameImage:    *image,

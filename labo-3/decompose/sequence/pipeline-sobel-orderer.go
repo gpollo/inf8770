@@ -11,14 +11,16 @@ type SobelOrdererPipeline struct {
 	queueOrdered   chan *FrameSobel
 	received       map[int]*FrameSobel
 	position       int
+	skip           int
 }
 
-func NewSobelOrdererPipeline(in, out chan *FrameSobel) *SobelOrdererPipeline {
+func NewSobelOrdererPipeline(in, out chan *FrameSobel, skip int) *SobelOrdererPipeline {
 	return &SobelOrdererPipeline{
 		queueUnordered: in,
 		queueOrdered:   out,
 		received:       make(map[int]*FrameSobel),
 		position:       1,
+		skip:           skip,
 	}
 }
 
@@ -52,7 +54,7 @@ func (p *SobelOrdererPipeline) worker() {
 			p.queueOrdered <- ordered
 
 			delete(p.received, p.position)
-			p.position += 1
+			p.position += p.skip
 		}
 	}
 }

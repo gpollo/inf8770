@@ -11,14 +11,16 @@ type EdgesOrdererPipeline struct {
 	queueOrdered   chan *FrameEdges
 	received       map[int]*FrameEdges
 	position       int
+	skip           int
 }
 
-func NewEdgesOrdererPipeline(in, out chan *FrameEdges) *EdgesOrdererPipeline {
+func NewEdgesOrdererPipeline(in, out chan *FrameEdges, skip int) *EdgesOrdererPipeline {
 	return &EdgesOrdererPipeline{
 		queueUnordered: in,
 		queueOrdered:   out,
 		received:       make(map[int]*FrameEdges),
 		position:       1,
+		skip:           skip,
 	}
 }
 
@@ -52,7 +54,7 @@ func (p *EdgesOrdererPipeline) worker() {
 			p.queueOrdered <- ordered
 
 			delete(p.received, p.position)
-			p.position += 1
+			p.position += p.skip
 		}
 	}
 }
