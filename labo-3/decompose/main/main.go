@@ -12,7 +12,7 @@ import (
 )
 
 func execute() error {
-	parser := argparse.NewParser("jpeg2000", "JPEG2000 encoder and decoder")
+	parser := argparse.NewParser("decompose", "Sequence decomposer")
 	directory := parser.String("d", "directory", &argparse.Options{
 		Required: false,
 		Help:     "The directory containing the image",
